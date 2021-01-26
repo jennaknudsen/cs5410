@@ -32,6 +32,9 @@ namespace GameLoop
             Console.WriteLine("GameLoop Demo Initializing...");
             GameEventsList = new List<GameEvent>();
             eventsToRender = new List<GameEvent>();
+
+            // For the first time, display the [cmd:] prompt
+            Console.Write("[cmd:] ");
         }
 
         // where the actual game loop will take place
@@ -63,7 +66,7 @@ namespace GameLoop
                     render();
 
                     // sleep the thread for a tiny amount so that the MS difference between last update and now will be greater than 1
-                    Thread.Sleep(1);
+                    Thread.Sleep(2);
                 }
 
                 processInput();
@@ -114,11 +117,16 @@ namespace GameLoop
         // Events fired are displayed in this method
         public void render()
         {
+            bool showedLine = false;
             foreach (GameEvent ge in eventsToRender)
             {
-                Console.WriteLine("\tEvent: " + ge.Name + " (" + ge.Count + " remaining)");
+                showedLine = true;
+                Console.WriteLine("\n\tEvent: " + ge.Name + " (" + ge.Count + " remaining)");
             }
             eventsToRender.Clear();
+
+            if (showedLine)
+                Console.Write("[cmd:] ");
         }
     }
 }
