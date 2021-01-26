@@ -24,6 +24,9 @@ namespace GameLoop
         // this string holds whatever the user is typing
         private string userInput = "";
 
+        // boolean represents whether we are ready to process user input or not
+        bool processUserInput = false;
+
         private DateTime lastUpdateTime = DateTime.Now;
 
         // the "constructor"
@@ -80,7 +83,22 @@ namespace GameLoop
         public void processInput()
         {
             ConsoleKeyInfo c = Console.ReadKey();
-            userInput += c.KeyChar;
+            // ENTER = 13 on ASCII table
+            if (c.KeyChar == (char) 13)
+            {
+                Debug.WriteLine("ENTER pressed");
+                processUserInput = true;
+            } 
+            // BACKSPACE = 8 on ASCII table
+            else if (c.KeyChar == (char) 8)
+            {
+                Debug.WriteLine("BACKSPACE pressed");
+                userInput = userInput.Remove(userInput.Length - 1, 1);
+            }
+            else
+            {
+                userInput += c.KeyChar;
+            }
         }
 
         // Handles event simulation
