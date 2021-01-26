@@ -34,21 +34,24 @@ namespace GameLoop
             // 3: check for user input
             while (true)
             {
-                // step 1
-                // use this temp list to keep track of which events will need to be deleted in the future
-                List<GameEvent> tempList = new List<GameEvent>();
-                foreach (GameEvent ge in GameEventsList)
+                while (!Console.KeyAvailable)
                 {
-                    fireEventIfNecessary(ge);
+                    // step 1
+                    // use this temp list to keep track of which events will need to be deleted in the future
+                    List<GameEvent> tempList = new List<GameEvent>();
+                    foreach (GameEvent ge in GameEventsList)
+                    {
+                        fireEventIfNecessary(ge);
 
-                    if (ge.Count == 0)
-                        tempList.Add(ge);
-                }
+                        if (ge.Count == 0)
+                            tempList.Add(ge);
+                    }
 
-                // step 2
-                foreach (GameEvent ge in tempList)
-                {
-                    GameEventsList.Remove(ge);
+                    // step 2
+                    foreach (GameEvent ge in tempList)
+                    {
+                        GameEventsList.Remove(ge);
+                    }
                 }
 
                 // step 3
