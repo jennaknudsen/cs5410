@@ -130,6 +130,43 @@ namespace GameLoop
             {
                 GameEventsList.Remove(ge);
             }
+
+            // now, see if user input is needed to be read
+            if (processUserInput)
+            {
+                string[] inputSplit = userInput.Split();
+                if (inputSplit[0].Equals("quit"))
+                {
+                    Environment.Exit(0);
+                } 
+                else if (inputSplit[0].Equals("create") && inputSplit[1].Equals("event"))
+                {
+                    try
+                    {
+                        string eventName;
+                        int eventDuration;
+                        int eventCount;
+                        eventName = inputSplit[2];
+                        eventDuration = int.Parse(inputSplit[3]);
+                        eventCount = int.Parse(inputSplit[4]);
+
+                        GameEventsList.Add(new GameEvent()
+                        {
+                            Name = eventName,
+                            DurationMillis = eventDuration,
+                            Count = eventCount
+                        });
+                    }
+                    catch
+                    {
+                        // do nothing on exception
+                    }
+                }
+
+                // reset the input flags
+                processUserInput = false;
+                userInput = "";
+            }
         }
 
         // Events fired are displayed in this method
@@ -144,7 +181,7 @@ namespace GameLoop
             eventsToRender.Clear();
 
             if (showedLine)
-                Console.Write("[cmd:] ");
+                Console.Write("[cmd:] " + userInput);
         }
     }
 }
