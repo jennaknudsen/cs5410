@@ -9,9 +9,10 @@ namespace GameLoop
         // Internal class to hold information about game events
         class GameEvent
         {
-            string Name { get; set; }
-            int Duration { get; set; }
-            int Count { get; set; }
+            public string Name { get; set; }
+            public int Duration { get; set; }
+            public DateTime StartTime { get; set; }
+            public int Count { get; set; }
         }
 
         // this list holds all game events
@@ -27,7 +28,17 @@ namespace GameLoop
         // where the actual game loop will take place
         public void run()
         {
+            
+        }
 
+        private void fireEventIfNecessary(GameEvent ge)
+        {
+            if ((DateTime.Now - ge.StartTime).TotalMilliseconds > ge.Duration)
+            {
+                ge.Count--;
+                Console.WriteLine("\tEvent: " + ge.Name + " (" + ge.Count + " remaining)");
+                ge.StartTime = DateTime.Now;
+            }
         }
     }
 }
