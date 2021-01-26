@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 using System.Threading;
 
 namespace GameLoop
@@ -27,6 +26,7 @@ namespace GameLoop
         // boolean represents whether we are ready to process user input or not
         bool processUserInput = false;
 
+        // DateTime holds the last time the update() function was called
         private DateTime lastUpdateTime = DateTime.Now;
 
         // the "constructor"
@@ -43,39 +43,25 @@ namespace GameLoop
         // where the actual game loop will take place
         public void run()
         {
-            // TEST - remove this 
-            GameEventsList.Add(new GameEvent
-            {
-                Name = "FirstEvent",
-                DurationMillis = 500,
-                ElapsedTimeMillis = 0,
-                Count = 3
-            }) ;
-            GameEventsList.Add(new GameEvent
-            {
-                Name = "SecondEvent",
-                DurationMillis = 1000,
-                ElapsedTimeMillis = 0,
-                Count = 6
-            });
-
             while (true)
             {
+                // when there isn't a key available, just run the internal game loop
                 while (!Console.KeyAvailable)
                 {
+                    // pass elapsed time as a parameter
                     update(DateTime.Now - lastUpdateTime);
+
                     lastUpdateTime = DateTime.Now;
 
+                    // render everything needed on screen
                     render();
 
                     // sleep the thread for a tiny amount so that the MS difference between last update and now will be greater than 1
                     Thread.Sleep(2);
                 }
 
+                // once there is a key available, then process the input
                 processInput();
-
-                Debug.WriteLine("====|" + userInput + "|====");
-                
             }
         }
 
@@ -83,16 +69,15 @@ namespace GameLoop
         public void processInput()
         {
             ConsoleKeyInfo c = Console.ReadKey();
+
             // ENTER = 13 on ASCII table
             if (c.KeyChar == (char) 13)
             {
-                Debug.WriteLine("ENTER pressed");
                 processUserInput = true;
             } 
             // BACKSPACE = 8 on ASCII table
             else if (c.KeyChar == (char) 8)
             {
-                Debug.WriteLine("BACKSPACE pressed");
                 userInput = userInput.Remove(userInput.Length - 1, 1);
             }
             else
@@ -107,7 +92,10 @@ namespace GameLoop
         {
             int elapsedTimeMillis = (int) elapsedTime.TotalMilliseconds;
 
+            // create this temp list to keep track of which events should be removed 
             List<GameEvent> eventsToRemove = new List<GameEvent>();
+
+            // loop through all game events, see which ones need to be updated / removed
             foreach (GameEvent ge in GameEventsList)
             {
                 ge.ElapsedTimeMillis += elapsedTimeMillis;
@@ -134,22 +122,29 @@ namespace GameLoop
             // now, see if user input is needed to be read
             if (processUserInput)
             {
+                // divide user input by spaces into a string array
                 string[] inputSplit = userInput.Split();
+
                 if (inputSplit[0].Equals("quit"))
                 {
                     Environment.Exit(0);
                 } 
                 else if (inputSplit[0].Equals("create") && inputSplit[1].Equals("event"))
                 {
+                    // proper user input for creating an event looks like:
+                    // create event NAME [duration (ms)] [count]
+                    // create event ExampleEvent 1000 4
                     try
                     {
                         string eventName;
                         int eventDuration;
                         int eventCount;
+
                         eventName = inputSplit[2];
                         eventDuration = int.Parse(inputSplit[3]);
                         eventCount = int.Parse(inputSplit[4]);
 
+                        // once all necessary information is gathered from gameloop, create the event
                         GameEventsList.Add(new GameEvent()
                         {
                             Name = eventName,
@@ -163,7 +158,7 @@ namespace GameLoop
                     }
                 }
 
-                // reset the input flags
+                // reset the input flags and stored user input
                 processUserInput = false;
                 userInput = "";
             }
@@ -172,7 +167,9 @@ namespace GameLoop
         // Events fired are displayed in this method
         public void render()
         {
+            // use this bool to determine whether to show [cmd:] text or not
             bool showedLine = false;
+
             foreach (GameEvent ge in eventsToRender)
             {
                 showedLine = true;
