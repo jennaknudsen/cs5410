@@ -16,19 +16,44 @@ namespace GameLoop
         }
 
         // this list holds all game events
-        private List<GameEvent> GameEvents;
+        private List<GameEvent> GameEventsList;
 
         // the "constructor"
         public void initialize()
         {
             Console.WriteLine("GameLoop Demo Initializing...");
-            GameEvents = new List<GameEvent>();
+            GameEventsList = new List<GameEvent>();
         }
 
         // where the actual game loop will take place
         public void run()
         {
-            
+            // 3 step process
+            // 1: fire all events if necessary
+            // 2: clear out all empty events
+            // 3: check for user input
+            while (true)
+            {
+                // step 1
+                // use this temp list to keep track of which events will need to be deleted in the future
+                List<GameEvent> tempList = new List<GameEvent>();
+                foreach (GameEvent ge in GameEventsList)
+                {
+                    fireEventIfNecessary(ge);
+
+                    if (ge.Count == 0)
+                        tempList.Add(ge);
+                }
+
+                // step 2
+                foreach (GameEvent ge in tempList)
+                {
+                    GameEventsList.Remove(ge);
+                }
+
+                // step 3
+                
+            }
         }
 
         private void fireEventIfNecessary(GameEvent ge)
