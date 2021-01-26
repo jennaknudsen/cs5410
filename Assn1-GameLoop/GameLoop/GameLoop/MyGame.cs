@@ -24,7 +24,10 @@ namespace GameLoop
         private string userInput = "";
 
         // boolean represents whether we are ready to process user input or not
-        bool processUserInput = false;
+        private bool processUserInput = false;
+
+        // boolean represents whether user pressed Enter (whether render() should show a new line)
+        private bool userPressedEnter = false;
 
         // DateTime holds the last time the update() function was called
         private DateTime lastUpdateTime = DateTime.Now;
@@ -74,11 +77,16 @@ namespace GameLoop
             if (c.KeyChar == (char) 13)
             {
                 processUserInput = true;
+                userPressedEnter = true;
             } 
             // BACKSPACE = 8 on ASCII table
             else if (c.KeyChar == (char) 8)
             {
-                userInput = userInput.Remove(userInput.Length - 1, 1);
+                // only backspace if string not empty
+                if (userInput.Length > 0)
+                {
+                    userInput = userInput.Remove(userInput.Length - 1, 1);
+                }
             }
             else
             {
@@ -170,6 +178,7 @@ namespace GameLoop
             // use this bool to determine whether to show [cmd:] text or not
             bool showedLine = false;
 
+            // render all events that need to be rendered
             foreach (GameEvent ge in eventsToRender)
             {
                 showedLine = true;
@@ -177,8 +186,16 @@ namespace GameLoop
             }
             eventsToRender.Clear();
 
-            if (showedLine)
+            // show [cmd:] line if user pressed Enter or if the game loop rendered something
+            if (userPressedEnter)
+            {
+                Console.Write("\n[cmd:] " + userInput);
+                userPressedEnter = false;
+            }
+            else if (showedLine)
+            {
                 Console.Write("[cmd:] " + userInput);
+            }
         }
     }
 }
