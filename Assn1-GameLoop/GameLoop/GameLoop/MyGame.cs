@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
+using System.Threading;
 
 namespace GameLoop
 {
@@ -10,63 +12,113 @@ namespace GameLoop
         class GameEvent
         {
             public string Name { get; set; }
-            public int Duration { get; set; }
-            public DateTime StartTime { get; set; }
+            public int DurationMillis { get; set; }
+            public int ElapsedTimeMillis { get; set; }
             public int Count { get; set; }
         }
 
         // this list holds all game events
         private List<GameEvent> GameEventsList;
+        private List<GameEvent> eventsToRender;
+
+        // this string holds whatever the user is typing
+        private string userInput = "";
+
+        private DateTime lastUpdateTime = DateTime.Now;
 
         // the "constructor"
         public void initialize()
         {
             Console.WriteLine("GameLoop Demo Initializing...");
             GameEventsList = new List<GameEvent>();
+            eventsToRender = new List<GameEvent>();
         }
 
         // where the actual game loop will take place
         public void run()
         {
-            // 3 step process
-            // 1: fire all events if necessary
-            // 2: clear out all empty events
-            // 3: check for user input
+            // TEST - remove this 
+            GameEventsList.Add(new GameEvent
+            {
+                Name = "FirstEvent",
+                DurationMillis = 500,
+                ElapsedTimeMillis = 0,
+                Count = 3
+            }) ;
+            GameEventsList.Add(new GameEvent
+            {
+                Name = "SecondEvent",
+                DurationMillis = 1000,
+                ElapsedTimeMillis = 0,
+                Count = 6
+            });
+
             while (true)
             {
                 while (!Console.KeyAvailable)
                 {
-                    // step 1
-                    // use this temp list to keep track of which events will need to be deleted in the future
-                    List<GameEvent> tempList = new List<GameEvent>();
-                    foreach (GameEvent ge in GameEventsList)
-                    {
-                        fireEventIfNecessary(ge);
+                    update(DateTime.Now - lastUpdateTime);
+                    lastUpdateTime = DateTime.Now;
 
-                        if (ge.Count == 0)
-                            tempList.Add(ge);
-                    }
+                    render();
 
-                    // step 2
-                    foreach (GameEvent ge in tempList)
-                    {
-                        GameEventsList.Remove(ge);
-                    }
+                    // sleep the thread for a tiny amount so that the MS difference between last update and now will be greater than 1
+                    Thread.Sleep(1);
                 }
 
-                // step 3
+                processInput();
+
+                Debug.WriteLine("====|" + userInput + "|====");
                 
             }
         }
 
-        private void fireEventIfNecessary(GameEvent ge)
+        // This is where keyboard input is handled
+        public void processInput()
         {
-            if ((DateTime.Now - ge.StartTime).TotalMilliseconds > ge.Duration)
+            ConsoleKeyInfo c = Console.ReadKey();
+            userInput += c.KeyChar;
+        }
+
+        // Handles event simulation
+        // elapsedTime: how much time has elapsed since the last update
+        public void update(TimeSpan elapsedTime)
+        {
+            int elapsedTimeMillis = (int) elapsedTime.TotalMilliseconds;
+
+            List<GameEvent> eventsToRemove = new List<GameEvent>();
+            foreach (GameEvent ge in GameEventsList)
             {
-                ge.Count--;
-                Console.WriteLine("\tEvent: " + ge.Name + " (" + ge.Count + " remaining)");
-                ge.StartTime = DateTime.Now;
+                ge.ElapsedTimeMillis += elapsedTimeMillis;
+
+                if (ge.ElapsedTimeMillis >= ge.DurationMillis)
+                {
+                    eventsToRender.Add(ge);
+                    ge.ElapsedTimeMillis = 0;
+                    ge.Count--;
+                }
+                if (ge.Count == 0)
+                {
+                    eventsToRemove.Add(ge);
+                }
             }
+
+            // now, remove all expired events
+            // they'll still exist in eventsToRender 
+            foreach (GameEvent ge in eventsToRemove)
+            {
+                GameEventsList.Remove(ge);
+            }
+        }
+
+        // Events fired are displayed in this method
+        public void render()
+        {
+            foreach (GameEvent ge in eventsToRender)
+            {
+                Console.WriteLine("\tEvent: " + ge.Name + " (" + ge.Count + " remaining)");
+            }
+            eventsToRender.Clear();
         }
     }
 }
