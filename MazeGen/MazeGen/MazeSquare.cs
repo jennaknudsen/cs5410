@@ -7,6 +7,8 @@ namespace MazeGen
          A MazeSquare has the following:
          Four walls
          An ID number (for the disjoint set)
+         PartOfSolution property
+         Visited property
 
          A Wall has the following: 
          MazeEdge property (whether it is at the edge of the maze or not)
@@ -23,6 +25,10 @@ namespace MazeGen
 
         public int ID { get; }
 
+        // These should be public and modifiable by all other classes
+        public bool PartOfSolution = false;
+        public bool Visited = false;
+
         public MazeSquare(Wall topWall, Wall leftWall, Wall rightWall,
                           Wall bottomWall, int id)
         {
@@ -32,8 +38,12 @@ namespace MazeGen
             BottomWall = bottomWall;
         }
 
+        /*
+         Inner class representing a Wall
+        */
         public class Wall
         {
+            // Use enums to hold WallStatus and Orientation
             public enum WallStatus
             { 
                 ENABLED,
