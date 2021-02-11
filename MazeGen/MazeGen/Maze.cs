@@ -57,7 +57,7 @@ namespace MazeGen
                 for (int col = 0; col < BoardSize; col++)
                 {
                     // id will be numerical from [0, BoardSize^2)
-                    mazeSquares[row, col] = new MazeSquare(row * 5 + col);
+                    mazeSquares[row, col] = new MazeSquare(row * BoardSize + col);
 
                     // set up all four walls
                     MazeSquare.Wall topWall;
@@ -164,9 +164,38 @@ namespace MazeGen
         // knocking out all walls randomly until each square is in the same
         // disjoint set
         public void GenerateMaze()
-        { 
-            // TODO: write this
-            
+        {
+            /*
+             shuffle all walls in the list
+             then, for each wall, determine if two cells in wall are in same DJ set
+             if not, then union the two sets and disable the wall
+            */
+
+            // shuffle a list in place:
+            // https://stackoverflow.com/a/1262619
+            Random random = new Random();
+            int n = listOfWalls.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                MazeSquare.Wall value = listOfWalls[k];
+                listOfWalls[k] = listOfWalls[n];
+                listOfWalls[n] = value;
+            }
+
+            foreach (MazeSquare.Wall wall in listOfWalls)
+            {
+                int leftID = wall.firstSquareRef.ID;
+                int rightID = wall.secondSquareRef.ID;
+
+                if (!(mazeSquaresDisjointSet.Find(leftID) ==
+                      mazeSquaresDisjointSet.Find(rightID)))
+                {
+                    mazeSquaresDisjointSet.Union(leftID, rightID);
+                    wall.wallStatus = MazeSquare.Wall.WallStatus.DISABLED;
+                }
+            }
         }
 
         // for debugging purposes, this will print the maze
