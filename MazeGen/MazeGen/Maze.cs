@@ -43,13 +43,13 @@ namespace MazeGen
             mazeSquaresDisjointSet = new DisjointSet(boardSize * boardSize);
 
             // next, fill the board with squares
-            fillBoardWithSquares();
+            FillBoardWithSquares();
 
             // finally, generate the actual maze
             GenerateMaze();
         }
 
-        public void fillBoardWithSquares()
+        public void FillBoardWithSquares()
         {
             // next, fill the board with squares
             for (int row = 0; row < BoardSize; row++)
@@ -197,71 +197,43 @@ namespace MazeGen
                     // center character is ' '
                     mazeChars[scaledRow + 1, scaledCol + 1] = ' ';
 
-                    // determine which edges need to be filled 
-                    char charToAdd;
-
-                    // top wall
-                    charToAdd = 'F';
-                    switch (mazeSquares[row, col].TopWall.wallStatus)
+                    var charToAdd = mazeSquares[row, col].TopWall.wallStatus switch
                     {
-                        case MazeSquare.Wall.WallStatus.ENABLED:
-                            charToAdd = '-';
-                            break;
-                        case MazeSquare.Wall.WallStatus.EDGE:
-                            charToAdd = '=';
-                            break;
-                        default:
-                            charToAdd = ' ';
-                            break;
-                    }
+                        MazeSquare.Wall.WallStatus.ENABLED => '-',
+                        MazeSquare.Wall.WallStatus.EDGE => '=',
+                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        _ => 'F',
+                    };
                     mazeChars[scaledRow, scaledCol + 1] = charToAdd;
 
                     // left wall
-                    charToAdd = 'F';
-                    switch (mazeSquares[row, col].LeftWall.wallStatus)
+                    charToAdd = mazeSquares[row, col].LeftWall.wallStatus switch
                     {
-                        case MazeSquare.Wall.WallStatus.ENABLED:
-                            charToAdd = '|';
-                            break;
-                        case MazeSquare.Wall.WallStatus.EDGE:
-                            charToAdd = '!';
-                            break;
-                        default:
-                            charToAdd = ' ';
-                            break;
-                    }
+                        MazeSquare.Wall.WallStatus.ENABLED => '|',
+                        MazeSquare.Wall.WallStatus.EDGE => '!',
+                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        _ => 'F',
+                    };
                     mazeChars[scaledRow + 1, scaledCol] = charToAdd;
 
                     // right wall
-                    charToAdd = 'F';
-                    switch (mazeSquares[row, col].RightWall.wallStatus)
+                    charToAdd = mazeSquares[row, col].RightWall.wallStatus switch
                     {
-                        case MazeSquare.Wall.WallStatus.ENABLED:
-                            charToAdd = '|';
-                            break;
-                        case MazeSquare.Wall.WallStatus.EDGE:
-                            charToAdd = '!';
-                            break;
-                        default:
-                            charToAdd = ' ';
-                            break;
-                    }
+                        MazeSquare.Wall.WallStatus.ENABLED => '|',
+                        MazeSquare.Wall.WallStatus.EDGE => '!',
+                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        _ => 'F',
+                    };
                     mazeChars[scaledRow + 1, scaledCol + 2] = charToAdd;
 
                     // bottom wall
-                    charToAdd = 'F';
-                    switch (mazeSquares[row, col].BottomWall.wallStatus)
+                    charToAdd = mazeSquares[row, col].BottomWall.wallStatus switch
                     {
-                        case MazeSquare.Wall.WallStatus.ENABLED:
-                            charToAdd = '-';
-                            break;
-                        case MazeSquare.Wall.WallStatus.EDGE:
-                            charToAdd = '=';
-                            break;
-                        default:
-                            charToAdd = ' ';
-                            break;
-                    }
+                        MazeSquare.Wall.WallStatus.ENABLED => '-',
+                        MazeSquare.Wall.WallStatus.EDGE => '=',
+                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        _ => 'F',
+                    };
                     mazeChars[scaledRow + 2, scaledCol + 1] = charToAdd;
                 }
             }
