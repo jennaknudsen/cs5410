@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DisjointSet
+namespace MazeGen
 {
     public class DisjointSet
     {
