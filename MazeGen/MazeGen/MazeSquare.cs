@@ -17,13 +17,6 @@ namespace MazeGen
                     the wall divides)
         */
 
-        // TODO determine which way is better
-        /*
-        public Wall TopWall { get; set; }
-        public Wall LeftWall { get; set; }
-        public Wall RightWall { get; set; }
-        public Wall BottomWall { get; set; }
-        */
         public Wall TopWall = null;
         public Wall LeftWall = null;
         public Wall RightWall = null;
@@ -41,18 +34,6 @@ namespace MazeGen
         {
             ID = id;
         }
-
-        /*
-        public MazeSquare(Wall topWall, Wall leftWall, Wall rightWall,
-                          Wall bottomWall, int id)
-        {
-            TopWall = topWall;
-            LeftWall = leftWall;
-            RightWall = rightWall;
-            BottomWall = bottomWall;
-            ID = id;
-        }
-        */
 
         /*
          Inner class representing a Wall

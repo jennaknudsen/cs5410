@@ -207,7 +207,7 @@ namespace MazeGen
             // = -> horizontal edge
             // - -> horizontal wall
             // * -> corner piece
-            char[,] mazeChars = new char[BoardSize * 3, BoardSize * 3];
+            char[,] mazeChars = new char[BoardSize * 3, BoardSize * 4];
 
             // print each cell in a 3x3 char grid
             for (int row = 0; row < BoardSize; row++)
@@ -215,16 +215,17 @@ namespace MazeGen
                 for (int col = 0; col < BoardSize; col++)
                 {
                     int scaledRow = 3 * row;
-                    int scaledCol = 3 * col;
+                    int scaledCol = 4 * col;
 
                     // fill corners with '*'
                     mazeChars[scaledRow, scaledCol] = '*';
                     mazeChars[scaledRow + 2, scaledCol] = '*';
-                    mazeChars[scaledRow, scaledCol + 2] = '*';
-                    mazeChars[scaledRow + 2, scaledCol + 2] = '*';
+                    mazeChars[scaledRow, scaledCol + 3] = '*';
+                    mazeChars[scaledRow + 2, scaledCol + 3] = '*';
 
                     // center character is ' '
                     mazeChars[scaledRow + 1, scaledCol + 1] = ' ';
+                    mazeChars[scaledRow + 1, scaledCol + 2] = ' ';
 
                     var charToAdd = mazeSquares[row, col].TopWall.wallStatus switch
                     {
@@ -234,6 +235,7 @@ namespace MazeGen
                         _ => 'F',
                     };
                     mazeChars[scaledRow, scaledCol + 1] = charToAdd;
+                    mazeChars[scaledRow, scaledCol + 2] = charToAdd;
 
                     // left wall
                     charToAdd = mazeSquares[row, col].LeftWall.wallStatus switch
@@ -253,7 +255,7 @@ namespace MazeGen
                         MazeSquare.Wall.WallStatus.DISABLED => ' ',
                         _ => 'F',
                     };
-                    mazeChars[scaledRow + 1, scaledCol + 2] = charToAdd;
+                    mazeChars[scaledRow + 1, scaledCol + 3] = charToAdd;
 
                     // bottom wall
                     charToAdd = mazeSquares[row, col].BottomWall.wallStatus switch
@@ -264,13 +266,14 @@ namespace MazeGen
                         _ => 'F',
                     };
                     mazeChars[scaledRow + 2, scaledCol + 1] = charToAdd;
+                    mazeChars[scaledRow + 2, scaledCol + 2] = charToAdd;
                 }
             }
 
             // once our char array is created, print it out
             for (int row = 0; row < 3 * BoardSize; row++)
             { 
-                for (int col = 0; col < 3 * BoardSize; col++)
+                for (int col = 0; col < 4 * BoardSize; col++)
                 {
                     Console.Write(mazeChars[row, col]);
                 }
