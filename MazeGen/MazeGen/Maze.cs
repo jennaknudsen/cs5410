@@ -52,9 +52,9 @@ namespace MazeGen
         public void fillBoardWithSquares()
         {
             // next, fill the board with squares
-            for (int x = 0; x < BoardSize; x++)
+            for (int y = 0; y < BoardSize; y++)
             {
-                for (int y = 0; y < BoardSize; y++)
+                for (int x = 0; x < BoardSize; x++)
                 {
                     // id will be numerical from [0, BoardSize^2)
                     mazeSquares[x, y] = new MazeSquare(x * 5 + y);
@@ -180,18 +180,21 @@ namespace MazeGen
             // * -> corner piece
             char[,] mazeChars = new char[BoardSize * 3, BoardSize * 3];
 
-            for (int x = 0; x < BoardSize; x++)
+            for (int y = 0; y < BoardSize; y++)
             { 
-                for (int y = 0; y < BoardSize; y++)
+                for (int x = 0; x < BoardSize; x++)
                 {
                     int scaledX = 3 * x;
                     int scaledY = 3 * y;
 
                     // fill corners with '*'
                     mazeChars[scaledX, scaledY] = '*';
-                    mazeChars[scaledX + 2, scaledX] = '*';
+                    mazeChars[scaledX + 2, scaledY] = '*';
                     mazeChars[scaledX, scaledY + 2] = '*';
                     mazeChars[scaledX + 2, scaledY + 2] = '*';
+
+                    // center character is ' '
+                    mazeChars[scaledX + 1, scaledY + 1] = ' ';
 
                     // determine which edges need to be filled 
                     char charToAdd;
@@ -260,6 +263,16 @@ namespace MazeGen
                     }
                     mazeChars[scaledX + 1, scaledY + 2] = charToAdd;
                 }
+            }
+
+            // once our char array is created, print it out
+            for (int y = 0; y < 3 * BoardSize; y++)
+            { 
+                for (int x = 0; x < 3 * BoardSize; x++)
+                {
+                    Console.Write(mazeChars[x, y]);
+                }
+                Console.Write('\n');
             }
         }
     }
