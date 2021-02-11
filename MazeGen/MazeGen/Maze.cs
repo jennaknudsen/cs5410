@@ -52,12 +52,12 @@ namespace MazeGen
         public void fillBoardWithSquares()
         {
             // next, fill the board with squares
-            for (int y = 0; y < BoardSize; y++)
+            for (int row = 0; row < BoardSize; row++)
             {
-                for (int x = 0; x < BoardSize; x++)
+                for (int col = 0; col < BoardSize; col++)
                 {
                     // id will be numerical from [0, BoardSize^2)
-                    mazeSquares[x, y] = new MazeSquare(x * 5 + y);
+                    mazeSquares[row, col] = new MazeSquare(row * 5 + col);
 
                     // set up all four walls
                     MazeSquare.Wall topWall;
@@ -65,46 +65,46 @@ namespace MazeGen
                     MazeSquare.Wall rightWall;
                     MazeSquare.Wall bottomWall;
 
-                    // top wall: if y = 0, make it the edge
+                    // top wall: if row = 0, make it the edge
                     // otherwise, grab bottom wall of previous
-                    if (y == 0)
+                    if (row == 0)
                     {
                         topWall = new MazeSquare.Wall(
                             MazeSquare.Wall.WallStatus.EDGE,
                             MazeSquare.Wall.Orientation.HORIZONTAL,
                             null,
-                            mazeSquares[x, y]);
+                            mazeSquares[row, col]);
                     }
                     else
                     {
-                        topWall = mazeSquares[x, y - 1].BottomWall;
+                        topWall = mazeSquares[row - 1, col].BottomWall;
                         // need to reassign second ref to this (it will have
                         // been set to null previously)
-                        topWall.secondSquareRef = mazeSquares[x, y];
+                        topWall.secondSquareRef = mazeSquares[row, col];
                     }
 
-                    // left wall: if x = 0, make it the edge
+                    // left wall: if col = 0, make it the edge
                     // otherwise, grab right wall of previous
-                    if (x == 0)
+                    if (col == 0)
                     {
                         leftWall = new MazeSquare.Wall(
                             MazeSquare.Wall.WallStatus.EDGE,
                             MazeSquare.Wall.Orientation.VERTICAL,
                             null,
-                            mazeSquares[x, y]);
+                            mazeSquares[row, col]);
                     }
                     else
                     {
-                        leftWall = mazeSquares[x - 1, y].RightWall;
+                        leftWall = mazeSquares[row, col - 1].RightWall;
                         // need to reassign second ref to this (it will have
                         // been set to null previously)
-                        leftWall.secondSquareRef = mazeSquares[x, y];
+                        leftWall.secondSquareRef = mazeSquares[row, col];
                     }
 
-                    // right wall: if x = BoardSize - 1, make it the edge
+                    // right wall: if col = BoardSize - 1, make it the edge
                     // otherwise, make it a new wall 
                     MazeSquare.Wall.WallStatus rightStatus;
-                    if (x == BoardSize - 1)
+                    if (col == BoardSize - 1)
                     {
                         rightStatus = MazeSquare.Wall.WallStatus.EDGE;
                     }
@@ -116,20 +116,20 @@ namespace MazeGen
                     rightWall = new MazeSquare.Wall(
                         rightStatus,
                         MazeSquare.Wall.Orientation.VERTICAL,
-                        mazeSquares[x, y],
+                        mazeSquares[row, col],
                         null);
 
                     // if this wasn't an edge, then add it to the ListOfWalls
                     // so that it might be disabled later
-                    if (x != BoardSize - 1)
+                    if (col != BoardSize - 1)
                     {
                         listOfWalls.Add(rightWall);
                     }
 
-                    // bottom wall: if y = BoardSize - 1, make it the edge
+                    // bottom wall: if row = BoardSize - 1, make it the edge
                     // otherwise, make it a new wall 
                     MazeSquare.Wall.WallStatus bottomStatus;
-                    if (y == BoardSize - 1)
+                    if (row == BoardSize - 1)
                     {
                         bottomStatus = MazeSquare.Wall.WallStatus.EDGE;
                     }
@@ -141,21 +141,21 @@ namespace MazeGen
                     bottomWall = new MazeSquare.Wall(
                         bottomStatus,
                         MazeSquare.Wall.Orientation.HORIZONTAL,
-                        mazeSquares[x, y],
+                        mazeSquares[row, col],
                         null);
 
                     // if this wasn't an edge, then add it to the ListOfWalls
                     // so that it might be disabled later
-                    if (y != BoardSize - 1)
+                    if (row != BoardSize - 1)
                     {
                         listOfWalls.Add(bottomWall);
                     }
 
                     // Assign all of the walls we just created to this square
-                    mazeSquares[x, y].TopWall = topWall;
-                    mazeSquares[x, y].LeftWall = leftWall;
-                    mazeSquares[x, y].RightWall = rightWall;
-                    mazeSquares[x, y].BottomWall = bottomWall;
+                    mazeSquares[row, col].TopWall = topWall;
+                    mazeSquares[row, col].LeftWall = leftWall;
+                    mazeSquares[row, col].RightWall = rightWall;
+                    mazeSquares[row, col].BottomWall = bottomWall;
                 }
             }
         }
@@ -180,28 +180,29 @@ namespace MazeGen
             // * -> corner piece
             char[,] mazeChars = new char[BoardSize * 3, BoardSize * 3];
 
-            for (int y = 0; y < BoardSize; y++)
+            // print each cell in a 3x3 char grid
+            for (int row = 0; row < BoardSize; row++)
             { 
-                for (int x = 0; x < BoardSize; x++)
+                for (int col = 0; col < BoardSize; col++)
                 {
-                    int scaledX = 3 * x;
-                    int scaledY = 3 * y;
+                    int scaledRow = 3 * row;
+                    int scaledCol = 3 * col;
 
                     // fill corners with '*'
-                    mazeChars[scaledX, scaledY] = '*';
-                    mazeChars[scaledX + 2, scaledY] = '*';
-                    mazeChars[scaledX, scaledY + 2] = '*';
-                    mazeChars[scaledX + 2, scaledY + 2] = '*';
+                    mazeChars[scaledRow, scaledCol] = '*';
+                    mazeChars[scaledRow + 2, scaledCol] = '*';
+                    mazeChars[scaledRow, scaledCol + 2] = '*';
+                    mazeChars[scaledRow + 2, scaledCol + 2] = '*';
 
                     // center character is ' '
-                    mazeChars[scaledX + 1, scaledY + 1] = ' ';
+                    mazeChars[scaledRow + 1, scaledCol + 1] = ' ';
 
                     // determine which edges need to be filled 
                     char charToAdd;
 
                     // top wall
                     charToAdd = 'F';
-                    switch (mazeSquares[x, y].TopWall.wallStatus)
+                    switch (mazeSquares[row, col].TopWall.wallStatus)
                     {
                         case MazeSquare.Wall.WallStatus.ENABLED:
                             charToAdd = '-';
@@ -213,11 +214,11 @@ namespace MazeGen
                             charToAdd = ' ';
                             break;
                     }
-                    mazeChars[scaledX + 1, scaledY] = charToAdd;
+                    mazeChars[scaledRow, scaledCol + 1] = charToAdd;
 
                     // left wall
                     charToAdd = 'F';
-                    switch (mazeSquares[x, y].LeftWall.wallStatus)
+                    switch (mazeSquares[row, col].LeftWall.wallStatus)
                     {
                         case MazeSquare.Wall.WallStatus.ENABLED:
                             charToAdd = '|';
@@ -229,11 +230,11 @@ namespace MazeGen
                             charToAdd = ' ';
                             break;
                     }
-                    mazeChars[scaledX, scaledY + 1] = charToAdd;
+                    mazeChars[scaledRow + 1, scaledCol] = charToAdd;
 
                     // right wall
                     charToAdd = 'F';
-                    switch (mazeSquares[x, y].RightWall.wallStatus)
+                    switch (mazeSquares[row, col].RightWall.wallStatus)
                     {
                         case MazeSquare.Wall.WallStatus.ENABLED:
                             charToAdd = '|';
@@ -245,11 +246,11 @@ namespace MazeGen
                             charToAdd = ' ';
                             break;
                     }
-                    mazeChars[scaledX + 2, scaledY + 1] = charToAdd;
+                    mazeChars[scaledRow + 1, scaledCol + 2] = charToAdd;
 
                     // bottom wall
                     charToAdd = 'F';
-                    switch (mazeSquares[x, y].BottomWall.wallStatus)
+                    switch (mazeSquares[row, col].BottomWall.wallStatus)
                     {
                         case MazeSquare.Wall.WallStatus.ENABLED:
                             charToAdd = '-';
@@ -261,17 +262,18 @@ namespace MazeGen
                             charToAdd = ' ';
                             break;
                     }
-                    mazeChars[scaledX + 1, scaledY + 2] = charToAdd;
+                    mazeChars[scaledRow + 2, scaledCol + 1] = charToAdd;
                 }
             }
 
             // once our char array is created, print it out
-            for (int y = 0; y < 3 * BoardSize; y++)
+            for (int row = 0; row < 3 * BoardSize; row++)
             { 
-                for (int x = 0; x < 3 * BoardSize; x++)
+                for (int col = 0; col < 3 * BoardSize; col++)
                 {
-                    Console.Write(mazeChars[x, y]);
+                    Console.Write(mazeChars[row, col]);
                 }
+                // at end of row, go to next line
                 Console.Write('\n');
             }
         }
