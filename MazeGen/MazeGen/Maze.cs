@@ -165,7 +165,102 @@ namespace MazeGen
         // disjoint set
         public void GenerateMaze()
         { 
+            // TODO: write this
             
+        }
+
+        // for debugging purposes, this will print the maze
+        public void PrintMaze()
+        {
+            // symbols:
+            // ! -> vertical edge
+            // | -> vertical wall
+            // = -> horizontal edge
+            // - -> horizontal wall
+            // * -> corner piece
+            char[,] mazeChars = new char[BoardSize * 3, BoardSize * 3];
+
+            for (int x = 0; x < BoardSize; x++)
+            { 
+                for (int y = 0; y < BoardSize; y++)
+                {
+                    int scaledX = 3 * x;
+                    int scaledY = 3 * y;
+
+                    // fill corners with '*'
+                    mazeChars[scaledX, scaledY] = '*';
+                    mazeChars[scaledX + 2, scaledX] = '*';
+                    mazeChars[scaledX, scaledY + 2] = '*';
+                    mazeChars[scaledX + 2, scaledY + 2] = '*';
+
+                    // determine which edges need to be filled 
+                    char charToAdd;
+
+                    // top wall
+                    charToAdd = 'F';
+                    switch (mazeSquares[x, y].TopWall.wallStatus)
+                    {
+                        case MazeSquare.Wall.WallStatus.ENABLED:
+                            charToAdd = '-';
+                            break;
+                        case MazeSquare.Wall.WallStatus.EDGE:
+                            charToAdd = '=';
+                            break;
+                        default:
+                            charToAdd = ' ';
+                            break;
+                    }
+                    mazeChars[scaledX + 1, scaledY] = charToAdd;
+
+                    // left wall
+                    charToAdd = 'F';
+                    switch (mazeSquares[x, y].LeftWall.wallStatus)
+                    {
+                        case MazeSquare.Wall.WallStatus.ENABLED:
+                            charToAdd = '|';
+                            break;
+                        case MazeSquare.Wall.WallStatus.EDGE:
+                            charToAdd = '!';
+                            break;
+                        default:
+                            charToAdd = ' ';
+                            break;
+                    }
+                    mazeChars[scaledX, scaledY + 1] = charToAdd;
+
+                    // right wall
+                    charToAdd = 'F';
+                    switch (mazeSquares[x, y].RightWall.wallStatus)
+                    {
+                        case MazeSquare.Wall.WallStatus.ENABLED:
+                            charToAdd = '|';
+                            break;
+                        case MazeSquare.Wall.WallStatus.EDGE:
+                            charToAdd = '!';
+                            break;
+                        default:
+                            charToAdd = ' ';
+                            break;
+                    }
+                    mazeChars[scaledX + 2, scaledY + 1] = charToAdd;
+
+                    // bottom wall
+                    charToAdd = 'F';
+                    switch (mazeSquares[x, y].BottomWall.wallStatus)
+                    {
+                        case MazeSquare.Wall.WallStatus.ENABLED:
+                            charToAdd = '-';
+                            break;
+                        case MazeSquare.Wall.WallStatus.EDGE:
+                            charToAdd = '=';
+                            break;
+                        default:
+                            charToAdd = ' ';
+                            break;
+                    }
+                    mazeChars[scaledX + 1, scaledY + 2] = charToAdd;
+                }
+            }
         }
     }
 }
