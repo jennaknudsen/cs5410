@@ -17,11 +17,17 @@ namespace MazeGen
                     the wall divides)
         */
 
-        // walls and ID should be read only to other classes
-        public Wall TopWall { get; }
-        public Wall LeftWall { get; }
-        public Wall RightWall { get; }
-        public Wall BottomWall { get; }
+        // TODO determine which way is better
+        /*
+        public Wall TopWall { get; set; }
+        public Wall LeftWall { get; set; }
+        public Wall RightWall { get; set; }
+        public Wall BottomWall { get; set; }
+        */
+        public Wall TopWall = null;
+        public Wall LeftWall = null;
+        public Wall RightWall = null;
+        public Wall BottomWall = null;
 
         public int ID { get; }
 
@@ -29,6 +35,14 @@ namespace MazeGen
         public bool PartOfSolution = false;
         public bool Visited = false;
 
+        // This constructor leaves the walls as null
+        // Assuming that they will get filled in later
+        public MazeSquare(int id)
+        {
+            ID = id;
+        }
+
+        /*
         public MazeSquare(Wall topWall, Wall leftWall, Wall rightWall,
                           Wall bottomWall, int id)
         {
@@ -36,7 +50,9 @@ namespace MazeGen
             LeftWall = leftWall;
             RightWall = rightWall;
             BottomWall = bottomWall;
+            ID = id;
         }
+        */
 
         /*
          Inner class representing a Wall
