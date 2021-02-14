@@ -9,6 +9,14 @@ namespace MazeGen
         // multidimensional array holds all maze squares
         public MazeSquare[,] mazeSquares;
 
+        // multidimensional array holds the solution squares
+        // use this for our recursive memoizing algorithm
+        private bool[,] visitedSquares;
+
+        // tuple holds start and end squares
+        public (int, int) startSquare = (0, 0);
+        public (int, int) endSquare;
+
         // DisjointSet for all of the squares
         // When all squares are part of the same disjoint set, the maze
         // is solvable
@@ -18,7 +26,7 @@ namespace MazeGen
         // using a List so that we can shuffle the walls;
         private List<MazeSquare.Wall> listOfWalls;
 
-        // acceptable maze sizes are: 
+        // acceptable maze sizes are:
         // 5x5, 10x10, 15x15, 20x20
         public readonly int BoardSize;
 
@@ -26,21 +34,30 @@ namespace MazeGen
         // doesn't do anything to construct the maze at all
         public Maze(int boardSize)
         {
-            if (!new int[]{ 5, 10, 15, 20 }.Contains(boardSize))
-            { 
+            if (!new int[] {5, 10, 15, 20}.Contains(boardSize))
+            {
                 throw new Exception("Board size must be 5x5, 10x10, "
-                    + "15x15, or 20x20.");
+                                    + "15x15, or 20x20.");
             }
 
             // assuming boardsize matches
             this.BoardSize = boardSize;
             mazeSquares = new MazeSquare[BoardSize, BoardSize];
 
+            // ending square will be bottom-right corner
+            this.endSquare = (BoardSize - 1, BoardSize - 1);
+
             // initialize the listOfWalls
             listOfWalls = new List<MazeSquare.Wall>();
 
             // initialize the DisjointSet
-            mazeSquaresDisjointSet = new DisjointSet(boardSize * boardSize);
+            mazeSquaresDisjointSet = new DisjointSet(BoardSize * BoardSize);
+
+            // initialize the list of visited squares as not visited
+            visitedSquares = new bool[BoardSize, BoardSize];
+            for (int i = 0; i < visitedSquares.GetLength(0); i++)
+                for (int j = 0; j < visitedSquares.GetLength(1); j++)
+                    visitedSquares[i, j] = false;
 
             // next, fill the board with squares
             FillBoardWithSquares();
@@ -102,7 +119,7 @@ namespace MazeGen
                     }
 
                     // right wall: if col = BoardSize - 1, make it the edge
-                    // otherwise, make it a new wall 
+                    // otherwise, make it a new wall
                     MazeSquare.Wall.WallStatus rightStatus;
                     if (col == BoardSize - 1)
                     {
@@ -127,7 +144,7 @@ namespace MazeGen
                     }
 
                     // bottom wall: if row = BoardSize - 1, make it the edge
-                    // otherwise, make it a new wall 
+                    // otherwise, make it a new wall
                     MazeSquare.Wall.WallStatus bottomStatus;
                     if (row == BoardSize - 1)
                     {
@@ -198,6 +215,104 @@ namespace MazeGen
             }
         }
 
+        // helper function to start recursion to solve the maze
+        public void SolveMaze()
+        {
+            // start the recursive solution at start (0, 0)
+            SolveMazeRecursive((0, 0));
+        }
+
+        private bool SolveMazeRecursive((int row, int col) currentSquare)
+        {
+            // inside, we need to check all four directions to see if the solution
+            // could be built in that direction
+            // check for: walls, visited squares (both false)
+            // because our maze has no loops, the shortest path to the end is also the
+            // only path to the end
+
+            // mark current as visited, so we don't ever double back on it
+            visitedSquares[currentSquare.row, currentSquare.col] = true;
+
+            // get a reference to the current square
+            MazeSquare thisSquare = mazeSquares[currentSquare.row, currentSquare.col];
+
+            // if we're at the solution then we're done, return True
+            if (currentSquare == endSquare)
+            {
+                thisSquare.PartOfSolution = true;
+                return true;
+            }
+
+            // each holds whether the direction was used in the solution
+            bool topSolution, leftSolution, rightSolution, bottomSolution;
+
+            // if not at boundary
+            // and if not already visited
+            // and if wall is disabled
+            // then recurse and check for solution
+            // otherwise, it's just false
+
+            // top
+            if (currentSquare.row != 0 &&
+                !visitedSquares[currentSquare.row - 1, currentSquare.col] &&
+                thisSquare.TopWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+            {
+                topSolution = SolveMazeRecursive((currentSquare.row - 1, currentSquare.col));
+            }
+            else
+            {
+                topSolution = false;
+            }
+
+            // left
+            if (currentSquare.col != 0 &&
+                !visitedSquares[currentSquare.row, currentSquare.col - 1] &&
+                thisSquare.LeftWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+            {
+                leftSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col - 1));
+            }
+            else
+            {
+                leftSolution = false;
+            }
+
+            // right
+            if (currentSquare.col != BoardSize - 1 &&
+                !visitedSquares[currentSquare.row, currentSquare.col + 1] &&
+                thisSquare.RightWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+            {
+                rightSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col + 1));
+            }
+            else
+            {
+                rightSolution = false;
+            }
+
+            // bottom
+            if (currentSquare.row != BoardSize - 1 &&
+                !visitedSquares[currentSquare.row + 1, currentSquare.col] &&
+                thisSquare.BottomWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+            {
+                bottomSolution = SolveMazeRecursive((currentSquare.row + 1, currentSquare.col));
+            }
+            else
+            {
+                bottomSolution = false;
+            }
+
+            // return true if there is any solution among the four directions
+            if (topSolution || leftSolution || rightSolution || bottomSolution)
+            {
+                thisSquare.PartOfSolution = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+
         // for debugging purposes, this will print the maze
         public void PrintMaze()
         {
@@ -211,7 +326,7 @@ namespace MazeGen
 
             // print each cell in a 3x3 char grid
             for (int row = 0; row < BoardSize; row++)
-            { 
+            {
                 for (int col = 0; col < BoardSize; col++)
                 {
                     int scaledRow = 3 * row;
@@ -223,11 +338,19 @@ namespace MazeGen
                     mazeChars[scaledRow, scaledCol + 3] = '*';
                     mazeChars[scaledRow + 2, scaledCol + 3] = '*';
 
-                    // center character is ' '
-                    mazeChars[scaledRow + 1, scaledCol + 1] = ' ';
-                    mazeChars[scaledRow + 1, scaledCol + 2] = ' ';
+                    // center character is ' ' if not part of solution,
+                    // OO if part of solution
+                    var charToAdd = mazeSquares[row, col].PartOfSolution switch
+                    {
+                        true => 'O',
+                        false => ' '
 
-                    var charToAdd = mazeSquares[row, col].TopWall.wallStatus switch
+                    };
+                    mazeChars[scaledRow + 1, scaledCol + 1] = charToAdd;
+                    mazeChars[scaledRow + 1, scaledCol + 2] = charToAdd;
+
+                    // top wall
+                    charToAdd = mazeSquares[row, col].TopWall.wallStatus switch
                     {
                         MazeSquare.Wall.WallStatus.ENABLED => '-',
                         MazeSquare.Wall.WallStatus.EDGE => '=',
@@ -272,7 +395,7 @@ namespace MazeGen
 
             // once our char array is created, print it out
             for (int row = 0; row < 3 * BoardSize; row++)
-            { 
+            {
                 for (int col = 0; col < 4 * BoardSize; col++)
                 {
                     Console.Write(mazeChars[row, col]);
