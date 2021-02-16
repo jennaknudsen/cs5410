@@ -9,6 +9,7 @@ namespace Maze
         private GraphicsDeviceManager m_graphics;
         private SpriteBatch m_spriteBatch;
 
+        # region Assets
         // all textures (floor tiles, circles, etc)
         // floor tiles
         private Texture2D m_texNone;
@@ -27,15 +28,24 @@ namespace Maze
         private Texture2D m_texURB;
         private Texture2D m_texLRB;
         private Texture2D m_texULRB;
-        
+ 
         // overlay sprites
         private Texture2D m_texBlueCircle;
         private Texture2D m_texGreenCircle;
         private Texture2D m_texPinkCircle;
         private Texture2D m_texSmallDot;
         private Texture2D m_texTransparentGreenCircle;
+ 
+        # endregion
+
+        private const int BOARD_SIZE_PIXELS = 600;
+
+        private int boardSize;
+        private int tileSizePixels;
         
-        
+        // underlying data structure to hold a Maze
+        private Maze thisMaze;
+ 
         public MazeGame()
         {
             m_graphics = new GraphicsDeviceManager(this);
@@ -45,12 +55,17 @@ namespace Maze
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            // Add your initialization logic here
             m_graphics.PreferredBackBufferWidth = 1200;
             m_graphics.PreferredBackBufferHeight = 800;
             
             m_graphics.ApplyChanges();
 
+            // initialize the maze
+            // TODO: handle this somewhere else
+            boardSize = 5;
+            thisMaze = new Maze(boardSize);
+            
             base.Initialize();
         }
 
@@ -98,10 +113,18 @@ namespace Maze
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.DarkSlateGray);
+            GraphicsDevice.Clear(Color.DarkGray);
 
+            m_spriteBatch.Begin();
+            
             // TODO: Add your drawing code here
-
+            Rectangle position = new Rectangle(500, 500, 50, 50);
+            Rectangle position2 = new Rectangle(550, 500, 50, 50);
+            m_spriteBatch.Draw(m_texULB, position, Color.White);
+            m_spriteBatch.Draw(m_texURB, position2, Color.White);
+            
+            m_spriteBatch.End();
+            
             base.Draw(gameTime);
         }
     }
