@@ -98,7 +98,7 @@ namespace Maze
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.DarkSlateGray);
 
             // TODO: Add your drawing code here
 
