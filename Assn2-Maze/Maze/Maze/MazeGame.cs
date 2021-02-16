@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
+using static Maze.MazeSquare.Wall;
 
 namespace Maze
 {
@@ -39,8 +42,13 @@ namespace Maze
         # endregion
 
         private const int BOARD_SIZE_PIXELS = 600;
+        private const int WINDOW_WIDTH = 1200;
+        private readonly (int x, int y) TOP_LEFT_CORNER = (300, 100);
+        private const int WINDDOW_HEIGHT = 800;
 
+        // dimensions in tiles (5x5, 10x10, 15x15, 20x20)
         private int boardSize;
+        // pixel width/height of each tile
         private int tileSizePixels;
         
         // underlying data structure to hold a Maze
@@ -56,15 +64,17 @@ namespace Maze
         protected override void Initialize()
         {
             // Add your initialization logic here
-            m_graphics.PreferredBackBufferWidth = 1200;
-            m_graphics.PreferredBackBufferHeight = 800;
+            m_graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
+            m_graphics.PreferredBackBufferHeight = WINDDOW_HEIGHT;
             
             m_graphics.ApplyChanges();
 
             // initialize the maze
-            // TODO: handle this somewhere else
+            // TODO: handle ALL of this somewhere else
             boardSize = 5;
+            tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
             thisMaze = new Maze(boardSize);
+            
             
             base.Initialize();
         }
@@ -118,10 +128,61 @@ namespace Maze
             m_spriteBatch.Begin();
             
             // TODO: Add your drawing code here
-            Rectangle position = new Rectangle(500, 500, 50, 50);
-            Rectangle position2 = new Rectangle(550, 500, 50, 50);
-            m_spriteBatch.Draw(m_texULB, position, Color.White);
-            m_spriteBatch.Draw(m_texURB, position2, Color.White);
+            // Rectangle position = new Rectangle(50, 50, 50, 50);
+            // Rectangle position2 = new Rectangle(100, 50, 50, 50);
+            // m_spriteBatch.Draw(m_texULB, position, Color.White);
+            // m_spriteBatch.Draw(m_texURB, position2, Color.White);
+            // draw the board
+            for (int row = 0; row < boardSize; row++)
+            {
+                for (int col = 0; col < boardSize; col++)
+                {
+                    // need to determine which tile goes here
+                    var textureName = "";
+                    var thisSquare = thisMaze.mazeSquares[row, col];
+
+                    if (thisSquare.TopWall.wallStatus != WallStatus.DISABLED)
+                        textureName += "U";
+                    if (thisSquare.LeftWall.wallStatus != WallStatus.DISABLED)
+                        textureName += "L";
+                    if (thisSquare.RightWall.wallStatus != WallStatus.DISABLED)
+                        textureName += "R";
+                    if (thisSquare.BottomWall.wallStatus != WallStatus.DISABLED)
+                        textureName += "B";
+
+                    if (textureName.Equals(""))
+                        textureName = "none";
+
+                    // now, use some ugly code to determine which texture is needed
+                    var textureToLoad = textureName switch
+                    {
+                        "U" => m_texU,
+                        "L" => m_texL,
+                        "R" => m_texR,
+                        "B" => m_texB,
+                        "UL" => m_texUL,
+                        "UR" => m_texUR,
+                        "UB" => m_texUB,
+                        "LR" => m_texLR,
+                        "LB" => m_texLB,
+                        "RB" => m_texRB,
+                        "ULR" => m_texULR,
+                        "URB" => m_texURB,
+                        "ULB" => m_texULB,
+                        "LRB" => m_texLRB,
+                        "ULRB" => m_texULRB,
+                        "none" => m_texNone,
+                        _ => m_texULRB
+                    };
+                    
+                    // tuple holds position that this rect starts at
+                    var position = (col * tileSizePixels + TOP_LEFT_CORNER.x,
+                        row * tileSizePixels + TOP_LEFT_CORNER.y);
+
+                    var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
+                    m_spriteBatch.Draw(textureToLoad, rect, Color.White);
+                }
+            }
             
             m_spriteBatch.End();
             
