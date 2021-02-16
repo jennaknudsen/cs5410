@@ -16,21 +16,21 @@ namespace Maze
         // all textures (floor tiles, circles, etc)
         // floor tiles
         private Texture2D m_texNone;
-        private Texture2D m_texU;
+        private Texture2D m_texT;
         private Texture2D m_texL;
         private Texture2D m_texR;
         private Texture2D m_texB;
-        private Texture2D m_texUL;
-        private Texture2D m_texUR;
-        private Texture2D m_texUB;
+        private Texture2D m_texTL;
+        private Texture2D m_texTR;
+        private Texture2D m_texTB;
         private Texture2D m_texLR;
         private Texture2D m_texLB;
         private Texture2D m_texRB;
-        private Texture2D m_texULR;
-        private Texture2D m_texULB;
-        private Texture2D m_texURB;
+        private Texture2D m_texTLR;
+        private Texture2D m_texTLB;
+        private Texture2D m_texTRB;
         private Texture2D m_texLRB;
-        private Texture2D m_texULRB;
+        private Texture2D m_texTLRB;
  
         // overlay sprites
         private Texture2D m_texBlueCircle;
@@ -71,7 +71,7 @@ namespace Maze
 
             // initialize the maze
             // TODO: handle ALL of this somewhere else
-            boardSize = 5;
+            boardSize = 20;
             tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
             thisMaze = new Maze(boardSize);
             
@@ -87,21 +87,21 @@ namespace Maze
             // all textures (floor tiles, circles, etc)
             // floor tiles
             m_texNone = this.Content.Load<Texture2D>("FloorTiles/none");
-            m_texU = this.Content.Load<Texture2D>("FloorTiles/U");
+            m_texT = this.Content.Load<Texture2D>("FloorTiles/T");
             m_texL = this.Content.Load<Texture2D>("FloorTiles/L");
             m_texR = this.Content.Load<Texture2D>("FloorTiles/R");
             m_texB = this.Content.Load<Texture2D>("FloorTiles/B");
-            m_texUL = this.Content.Load<Texture2D>("FloorTiles/UL");
-            m_texUR = this.Content.Load<Texture2D>("FloorTiles/UR");
-            m_texUB = this.Content.Load<Texture2D>("FloorTiles/UB");
+            m_texTL = this.Content.Load<Texture2D>("FloorTiles/TL");
+            m_texTR = this.Content.Load<Texture2D>("FloorTiles/TR");
+            m_texTB = this.Content.Load<Texture2D>("FloorTiles/TB");
             m_texLR = this.Content.Load<Texture2D>("FloorTiles/LR");
             m_texLB = this.Content.Load<Texture2D>("FloorTiles/LB");
             m_texRB = this.Content.Load<Texture2D>("FloorTiles/RB");
-            m_texULR = this.Content.Load<Texture2D>("FloorTiles/ULR");
-            m_texULB = this.Content.Load<Texture2D>("FloorTiles/ULB");
-            m_texURB = this.Content.Load<Texture2D>("FloorTiles/URB");
+            m_texTLR = this.Content.Load<Texture2D>("FloorTiles/TLR");
+            m_texTLB = this.Content.Load<Texture2D>("FloorTiles/TLB");
+            m_texTRB = this.Content.Load<Texture2D>("FloorTiles/TRB");
             m_texLRB = this.Content.Load<Texture2D>("FloorTiles/LRB");
-            m_texULRB = this.Content.Load<Texture2D>("FloorTiles/ULRB");
+            m_texTLRB = this.Content.Load<Texture2D>("FloorTiles/TLRB");
         
             // overlay sprites
             m_texBlueCircle = this.Content.Load<Texture2D>("OverlaySprites/BlueCircle");
@@ -130,8 +130,8 @@ namespace Maze
             // TODO: Add your drawing code here
             // Rectangle position = new Rectangle(50, 50, 50, 50);
             // Rectangle position2 = new Rectangle(100, 50, 50, 50);
-            // m_spriteBatch.Draw(m_texULB, position, Color.White);
-            // m_spriteBatch.Draw(m_texURB, position2, Color.White);
+            // m_spriteBatch.Draw(m_texTLB, position, Color.White);
+            // m_spriteBatch.Draw(m_texTRB, position2, Color.White);
             // draw the board
             for (int row = 0; row < boardSize; row++)
             {
@@ -142,7 +142,7 @@ namespace Maze
                     var thisSquare = thisMaze.mazeSquares[row, col];
 
                     if (thisSquare.TopWall.wallStatus != WallStatus.DISABLED)
-                        textureName += "U";
+                        textureName += "T";
                     if (thisSquare.LeftWall.wallStatus != WallStatus.DISABLED)
                         textureName += "L";
                     if (thisSquare.RightWall.wallStatus != WallStatus.DISABLED)
@@ -156,23 +156,23 @@ namespace Maze
                     // now, use some ugly code to determine which texture is needed
                     var textureToLoad = textureName switch
                     {
-                        "U" => m_texU,
+                        "T" => m_texT,
                         "L" => m_texL,
                         "R" => m_texR,
                         "B" => m_texB,
-                        "UL" => m_texUL,
-                        "UR" => m_texUR,
-                        "UB" => m_texUB,
+                        "TL" => m_texTL,
+                        "TR" => m_texTR,
+                        "TB" => m_texTB,
                         "LR" => m_texLR,
                         "LB" => m_texLB,
                         "RB" => m_texRB,
-                        "ULR" => m_texULR,
-                        "URB" => m_texURB,
-                        "ULB" => m_texULB,
+                        "TLR" => m_texTLR,
+                        "TRB" => m_texTRB,
+                        "TLB" => m_texTLB,
                         "LRB" => m_texLRB,
-                        "ULRB" => m_texULRB,
+                        "TLRB" => m_texTLRB,
                         "none" => m_texNone,
-                        _ => m_texULRB
+                        _ => m_texTLRB
                     };
                     
                     // tuple holds position that this rect starts at

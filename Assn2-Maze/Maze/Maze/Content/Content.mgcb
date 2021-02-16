@@ -109,7 +109,7 @@
 /processorParam:TextureFormat=Color
 /build:FloorTiles/RB.png
 
-#begin FloorTiles/U.png
+#begin FloorTiles/T.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -119,9 +119,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/U.png
+/build:FloorTiles/T.png
 
-#begin FloorTiles/UB.png
+#begin FloorTiles/TB.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -131,9 +131,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/UB.png
+/build:FloorTiles/TB.png
 
-#begin FloorTiles/UL.png
+#begin FloorTiles/TL.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -143,9 +143,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/UL.png
+/build:FloorTiles/TL.png
 
-#begin FloorTiles/ULB.png
+#begin FloorTiles/TLB.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -155,9 +155,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/ULB.png
+/build:FloorTiles/TLB.png
 
-#begin FloorTiles/ULR.png
+#begin FloorTiles/TLR.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -167,9 +167,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/ULR.png
+/build:FloorTiles/TLR.png
 
-#begin FloorTiles/ULRB.png
+#begin FloorTiles/TLRB.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -179,9 +179,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/ULRB.png
+/build:FloorTiles/TLRB.png
 
-#begin FloorTiles/UR.png
+#begin FloorTiles/TR.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -191,9 +191,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/UR.png
+/build:FloorTiles/TR.png
 
-#begin FloorTiles/URB.png
+#begin FloorTiles/TRB.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -203,7 +203,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:FloorTiles/URB.png
+/build:FloorTiles/TRB.png
 
 #begin OverlaySprites/BlueCircle.png
 /importer:TextureImporter
