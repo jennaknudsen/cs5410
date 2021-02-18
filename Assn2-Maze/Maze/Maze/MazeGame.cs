@@ -296,6 +296,13 @@ namespace Maze
                             showHint = false;
                             showShortestPath = false;
                             gameState = GameState.GameOver;
+
+                            // add to high scores list
+                            highScores.Add((boardSize, thisMaze.GameScore));
+                            // LINQ sort list of tuples:
+                            // https://stackoverflow.com/a/4668558
+                            highScores.Sort((x, y) =>
+                                y.score.CompareTo(x.score));
                         }
                     }
                     break;
@@ -475,6 +482,18 @@ P - Toggle Path to Goal";
                     m_spriteBatch.End();
                     break;
                 case GameState.HighScores:
+                    m_spriteBatch.Begin();
+
+                    var scoreString = "High Scores:\n\n";
+                    // add all high scores to this string
+                    foreach (var highScore in highScores)
+                        scoreString += highScore.score + " (" + highScore.size
+                                       + "x" + highScore.size + ")\n";
+
+                    m_spriteBatch.DrawString(m_fontGameFont, scoreString,
+                        new Vector2(450, 200), Color.Black);
+
+                    m_spriteBatch.End();
                     break;
                 case GameState.Credits:
                     m_spriteBatch.Begin();
