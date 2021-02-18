@@ -225,6 +225,12 @@ namespace Maze
                                 GenerateMaze(20);
                                 gameState = GameState.Playing;
                                 break;
+                            case ButtonAction.HighScores:
+                                gameState = GameState.HighScores;
+                                break;
+                            case ButtonAction.Credits:
+                                gameState = GameState.Credits;
+                                break;
                         }
                     }
                     break;
@@ -273,6 +279,14 @@ namespace Maze
                             case ButtonAction.NewGame20:
                                 GenerateMaze(20);
                                 gameState = GameState.Playing;
+                                break;
+
+                            // OTHER
+                            case ButtonAction.HighScores:
+                                gameState = GameState.HighScores;
+                                break;
+                            case ButtonAction.Credits:
+                                gameState = GameState.Credits;
                                 break;
                         }
 
@@ -363,7 +377,6 @@ P - Toggle Path to Goal";
             m_spriteBatch.DrawString(m_fontGameFont, menuString, new Vector2(50, 300), Color.Black);
             m_spriteBatch.DrawString(m_fontGameFont, controlsString, new Vector2(950, 300), Color.Black);
             m_spriteBatch.End();
-
 
             switch (gameState)
             {
@@ -464,6 +477,22 @@ P - Toggle Path to Goal";
                 case GameState.HighScores:
                     break;
                 case GameState.Credits:
+                    m_spriteBatch.Begin();
+
+                    // just display simple credits here
+                    var creditsString = @"CREDITS:
+All game logic, assets, and artwork created 
+by me (Jonas Knudsen).
+
+Used StackOverflow for a couple of small code 
+snippets. These snippets are cited in comments 
+found in the source code.
+
+Maze Generation Algorithm: Randomized Kruskal's Algorithm
+Maze Solving Algorithm: Depth-First Search";
+                    m_spriteBatch.DrawString(m_fontGameFont, creditsString,
+                        new Vector2(350, 200), Color.Black);
+                    m_spriteBatch.End();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
