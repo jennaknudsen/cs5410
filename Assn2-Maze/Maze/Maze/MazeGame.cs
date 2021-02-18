@@ -42,6 +42,8 @@ namespace Maze
         private Texture2D m_texTransparentGreenCircle;
         private Texture2D m_texSuperTransparentGreenCircle;
 
+        // font
+        private SpriteFont m_fontGameFont;
         # endregion
 
         // consts that hold unchanging values
@@ -180,6 +182,9 @@ namespace Maze
             m_texSmallDot = this.Content.Load<Texture2D>("OverlaySprites/SmallDot");
             m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle");
             m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle");
+
+            // sprite font
+            m_fontGameFont = this.Content.Load<SpriteFont>("GameFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -312,6 +317,19 @@ namespace Maze
             GraphicsDevice.Clear(Color.DarkGray);
 
             // TODO: Add your drawing code here
+            // always show menu on the left
+            m_spriteBatch.Begin();
+
+            var menuString = @"MENU:
+F1 - New 5x5 Maze
+F2 - New 10x10 Maze
+F3 - New 15x15 Maze
+F4 - New 20x20 Maze
+F5 - Display High Scores
+F6 - Display Credits";
+            m_spriteBatch.DrawString(m_fontGameFont, menuString, new Vector2(70, 300), Color.Black);
+            m_spriteBatch.End();
+
 
             switch (gameState)
             {
