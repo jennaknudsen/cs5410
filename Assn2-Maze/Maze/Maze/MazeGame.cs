@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -64,6 +65,12 @@ namespace Maze
         private bool showHint = false;
 
         // all buttons that need debouncing (aka all of them)
+        private Debouncer newGame5Debouncer;
+        private Debouncer newGame10Debouncer;
+        private Debouncer newGame15Debouncer;
+        private Debouncer newGame20Debouncer;
+        private Debouncer highScoresDebouncer;
+        private Debouncer creditsDebouncer;
         private Debouncer leftDebouncer;
         private Debouncer rightDebouncer;
         private Debouncer upDebouncer;
@@ -72,19 +79,38 @@ namespace Maze
         private Debouncer shortestPathDebouncer;
         private Debouncer breadcrumbsDebouncer;
 
+        // list of all possible button actions
         private enum ButtonAction
         {
-            MoveUp,
-            MoveLeft,
-            MoveRight,
-            MoveDown,
-            Breadcrumbs,
-            Hint,
-            ShortestPath,
+            NewGame5,           // F1,
+            NewGame10,          // F2,
+            NewGame15,          // F3,
+            NewGame20,          // F4,
+            HighScores,         // F5,
+            Credits,            // F6,
+            MoveUp,             // W, I, Up
+            MoveLeft,           // A, J, Left
+            MoveRight,          // D, L, Right
+            MoveDown,           // S, K, Down
+            Breadcrumbs,        // B
+            Hint,               // H
+            ShortestPath,       // P
         }
 
         // list of all buttons that are pressed in this cycle
         private List<ButtonAction> buttonActionsList;
+
+        // state variables
+        private enum GameState
+        {
+            Playing,
+            GameOver,
+            HighScores,
+            Credits,
+            Init,
+        }
+
+        private GameState gameState;
 
         public MazeGame()
         {
@@ -103,10 +129,13 @@ namespace Maze
 
             // initialize the maze
             // TODO: handle ALL of this somewhere else
-            boardSize = 5;
-            tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
-            thisMaze = new Maze(boardSize);
-            thisMaze.SolveMazeFromStart();
+
+            newGame5Debouncer = new Debouncer();
+            newGame10Debouncer = new Debouncer();
+            newGame15Debouncer = new Debouncer();
+            newGame20Debouncer = new Debouncer();
+            highScoresDebouncer = new Debouncer();
+            creditsDebouncer = new Debouncer();
             leftDebouncer = new Debouncer();
             rightDebouncer = new Debouncer();
             upDebouncer = new Debouncer();
@@ -115,6 +144,7 @@ namespace Maze
             shortestPathDebouncer = new Debouncer();
             breadcrumbsDebouncer = new Debouncer();
             buttonActionsList = new List<ButtonAction>();
+            gameState = GameState.Init;
 
             base.Initialize();
         }
@@ -159,39 +189,85 @@ namespace Maze
             // first, get user input
             processInput();
 
-            // once we got which buttons were pressed, we need to activate each one
-            foreach (var buttonPressed in buttonActionsList)
+            // check what game state we are in
+            switch (gameState)
             {
-                switch (buttonPressed)
-                {
-                    case ButtonAction.MoveUp:
-                        thisMaze.MoveUp();
-                        break;
-                    case ButtonAction.MoveDown:
-                        thisMaze.MoveDown();
-                        break;
-                    case ButtonAction.MoveLeft:
-                        thisMaze.MoveLeft();
-                        break;
-                    case ButtonAction.MoveRight:
-                        thisMaze.MoveRight();
-                        break;
-                    case ButtonAction.Breadcrumbs:
-                        showBreadcrumbs = !showBreadcrumbs;
-                        break;
-                    case ButtonAction.Hint:
-                        showHint = !showHint;
-                        break;
-                    case ButtonAction.ShortestPath:
-                        showShortestPath = !showShortestPath;
-                        break;
-                }
+                case GameState.Init:
+                    foreach (var buttonPressed in buttonActionsList)
+                    {
+                        switch (buttonPressed)
+                        {
+                            case ButtonAction.NewGame5:
+                                GenerateMaze(5);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame10:
+                                GenerateMaze(10);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame15:
+                                GenerateMaze(15);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame20:
+                                GenerateMaze(20);
+                                gameState = GameState.Playing;
+                                break;
+                        }
+                    }
+                    break;
+                case GameState.Playing:
+                    // once we got which buttons were pressed, we need to activate each one
+                    foreach (var buttonPressed in buttonActionsList)
+                    {
+                        switch (buttonPressed)
+                        {
+                            case ButtonAction.MoveUp:
+                                thisMaze.MoveUp();
+                                break;
+                            case ButtonAction.MoveDown:
+                                thisMaze.MoveDown();
+                                break;
+                            case ButtonAction.MoveLeft:
+                                thisMaze.MoveLeft();
+                                break;
+                            case ButtonAction.MoveRight:
+                                thisMaze.MoveRight();
+                                break;
+                            case ButtonAction.Breadcrumbs:
+                                showBreadcrumbs = !showBreadcrumbs;
+                                break;
+                            case ButtonAction.Hint:
+                                showHint = !showHint;
+                                break;
+                            case ButtonAction.ShortestPath:
+                                showShortestPath = !showShortestPath;
+                                break;
+                            default:
+                                // do nothing if no buttons are pressed
+                                break;
+                        }
+                    }
+                    break;
+                case GameState.GameOver:
+                    break;
+                case GameState.Credits:
+                    break;
+                case GameState.HighScores:
+                    break;
             }
 
             // clear button actions list after performing button actions
             buttonActionsList.Clear();
 
             base.Update(gameTime);
+        }
+
+        private void GenerateMaze(int theBoardSize)
+        {
+            this.boardSize = theBoardSize;
+            tileSizePixels = BOARD_SIZE_PIXELS / theBoardSize;
+            thisMaze = new Maze(theBoardSize);
         }
 
         private void processInput()
@@ -216,6 +292,12 @@ namespace Maze
                 }
             }
 
+            AddIfNotDebounced(newGame5Debouncer, ButtonAction.NewGame5, Keys.F1);
+            AddIfNotDebounced(newGame10Debouncer, ButtonAction.NewGame10, Keys.F2);
+            AddIfNotDebounced(newGame15Debouncer, ButtonAction.NewGame15, Keys.F3);
+            AddIfNotDebounced(newGame20Debouncer, ButtonAction.NewGame20, Keys.F4);
+            AddIfNotDebounced(highScoresDebouncer, ButtonAction.HighScores, Keys.F5);
+            AddIfNotDebounced(creditsDebouncer, ButtonAction.Credits, Keys.F6);
             AddIfNotDebounced(upDebouncer, ButtonAction.MoveUp, Keys.W, Keys.I, Keys.Up);
             AddIfNotDebounced(leftDebouncer, ButtonAction.MoveLeft, Keys.A, Keys.J, Keys.Left);
             AddIfNotDebounced(rightDebouncer, ButtonAction.MoveRight, Keys.D, Keys.L, Keys.Right);
@@ -229,93 +311,109 @@ namespace Maze
         {
             GraphicsDevice.Clear(Color.DarkGray);
 
-            m_spriteBatch.Begin();
-
             // TODO: Add your drawing code here
 
-            // draw the board
-            for (int row = 0; row < boardSize; row++)
+            switch (gameState)
             {
-                for (int col = 0; col < boardSize; col++)
-                {
-                    // need to determine which tile goes here
-                    var textureName = "";
-                    var thisSquare = thisMaze.mazeSquares[row, col];
+                case GameState.Init:
+                    break;
+                case GameState.Playing:
+                    m_spriteBatch.Begin();
 
-                    if (thisSquare.TopWall.wallStatus != WallStatus.DISABLED)
-                        textureName += "T";
-                    if (thisSquare.LeftWall.wallStatus != WallStatus.DISABLED)
-                        textureName += "L";
-                    if (thisSquare.RightWall.wallStatus != WallStatus.DISABLED)
-                        textureName += "R";
-                    if (thisSquare.BottomWall.wallStatus != WallStatus.DISABLED)
-                        textureName += "B";
-
-                    if (textureName.Equals(""))
-                        textureName = "none";
-
-                    // now, use some ugly code to determine which texture is needed
-                    var textureToLoad = textureName switch
+                    // draw the board
+                    for (int row = 0; row < boardSize; row++)
                     {
-                        "T" => m_texT,
-                        "L" => m_texL,
-                        "R" => m_texR,
-                        "B" => m_texB,
-                        "TL" => m_texTL,
-                        "TR" => m_texTR,
-                        "TB" => m_texTB,
-                        "LR" => m_texLR,
-                        "LB" => m_texLB,
-                        "RB" => m_texRB,
-                        "TLR" => m_texTLR,
-                        "TRB" => m_texTRB,
-                        "TLB" => m_texTLB,
-                        "LRB" => m_texLRB,
-                        "TLRB" => m_texTLRB,
-                        "none" => m_texNone,
-                        _ => m_texTLRB
-                    };
+                        for (int col = 0; col < boardSize; col++)
+                        {
+                            // need to determine which tile goes here
+                            var textureName = "";
+                            var thisSquare = thisMaze.mazeSquares[row, col];
 
-                    // tuple holds position that this rect starts at
-                    var position = (col * tileSizePixels + TOP_LEFT_CORNER.x,
-                        row * tileSizePixels + TOP_LEFT_CORNER.y);
+                            if (thisSquare.TopWall.wallStatus != WallStatus.DISABLED)
+                                textureName += "T";
+                            if (thisSquare.LeftWall.wallStatus != WallStatus.DISABLED)
+                                textureName += "L";
+                            if (thisSquare.RightWall.wallStatus != WallStatus.DISABLED)
+                                textureName += "R";
+                            if (thisSquare.BottomWall.wallStatus != WallStatus.DISABLED)
+                                textureName += "B";
 
-                    // draw this tile
-                    var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
-                    m_spriteBatch.Draw(textureToLoad, rect, Color.White);
+                            if (textureName.Equals(""))
+                                textureName = "none";
 
-                    // if player is on this square, draw the pink circle
-                    if (thisMaze.currentSquare == (row, col))
-                    {
-                        m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                            // now, use some ugly code to determine which texture is needed
+                            var textureToLoad = textureName switch
+                            {
+                                "T" => m_texT,
+                                "L" => m_texL,
+                                "R" => m_texR,
+                                "B" => m_texB,
+                                "TL" => m_texTL,
+                                "TR" => m_texTR,
+                                "TB" => m_texTB,
+                                "LR" => m_texLR,
+                                "LB" => m_texLB,
+                                "RB" => m_texRB,
+                                "TLR" => m_texTLR,
+                                "TRB" => m_texTRB,
+                                "TLB" => m_texTLB,
+                                "LRB" => m_texLRB,
+                                "TLRB" => m_texTLRB,
+                                "none" => m_texNone,
+                                _ => m_texTLRB
+                            };
+
+                            // tuple holds position that this rect starts at
+                            var position = (col * tileSizePixels + TOP_LEFT_CORNER.x,
+                                row * tileSizePixels + TOP_LEFT_CORNER.y);
+
+                            // draw this tile
+                            var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
+                            m_spriteBatch.Draw(textureToLoad, rect, Color.White);
+
+                            // if player is on this square, draw the pink circle
+                            if (thisMaze.currentSquare == (row, col))
+                            {
+                                m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                            }
+
+                            // if this is the end square, draw the blue circle
+                            if (thisMaze.endSquare == (row, col))
+                            {
+                                m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
+                            }
+
+                            // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
+                            if (showBreadcrumbs && thisMaze.mazeSquares[row, col].Visited)
+                            {
+                                m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
+                            }
+
+                            // if this is a solution square and showShortestPath is enabled, show a transparent green circle
+                            if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
+                            {
+                                m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
+                            }
+
+                            if (showHint && thisMaze.hintSquare == (row, col))
+                            {
+                                m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
+                            }
+                        }
                     }
 
-                    // if this is the end square, draw the blue circle
-                    if (thisMaze.endSquare == (row, col))
-                    {
-                        m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
-                    }
+                    m_spriteBatch.End();
+                    break;
+                case GameState.GameOver:
 
-                    // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
-                    if (showBreadcrumbs && thisMaze.mazeSquares[row, col].Visited)
-                    {
-                        m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
-                    }
-
-                    // if this is a solution square and showShortestPath is enabled, show a transparent green circle
-                    if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
-                    {
-                        m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
-                    }
-
-                    if (showHint && thisMaze.hintSquare == (row, col))
-                    {
-                        m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
-                    }
-                }
+                    break;
+                case GameState.HighScores:
+                    break;
+                case GameState.Credits:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
-
-            m_spriteBatch.End();
 
             base.Draw(gameTime);
         }

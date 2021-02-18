@@ -61,11 +61,12 @@ namespace Maze
 
             // finally, generate and solve the actual maze
             GenerateMaze();
-            SolveMazeFromStart();
 
             // start player at (0, 0)
             currentSquare = startSquare;
             mazeSquares[startSquare.row, startSquare.col].Visited = true;
+
+            SolveMazeFromStart();
         }
 
         private void FillBoardWithSquares()
