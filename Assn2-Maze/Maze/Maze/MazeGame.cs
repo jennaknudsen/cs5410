@@ -202,6 +202,9 @@ namespace Maze
             switch (gameState)
             {
                 case GameState.Init:
+                case GameState.GameOver:
+                case GameState.HighScores:
+                case GameState.Credits:
                     foreach (var buttonPressed in buttonActionsList)
                     {
                         switch (buttonPressed)
@@ -231,6 +234,7 @@ namespace Maze
                     {
                         switch (buttonPressed)
                         {
+                            // MAZE GAME CONTROL INPUTS
                             case ButtonAction.MoveUp:
                                 thisMaze.MoveUp();
                                 break;
@@ -252,6 +256,24 @@ namespace Maze
                             case ButtonAction.ShortestPath:
                                 showShortestPath = !showShortestPath;
                                 break;
+
+                            // NEW GAME INPUTS
+                            case ButtonAction.NewGame5:
+                                GenerateMaze(5);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame10:
+                                GenerateMaze(10);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame15:
+                                GenerateMaze(15);
+                                gameState = GameState.Playing;
+                                break;
+                            case ButtonAction.NewGame20:
+                                GenerateMaze(20);
+                                gameState = GameState.Playing;
+                                break;
                         }
 
                         if (thisMaze.currentSquare == thisMaze.endSquare)
@@ -262,12 +284,6 @@ namespace Maze
                             gameState = GameState.GameOver;
                         }
                     }
-                    break;
-                case GameState.GameOver:
-                    break;
-                case GameState.Credits:
-                    break;
-                case GameState.HighScores:
                     break;
             }
 
@@ -336,7 +352,16 @@ F3 - New 15x15 Maze
 F4 - New 20x20 Maze
 F5 - Display High Scores
 F6 - Display Credits";
+
+            var controlsString = @"CONTROLS:
+WASD / IJKL / 
+Up/Left/Right/DownArrow - 
+Up/Down/Left/Right
+B - Toggle Breadcrumbs
+H - Toggle Hint
+P - Toggle Path to Goal";
             m_spriteBatch.DrawString(m_fontGameFont, menuString, new Vector2(50, 300), Color.Black);
+            m_spriteBatch.DrawString(m_fontGameFont, controlsString, new Vector2(950, 300), Color.Black);
             m_spriteBatch.End();
 
 
