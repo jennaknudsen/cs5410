@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Linq;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -56,7 +57,7 @@ namespace Maze
         private Maze thisMaze;
 
         // whether or not to show certain UI elements
-        private bool showBreadcrumbs = true;
+        private bool showBreadcrumbs = false;
         private bool showShortestPath = false;
         private bool showHint = false;
 
@@ -68,6 +69,9 @@ namespace Maze
         private Debouncer hintDebouncer;
         private Debouncer shortestPathDebouncer;
         private Debouncer breadcrumbsDebouncer;
+
+        // delegate for function with zero parameters
+        private delegate void ButtonActionDelegate();
 
         public MazeGame()
         {
@@ -152,94 +156,80 @@ namespace Maze
             var keyboardState = Keyboard.GetState();
 
             // UP
-            if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.I) || keyboardState.IsKeyDown(Keys.Up))
+            var upKeysArray = new[] {Keys.W, Keys.I, Keys.Up};
+            void UpDelegate()
             {
-                if (upDebouncer.Press())
-                {
-                    thisMaze.MoveUp();
-                }
+                thisMaze.MoveUp();
             }
-            else
-            {
-                upDebouncer.Release();
-            }
+            PressButtonIfDebounced(upDebouncer, UpDelegate, upKeysArray);
 
             // LEFT
-            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.J) || keyboardState.IsKeyDown(Keys.Left))
+            var leftKeysArray = new[] {Keys.A, Keys.J, Keys.Left};
+            void LeftDelegate()
             {
-                if (leftDebouncer.Press())
-                {
-                    thisMaze.MoveLeft();
-                }
+                thisMaze.MoveLeft();
             }
-            else
-            {
-                leftDebouncer.Release();
-            }
+            PressButtonIfDebounced(leftDebouncer, LeftDelegate, leftKeysArray);
 
             // RIGHT
-            if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.L) || keyboardState.IsKeyDown(Keys.Right))
+            var rightKeysArray = new[] {Keys.D, Keys.L, Keys.Right};
+            void RightDelegate()
             {
-                if (rightDebouncer.Press())
-                {
-                    thisMaze.MoveRight();
-                }
+                thisMaze.MoveRight();
             }
-            else
-            {
-                rightDebouncer.Release();
-            }
+            PressButtonIfDebounced(rightDebouncer, RightDelegate, rightKeysArray);
 
             // DOWN
-            if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.K) || keyboardState.IsKeyDown(Keys.Down))
+            var downKeysArray = new[] {Keys.S, Keys.K, Keys.Down};
+            void DownDelegate()
             {
-                if (downDebouncer.Press())
-                {
-                    thisMaze.MoveDown();
-                }
+                thisMaze.MoveDown();
             }
-            else
-            {
-                downDebouncer.Release();
-            }
+            PressButtonIfDebounced(downDebouncer, DownDelegate, downKeysArray);
 
             // BREADCRUMBS
-            if (keyboardState.IsKeyDown(Keys.B))
+            var breadcrumbsArray = Keys.B;
+            void BreadcrumbsDelegate()
             {
-                if (breadcrumbsDebouncer.Press())
-                {
-                    showBreadcrumbs = !showBreadcrumbs;
-                }
+                showBreadcrumbs = !showBreadcrumbs;
             }
-            else
-            {
-                breadcrumbsDebouncer.Release();
-            }
+            PressButtonIfDebounced(breadcrumbsDebouncer, BreadcrumbsDelegate, breadcrumbsArray);
 
             // HINT
-            if (keyboardState.IsKeyDown(Keys.H))
+            var hintArray = Keys.H;
+            void HintDelegate()
             {
-                if (hintDebouncer.Press())
-                {
-                    showHint = !showHint;
-                }
+                showHint = !showHint;
             }
-            else
-            {
-                hintDebouncer.Release();
-            }
+            PressButtonIfDebounced(hintDebouncer, HintDelegate, hintArray);
 
             // SHORTEST PATH
-            if (keyboardState.IsKeyDown(Keys.P))
+            var shortestPathArray = Keys.P;
+            void ShortestPathDelegate()
             {
-                if (shortestPathDebouncer.Press())
+                showShortestPath = !showShortestPath;
+            }
+            PressButtonIfDebounced(shortestPathDebouncer, ShortestPathDelegate, shortestPathArray);
+        }
+
+        private void PressButtonIfDebounced(Debouncer debouncer,
+            ButtonActionDelegate buttonAction, params Keys[] keysPressed)
+        {
+            // get if any of the keys are pressed
+            var wasKeyPressed = keysPressed.Any(key => Keyboard.GetState().IsKeyDown(key));
+
+            // if a key was pressed and button was not pressed already, press it
+            if (wasKeyPressed)
+            {
+                if (debouncer.Press())
                 {
-                    showShortestPath = !showShortestPath;
+                    // use a callback function to perform whatever task the button needed to perform
+                    buttonAction();
                 }
             }
             else
             {
-                shortestPathDebouncer.Release();
+                debouncer.Release();
             }
         }
 
