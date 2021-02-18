@@ -18,6 +18,7 @@ namespace Maze
         public (int row, int col) startSquare = (0, 0);
         public (int row, int col) endSquare;
         public (int row, int col) currentSquare;
+        public (int row, int col) hintSquare;
 
         // DisjointSet for all of the squares
         // When all squares are part of the same disjoint set, the maze
@@ -55,17 +56,14 @@ namespace Maze
             // initialize the DisjointSet
             mazeSquaresDisjointSet = new DisjointSet(BoardSize * BoardSize);
 
-            // initialize the list of visited squares as not visited
-            visitedSquares = new bool[BoardSize, BoardSize];
-            for (int i = 0; i < visitedSquares.GetLength(0); i++)
-                for (int j = 0; j < visitedSquares.GetLength(1); j++)
-                    visitedSquares[i, j] = false;
+
 
             // next, fill the board with squares
             FillBoardWithSquares();
 
             // finally, generate the actual maze
             GenerateMaze();
+            SolveMazeFromStart();
 
             // start player at (0, 0)
             currentSquare = startSquare;
@@ -223,11 +221,26 @@ namespace Maze
         // helper function to start recursion to solve the maze
         public void SolveMazeFromStart()
         {
-            // start the recursive solution at start (0, 0)
-            SolveMazeRecursive((0, 0));
+            // start the recursive solution at start (will usually be (0, 0) but could be different theoretically)
+            SolveMazeFromPoint(startSquare);
         }
 
-        private bool SolveMazeRecursive((int row, int col) currentSquare)
+        private void SolveMazeFromPoint((int row, int col) currentSquareRecursive)
+        {
+            // initialize the list of visited squares as not visited
+            visitedSquares = new bool[BoardSize, BoardSize];
+            for (int i = 0; i < visitedSquares.GetLength(0); i++)
+                for (int j = 0; j < visitedSquares.GetLength(1); j++)
+                    visitedSquares[i, j] = false;
+
+            // start the recursive solution at currentSquare
+            SolveMazeRecursive(currentSquareRecursive);
+
+            // get next hint
+            GenerateNextHint();
+        }
+
+        private bool SolveMazeRecursive((int row, int col) currentSquareRecursive)
         {
             // inside, we need to check all four directions to see if the solution
             // could be built in that direction
@@ -236,13 +249,13 @@ namespace Maze
             // only path to the end
 
             // mark current as visited, so we don't ever double back on it
-            visitedSquares[currentSquare.row, currentSquare.col] = true;
+            visitedSquares[currentSquareRecursive.row, currentSquareRecursive.col] = true;
 
             // get a reference to the current square
-            MazeSquare thisSquare = mazeSquares[currentSquare.row, currentSquare.col];
+            var thisSquare = mazeSquares[currentSquareRecursive.row, currentSquareRecursive.col];
 
             // if we're at the solution then we're done, return True
-            if (currentSquare == endSquare)
+            if (currentSquareRecursive == endSquare)
             {
                 thisSquare.PartOfSolution = true;
                 return true;
@@ -258,11 +271,11 @@ namespace Maze
             // otherwise, it's just false
 
             // top
-            if (currentSquare.row != 0 &&
-                !visitedSquares[currentSquare.row - 1, currentSquare.col] &&
+            if (currentSquareRecursive.row != 0 &&
+                !visitedSquares[currentSquareRecursive.row - 1, currentSquareRecursive.col] &&
                 thisSquare.TopWall.wallStatus == WallStatus.DISABLED)
             {
-                topSolution = SolveMazeRecursive((currentSquare.row - 1, currentSquare.col));
+                topSolution = SolveMazeRecursive((currentSquareRecursive.row - 1, currentSquareRecursive.col));
             }
             else
             {
@@ -270,11 +283,11 @@ namespace Maze
             }
 
             // left
-            if (currentSquare.col != 0 &&
-                !visitedSquares[currentSquare.row, currentSquare.col - 1] &&
+            if (currentSquareRecursive.col != 0 &&
+                !visitedSquares[currentSquareRecursive.row, currentSquareRecursive.col - 1] &&
                 thisSquare.LeftWall.wallStatus == WallStatus.DISABLED)
             {
-                leftSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col - 1));
+                leftSolution = SolveMazeRecursive((currentSquareRecursive.row, currentSquareRecursive.col - 1));
             }
             else
             {
@@ -282,11 +295,11 @@ namespace Maze
             }
 
             // right
-            if (currentSquare.col != BoardSize - 1 &&
-                !visitedSquares[currentSquare.row, currentSquare.col + 1] &&
+            if (currentSquareRecursive.col != BoardSize - 1 &&
+                !visitedSquares[currentSquareRecursive.row, currentSquareRecursive.col + 1] &&
                 thisSquare.RightWall.wallStatus == WallStatus.DISABLED)
             {
-                rightSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col + 1));
+                rightSolution = SolveMazeRecursive((currentSquareRecursive.row, currentSquareRecursive.col + 1));
             }
             else
             {
@@ -294,11 +307,11 @@ namespace Maze
             }
 
             // bottom
-            if (currentSquare.row != BoardSize - 1 &&
-                !visitedSquares[currentSquare.row + 1, currentSquare.col] &&
+            if (currentSquareRecursive.row != BoardSize - 1 &&
+                !visitedSquares[currentSquareRecursive.row + 1, currentSquareRecursive.col] &&
                 thisSquare.BottomWall.wallStatus == WallStatus.DISABLED)
             {
-                bottomSolution = SolveMazeRecursive((currentSquare.row + 1, currentSquare.col));
+                bottomSolution = SolveMazeRecursive((currentSquareRecursive.row + 1, currentSquareRecursive.col));
             }
             else
             {
@@ -313,6 +326,7 @@ namespace Maze
             }
             else
             {
+                thisSquare.PartOfSolution = false;
                 return false;
             }
 
@@ -320,42 +334,93 @@ namespace Maze
 
         // for each move function:
         // check if wall above/left/right/down is DISABLED, and if so, move in that direction
-        public void moveUp()
+        // then, re-solve maze from this position
+        public void MoveUp()
         {
             if (mazeSquares[currentSquare.row, currentSquare.col].TopWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.row -= 1;
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+                // need to re-solve maze every time we move
+                SolveMazeFromPoint(currentSquare);
             }
         }
 
-        public void moveLeft()
+        public void MoveLeft()
         {
             if (mazeSquares[currentSquare.row, currentSquare.col].LeftWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.col -= 1;
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+                // need to re-solve maze every time we move
+                SolveMazeFromPoint(currentSquare);
             }
         }
 
-        public void moveRight()
+        public void MoveRight()
         {
             if (mazeSquares[currentSquare.row, currentSquare.col].RightWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.col += 1;
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+                // need to re-solve maze every time we move
+                SolveMazeFromPoint(currentSquare);
             }
-
         }
 
-        public void moveDown()
+        public void MoveDown()
         {
             if (mazeSquares[currentSquare.row, currentSquare.col].BottomWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.row += 1;
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+                // need to re-solve maze every time we move
+                SolveMazeFromPoint(currentSquare);
             }
+        }
 
+        private void GenerateNextHint()
+        {
+            // if at end of maze, then hint is just current
+            // else, have to look for available moves and see which is part of solution
+            if (currentSquare == endSquare)
+            {
+                hintSquare = endSquare;
+            }
+            else
+            {
+                // hint: UP
+                if (mazeSquares[currentSquare.row, currentSquare.col].TopWall.wallStatus == WallStatus.DISABLED &&
+                    mazeSquares[currentSquare.row - 1, currentSquare.col].PartOfSolution == true)
+                {
+                    hintSquare = (currentSquare.row - 1, currentSquare.col);
+                }
+                // hint: LEFT
+                else if (mazeSquares[currentSquare.row, currentSquare.col].LeftWall.wallStatus == WallStatus.DISABLED &&
+                    mazeSquares[currentSquare.row, currentSquare.col - 1].PartOfSolution == true)
+                {
+                    hintSquare = (currentSquare.row, currentSquare.col - 1);
+                }
+                // hint: RIGHT
+                else if (mazeSquares[currentSquare.row, currentSquare.col].RightWall.wallStatus == WallStatus.DISABLED &&
+                    mazeSquares[currentSquare.row, currentSquare.col + 1].PartOfSolution == true)
+                {
+                    hintSquare = (currentSquare.row, currentSquare.col + 1);
+                }
+                // hint: BOTTOM
+                else if (mazeSquares[currentSquare.row, currentSquare.col].BottomWall.wallStatus == WallStatus.DISABLED &&
+                    mazeSquares[currentSquare.row + 1, currentSquare.col].PartOfSolution == true)
+                {
+                    hintSquare = (currentSquare.row + 1, currentSquare.col);
+                }
+                // should NEVER get to this point
+                else
+                {
+                    throw new Exception("Unable to generate hint! Something bad has happened.");
+                }
+
+                Console.WriteLine("Hint is: " + hintSquare);
+            }
         }
 
         // for debugging purposes, this will print the maze

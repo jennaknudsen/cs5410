@@ -56,8 +56,9 @@ namespace Maze
         private Maze thisMaze;
 
         // whether or not to show certain UI elements
-        private bool showBreadcrumbs = false;
-        private bool showShortestPath = false;
+        private bool showBreadcrumbs = true;
+        private bool showShortestPath = true;
+        private bool showHint = true;
 
         // all buttons that need debouncing (aka all of them)
         private Debouncer leftDebouncer;
@@ -155,7 +156,7 @@ namespace Maze
             {
                 if (upDebouncer.Press())
                 {
-                    thisMaze.moveUp();
+                    thisMaze.MoveUp();
                 }
             }
             else
@@ -168,7 +169,7 @@ namespace Maze
             {
                 if (leftDebouncer.Press())
                 {
-                    thisMaze.moveLeft();
+                    thisMaze.MoveLeft();
                 }
             }
             else
@@ -181,7 +182,7 @@ namespace Maze
             {
                 if (rightDebouncer.Press())
                 {
-                    thisMaze.moveRight();
+                    thisMaze.MoveRight();
                 }
             }
             else
@@ -194,7 +195,7 @@ namespace Maze
             {
                 if (downDebouncer.Press())
                 {
-                    thisMaze.moveDown();
+                    thisMaze.MoveDown();
                 }
             }
             else
@@ -268,10 +269,10 @@ namespace Maze
                         m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
                     }
 
-                    // if this is the end square, draw the green circle
+                    // if this is the end square, draw the blue circle
                     if (thisMaze.endSquare == (row, col))
                     {
-                        m_spriteBatch.Draw(m_texGreenCircle, rect, Color.White);
+                        m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
                     }
 
                     // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
@@ -284,6 +285,11 @@ namespace Maze
                     if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
                     {
                         m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
+                    }
+
+                    if (showHint && thisMaze.hintSquare == (row, col))
+                    {
+                        m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
                     }
                 }
             }
