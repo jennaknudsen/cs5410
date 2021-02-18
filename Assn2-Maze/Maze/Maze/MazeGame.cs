@@ -38,6 +38,7 @@ namespace Maze
         private Texture2D m_texPinkCircle;
         private Texture2D m_texSmallDot;
         private Texture2D m_texTransparentGreenCircle;
+        private Texture2D m_texSuperTransparentGreenCircle;
  
         # endregion
 
@@ -78,6 +79,7 @@ namespace Maze
             boardSize = 20;
             tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
             thisMaze = new Maze(boardSize);
+            thisMaze.SolveMazeFromStart();
             
             
             base.Initialize();
@@ -113,6 +115,7 @@ namespace Maze
             m_texPinkCircle = this.Content.Load<Texture2D>("OverlaySprites/PinkCircle");
             m_texSmallDot = this.Content.Load<Texture2D>("OverlaySprites/SmallDot");
             m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle"); 
+            m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle"); 
         }
 
         protected override void Update(GameTime gameTime)
@@ -188,6 +191,18 @@ namespace Maze
                     if (thisMaze.currentSquare == (row, col))
                     {
                         m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                    }
+                    
+                    // if this is the end square, draw the green circle
+                    if (thisMaze.endSquare == (row, col))
+                    {
+                        m_spriteBatch.Draw(m_texGreenCircle, rect, Color.White);
+                    }
+                    
+                    // if this is a solution square and showShortestPath is enabled, show a transparent green circle
+                    if (thisMaze.mazeSquares[row, col].PartOfSolution)
+                    {
+                        m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
                     }
                 }
             }
