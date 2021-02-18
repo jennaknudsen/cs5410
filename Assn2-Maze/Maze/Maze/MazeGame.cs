@@ -90,7 +90,7 @@ namespace Maze
 
             // initialize the maze
             // TODO: handle ALL of this somewhere else
-            boardSize = 20;
+            boardSize = 5;
             tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
             thisMaze = new Maze(boardSize);
             thisMaze.SolveMazeFromStart();

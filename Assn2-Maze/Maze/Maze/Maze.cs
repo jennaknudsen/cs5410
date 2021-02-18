@@ -254,8 +254,13 @@ namespace Maze
             var thisSquare = mazeSquares[currentSquareRecursive.row, currentSquareRecursive.col];
 
             // if we're at the solution then we're done, return True
+            // mark all other squares as not part of solution
             if (currentSquareRecursive == endSquare)
             {
+                foreach (var mazeSquare in mazeSquares)
+                {
+                    mazeSquare.PartOfSolution = false;
+                }
                 thisSquare.PartOfSolution = true;
                 return true;
             }
