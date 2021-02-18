@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -50,6 +51,7 @@ namespace Maze
 
         // dimensions in tiles (5x5, 10x10, 15x15, 20x20)
         private int boardSize;
+
         // pixel width/height of each tile
         private int tileSizePixels;
 
@@ -70,8 +72,19 @@ namespace Maze
         private Debouncer shortestPathDebouncer;
         private Debouncer breadcrumbsDebouncer;
 
-        // delegate for function with zero parameters
-        private delegate void ButtonActionDelegate();
+        private enum ButtonAction
+        {
+            MoveUp,
+            MoveLeft,
+            MoveRight,
+            MoveDown,
+            Breadcrumbs,
+            Hint,
+            ShortestPath,
+        }
+
+        // list of all buttons that are pressed in this cycle
+        private List<ButtonAction> buttonActionsList;
 
         public MazeGame()
         {
@@ -101,6 +114,7 @@ namespace Maze
             hintDebouncer = new Debouncer();
             shortestPathDebouncer = new Debouncer();
             breadcrumbsDebouncer = new Debouncer();
+            buttonActionsList = new List<ButtonAction>();
 
             base.Initialize();
         }
@@ -140,97 +154,75 @@ namespace Maze
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
             // TODO: Add your update logic here
 
+            // first, get user input
             processInput();
 
+            // once we got which buttons were pressed, we need to activate each one
+            foreach (var buttonPressed in buttonActionsList)
+            {
+                switch (buttonPressed)
+                {
+                    case ButtonAction.MoveUp:
+                        thisMaze.MoveUp();
+                        break;
+                    case ButtonAction.MoveDown:
+                        thisMaze.MoveDown();
+                        break;
+                    case ButtonAction.MoveLeft:
+                        thisMaze.MoveLeft();
+                        break;
+                    case ButtonAction.MoveRight:
+                        thisMaze.MoveRight();
+                        break;
+                    case ButtonAction.Breadcrumbs:
+                        showBreadcrumbs = !showBreadcrumbs;
+                        break;
+                    case ButtonAction.Hint:
+                        showHint = !showHint;
+                        break;
+                    case ButtonAction.ShortestPath:
+                        showShortestPath = !showShortestPath;
+                        break;
+                }
+            }
+
+            // clear button actions list after performing button actions
+            buttonActionsList.Clear();
 
             base.Update(gameTime);
         }
 
         private void processInput()
         {
-            var keyboardState = Keyboard.GetState();
+            var ks = Keyboard.GetState();
 
-            // UP
-            var upKeysArray = new[] {Keys.W, Keys.I, Keys.Up};
-            void UpDelegate()
+            // helper function adds all buttons if not debounced
+            void AddIfNotDebounced(Debouncer thisButton, ButtonAction buttonAction, params Keys[] keysArray)
             {
-                thisMaze.MoveUp();
-            }
-            PressButtonIfDebounced(upDebouncer, UpDelegate, upKeysArray);
+                // true if any of the keys in keysArray are depressed
+                var isKeyPressed = keysArray.Any(key => ks.IsKeyDown(key));
 
-            // LEFT
-            var leftKeysArray = new[] {Keys.A, Keys.J, Keys.Left};
-            void LeftDelegate()
-            {
-                thisMaze.MoveLeft();
-            }
-            PressButtonIfDebounced(leftDebouncer, LeftDelegate, leftKeysArray);
-
-            // RIGHT
-            var rightKeysArray = new[] {Keys.D, Keys.L, Keys.Right};
-            void RightDelegate()
-            {
-                thisMaze.MoveRight();
-            }
-            PressButtonIfDebounced(rightDebouncer, RightDelegate, rightKeysArray);
-
-            // DOWN
-            var downKeysArray = new[] {Keys.S, Keys.K, Keys.Down};
-            void DownDelegate()
-            {
-                thisMaze.MoveDown();
-            }
-            PressButtonIfDebounced(downDebouncer, DownDelegate, downKeysArray);
-
-            // BREADCRUMBS
-            var breadcrumbsArray = Keys.B;
-            void BreadcrumbsDelegate()
-            {
-                showBreadcrumbs = !showBreadcrumbs;
-            }
-            PressButtonIfDebounced(breadcrumbsDebouncer, BreadcrumbsDelegate, breadcrumbsArray);
-
-            // HINT
-            var hintArray = Keys.H;
-            void HintDelegate()
-            {
-                showHint = !showHint;
-            }
-            PressButtonIfDebounced(hintDebouncer, HintDelegate, hintArray);
-
-            // SHORTEST PATH
-            var shortestPathArray = Keys.P;
-            void ShortestPathDelegate()
-            {
-                showShortestPath = !showShortestPath;
-            }
-            PressButtonIfDebounced(shortestPathDebouncer, ShortestPathDelegate, shortestPathArray);
-        }
-
-        private void PressButtonIfDebounced(Debouncer debouncer,
-            ButtonActionDelegate buttonAction, params Keys[] keysPressed)
-        {
-            // get if any of the keys are pressed
-            var wasKeyPressed = keysPressed.Any(key => Keyboard.GetState().IsKeyDown(key));
-
-            // if a key was pressed and button was not pressed already, press it
-            if (wasKeyPressed)
-            {
-                if (debouncer.Press())
+                if (isKeyPressed)
                 {
-                    // use a callback function to perform whatever task the button needed to perform
-                    buttonAction();
+                    // debouncing
+                    if (thisButton.Press())
+                        buttonActionsList.Add(buttonAction);
+                }
+                else
+                {
+                    thisButton.Release();
                 }
             }
-            else
-            {
-                debouncer.Release();
-            }
+
+            AddIfNotDebounced(upDebouncer, ButtonAction.MoveUp, Keys.W, Keys.I, Keys.Up);
+            AddIfNotDebounced(leftDebouncer, ButtonAction.MoveLeft, Keys.A, Keys.J, Keys.Left);
+            AddIfNotDebounced(rightDebouncer, ButtonAction.MoveRight, Keys.D, Keys.L, Keys.Right);
+            AddIfNotDebounced(downDebouncer, ButtonAction.MoveDown, Keys.S, Keys.K, Keys.Down);
+            AddIfNotDebounced(breadcrumbsDebouncer, ButtonAction.Breadcrumbs, Keys.B);
+            AddIfNotDebounced(hintDebouncer, ButtonAction.Hint, Keys.H);
+            AddIfNotDebounced(shortestPathDebouncer, ButtonAction.ShortestPath, Keys.P);
         }
 
         protected override void Draw(GameTime gameTime)
