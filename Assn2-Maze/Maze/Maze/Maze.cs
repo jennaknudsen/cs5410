@@ -33,8 +33,10 @@ namespace Maze
         // 5x5, 10x10, 15x15, 20x20
         public readonly int BoardSize;
 
-        // constructor just initializes the mazeSquares array itself
-        // doesn't do anything to construct the maze at all
+        // score tracker (read only)
+        public int GameScore { get; private set; } = 0;
+
+        // constructor sets up the maze
         public Maze(int boardSize)
         {
             if (!new int[] {5, 10, 15, 20}.Contains(boardSize))
@@ -59,14 +61,22 @@ namespace Maze
             // next, fill the board with squares
             FillBoardWithSquares();
 
-            // finally, generate and solve the actual maze
+            // finally, generate the actual maze
             GenerateMaze();
 
             // start player at (0, 0)
             currentSquare = startSquare;
             mazeSquares[startSquare.row, startSquare.col].Visited = true;
 
+            // solve the maze and mark all solution squares as part of original solution
             SolveMazeFromStart();
+
+            // the PartOfCurrentSolution property might change as the maze is solved, but
+            // the PartOfOriginalSolution property must remain the same (for scoring purposes)
+            foreach (var mazeSquare in mazeSquares)
+            {
+                mazeSquare.PartOfOriginalSolution = mazeSquare.PartOfCurrentSolution;
+            }
         }
 
         private void FillBoardWithSquares()
@@ -260,9 +270,9 @@ namespace Maze
             {
                 foreach (var mazeSquare in mazeSquares)
                 {
-                    mazeSquare.PartOfSolution = false;
+                    mazeSquare.PartOfCurrentSolution = false;
                 }
-                thisSquare.PartOfSolution = true;
+                thisSquare.PartOfCurrentSolution = true;
                 return true;
             }
 
@@ -326,12 +336,12 @@ namespace Maze
             // return true if there is any solution among the four directions
             if (topSolution || leftSolution || rightSolution || bottomSolution)
             {
-                thisSquare.PartOfSolution = true;
+                thisSquare.PartOfCurrentSolution = true;
                 return true;
             }
             else
             {
-                thisSquare.PartOfSolution = false;
+                thisSquare.PartOfCurrentSolution = false;
                 return false;
             }
 
@@ -345,7 +355,12 @@ namespace Maze
         {
             if (mazeSquares[currentSquare.row, currentSquare.col].TopWall.wallStatus == WallStatus.DISABLED)
             {
+                // record whether we were on a solution square or not
+                var wasOnSolSquare = (mazeSquares[currentSquare.row, currentSquare.col].PartOfOriginalSolution);
+
                 currentSquare.row -= 1;
+                CalculateScore(wasOnSolSquare);
+
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
                 // need to re-solve maze every time we move
                 SolveMazeFromPoint(currentSquare);
@@ -354,9 +369,14 @@ namespace Maze
 
         public void MoveLeft()
         {
+            // record whether we were on a solution square or not
+            var wasOnSolSquare = (mazeSquares[currentSquare.row, currentSquare.col].PartOfOriginalSolution);
+
             if (mazeSquares[currentSquare.row, currentSquare.col].LeftWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.col -= 1;
+                CalculateScore(wasOnSolSquare);
+
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
                 // need to re-solve maze every time we move
                 SolveMazeFromPoint(currentSquare);
@@ -365,9 +385,14 @@ namespace Maze
 
         public void MoveRight()
         {
+            // record whether we were on a solution square or not
+            var wasOnSolSquare = (mazeSquares[currentSquare.row, currentSquare.col].PartOfOriginalSolution);
+
             if (mazeSquares[currentSquare.row, currentSquare.col].RightWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.col += 1;
+                CalculateScore(wasOnSolSquare);
+
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
                 // need to re-solve maze every time we move
                 SolveMazeFromPoint(currentSquare);
@@ -376,15 +401,46 @@ namespace Maze
 
         public void MoveDown()
         {
+            // record whether we were on a solution square or not
+            var wasOnSolSquare = (mazeSquares[currentSquare.row, currentSquare.col].PartOfOriginalSolution);
+
             if (mazeSquares[currentSquare.row, currentSquare.col].BottomWall.wallStatus == WallStatus.DISABLED)
             {
                 currentSquare.row += 1;
+                CalculateScore(wasOnSolSquare);
+
                 mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
                 // need to re-solve maze every time we move
                 SolveMazeFromPoint(currentSquare);
             }
         }
         # endregion
+
+        private void CalculateScore(bool wasOnSolSquare)
+        {
+            // calculate the score
+            // first of all, don't recalculate score if already visited
+            if (!mazeSquares[currentSquare.row, currentSquare.col].Visited)
+            {
+                // move onto correct square: +5
+                // move onto incorrect square (but 1 away from correct square): -1
+                // move onto any other incorrect square: -2
+                // NOTE: with our maze implementation, the only way to move onto a *new*
+                // square that's 1 away from the solution is to go from the solution square to a different square
+                if (mazeSquares[currentSquare.row, currentSquare.col].PartOfOriginalSolution)
+                {
+                    GameScore += 5;
+                }
+                else if (wasOnSolSquare)
+                {
+                    GameScore -= 1;
+                }
+                else
+                {
+                    GameScore -= 2;
+                }
+            }
+        }
 
         private void GenerateNextHint()
         {
@@ -398,25 +454,25 @@ namespace Maze
             {
                 // hint: UP
                 if (mazeSquares[currentSquare.row, currentSquare.col].TopWall.wallStatus == WallStatus.DISABLED &&
-                    mazeSquares[currentSquare.row - 1, currentSquare.col].PartOfSolution == true)
+                    mazeSquares[currentSquare.row - 1, currentSquare.col].PartOfCurrentSolution == true)
                 {
                     hintSquare = (currentSquare.row - 1, currentSquare.col);
                 }
                 // hint: LEFT
                 else if (mazeSquares[currentSquare.row, currentSquare.col].LeftWall.wallStatus == WallStatus.DISABLED &&
-                    mazeSquares[currentSquare.row, currentSquare.col - 1].PartOfSolution == true)
+                    mazeSquares[currentSquare.row, currentSquare.col - 1].PartOfCurrentSolution == true)
                 {
                     hintSquare = (currentSquare.row, currentSquare.col - 1);
                 }
                 // hint: RIGHT
                 else if (mazeSquares[currentSquare.row, currentSquare.col].RightWall.wallStatus == WallStatus.DISABLED &&
-                    mazeSquares[currentSquare.row, currentSquare.col + 1].PartOfSolution == true)
+                    mazeSquares[currentSquare.row, currentSquare.col + 1].PartOfCurrentSolution == true)
                 {
                     hintSquare = (currentSquare.row, currentSquare.col + 1);
                 }
                 // hint: BOTTOM
                 else if (mazeSquares[currentSquare.row, currentSquare.col].BottomWall.wallStatus == WallStatus.DISABLED &&
-                    mazeSquares[currentSquare.row + 1, currentSquare.col].PartOfSolution == true)
+                    mazeSquares[currentSquare.row + 1, currentSquare.col].PartOfCurrentSolution == true)
                 {
                     hintSquare = (currentSquare.row + 1, currentSquare.col);
                 }
@@ -455,7 +511,7 @@ namespace Maze
 
                     // center character is ' ' if not part of solution,
                     // OO if part of solution
-                    var charToAdd = mazeSquares[row, col].PartOfSolution switch
+                    var charToAdd = mazeSquares[row, col].PartOfCurrentSolution switch
                     {
                         true => 'O',
                         false => ' '

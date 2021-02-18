@@ -50,7 +50,7 @@ namespace Maze
         private const int BOARD_SIZE_PIXELS = 600;
         private const int WINDOW_WIDTH = 1200;
         private readonly (int x, int y) TOP_LEFT_CORNER = (300, 100);
-        private const int WINDDOW_HEIGHT = 800;
+        private const int WINDOW_HEIGHT = 800;
 
         // dimensions in tiles (5x5, 10x10, 15x15, 20x20)
         private int boardSize;
@@ -112,7 +112,11 @@ namespace Maze
             Init,
         }
 
+        // the current game state
         private GameState gameState;
+
+        // the high scores
+        private List<(int size, int score)> highScores;
 
         public MazeGame()
         {
@@ -125,13 +129,12 @@ namespace Maze
         {
             // Add your initialization logic here
             m_graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
-            m_graphics.PreferredBackBufferHeight = WINDDOW_HEIGHT;
+            m_graphics.PreferredBackBufferHeight = WINDOW_HEIGHT;
 
             m_graphics.ApplyChanges();
 
             // initialize the maze
             // TODO: handle ALL of this somewhere else
-
             newGame5Debouncer = new Debouncer();
             newGame10Debouncer = new Debouncer();
             newGame15Debouncer = new Debouncer();
@@ -147,6 +150,7 @@ namespace Maze
             breadcrumbsDebouncer = new Debouncer();
             buttonActionsList = new List<ButtonAction>();
             gameState = GameState.Init;
+            highScores = new List<(int size, int score)>();
 
             base.Initialize();
         }
@@ -332,7 +336,7 @@ F3 - New 15x15 Maze
 F4 - New 20x20 Maze
 F5 - Display High Scores
 F6 - Display Credits";
-            m_spriteBatch.DrawString(m_fontGameFont, menuString, new Vector2(70, 300), Color.Black);
+            m_spriteBatch.DrawString(m_fontGameFont, menuString, new Vector2(50, 300), Color.Black);
             m_spriteBatch.End();
 
 
@@ -414,7 +418,7 @@ F6 - Display Credits";
                             }
 
                             // if this is a solution square and showShortestPath is enabled, show a transparent green circle
-                            if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
+                            if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfCurrentSolution)
                             {
                                 m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
                             }
@@ -425,6 +429,10 @@ F6 - Display Credits";
                             }
                         }
                     }
+
+                    // draw the game score
+                    m_spriteBatch.DrawString(m_fontGameFont, "Score: " + thisMaze.GameScore,
+                        new Vector2(700, 50), Color.Black);
 
                     m_spriteBatch.End();
                     break;

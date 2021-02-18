@@ -6,10 +6,10 @@ namespace Maze
          A MazeSquare has the following:
          Four walls
          An ID number (for the disjoint set)
-         PartOfSolution property
+         PartOfCurrentSolution property
          Visited property
 
-         A Wall has the following: 
+         A Wall has the following:
          MazeEdge property (whether it is at the edge of the maze or not)
          Enabled / Disabled property (whether the wall exists or not)
          FirstSquareRef / SecondSquareRef properties (which two MazeSquares
@@ -24,7 +24,8 @@ namespace Maze
         public int ID { get; }
 
         // These should be public and modifiable by all other classes
-        public bool PartOfSolution = false;
+        public bool PartOfOriginalSolution = false;
+        public bool PartOfCurrentSolution = false;
         public bool Visited = false;
 
         // This constructor leaves the walls as null
@@ -41,14 +42,14 @@ namespace Maze
         {
             // Use enums to hold WallStatus and Orientation
             public enum WallStatus
-            { 
+            {
                 ENABLED,
                 DISABLED,
                 EDGE
             }
-            
+
             public enum Orientation
-            { 
+            {
                 HORIZONTAL,
                 VERTICAL
             }
@@ -59,7 +60,7 @@ namespace Maze
             public MazeSquare firstSquareRef;
             public MazeSquare secondSquareRef;
 
-            public Wall(WallStatus wallStatus, Orientation orientation, 
+            public Wall(WallStatus wallStatus, Orientation orientation,
                         MazeSquare firstSquareRef, MazeSquare secondSquareRef)
             {
                 this.wallStatus = wallStatus;
