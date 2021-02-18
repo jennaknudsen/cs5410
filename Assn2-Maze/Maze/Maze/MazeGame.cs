@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -31,7 +30,7 @@ namespace Maze
         private Texture2D m_texTRB;
         private Texture2D m_texLRB;
         private Texture2D m_texTLRB;
- 
+
         // overlay sprites
         private Texture2D m_texBlueCircle;
         private Texture2D m_texGreenCircle;
@@ -39,7 +38,7 @@ namespace Maze
         private Texture2D m_texSmallDot;
         private Texture2D m_texTransparentGreenCircle;
         private Texture2D m_texSuperTransparentGreenCircle;
- 
+
         # endregion
 
         // consts that hold unchanging values
@@ -52,13 +51,23 @@ namespace Maze
         private int boardSize;
         // pixel width/height of each tile
         private int tileSizePixels;
-        
+
         // underlying data structure to hold a Maze
         private Maze thisMaze;
 
+        // whether or not to show certain UI elements
         private bool showBreadcrumbs = false;
         private bool showShortestPath = false;
- 
+
+        // all buttons that need debouncing (aka all of them)
+        private Debouncer leftDebouncer;
+        private Debouncer rightDebouncer;
+        private Debouncer upDebouncer;
+        private Debouncer downDebouncer;
+        private Debouncer hintDebouncer;
+        private Debouncer shortestPathDebouncer;
+        private Debouncer breadcrumbsDebouncer;
+
         public MazeGame()
         {
             m_graphics = new GraphicsDeviceManager(this);
@@ -71,7 +80,7 @@ namespace Maze
             // Add your initialization logic here
             m_graphics.PreferredBackBufferWidth = WINDOW_WIDTH;
             m_graphics.PreferredBackBufferHeight = WINDDOW_HEIGHT;
-            
+
             m_graphics.ApplyChanges();
 
             // initialize the maze
@@ -80,8 +89,14 @@ namespace Maze
             tileSizePixels = BOARD_SIZE_PIXELS / boardSize;
             thisMaze = new Maze(boardSize);
             thisMaze.SolveMazeFromStart();
-            
-            
+            leftDebouncer = new Debouncer();
+            rightDebouncer = new Debouncer();
+            upDebouncer = new Debouncer();
+            downDebouncer = new Debouncer();
+            hintDebouncer = new Debouncer();
+            shortestPathDebouncer = new Debouncer();
+            breadcrumbsDebouncer = new Debouncer();
+
             base.Initialize();
         }
 
@@ -108,14 +123,14 @@ namespace Maze
             m_texTRB = this.Content.Load<Texture2D>("FloorTiles/TRB");
             m_texLRB = this.Content.Load<Texture2D>("FloorTiles/LRB");
             m_texTLRB = this.Content.Load<Texture2D>("FloorTiles/TLRB");
-        
+
             // overlay sprites
             m_texBlueCircle = this.Content.Load<Texture2D>("OverlaySprites/BlueCircle");
             m_texGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/GreenCircle");
             m_texPinkCircle = this.Content.Load<Texture2D>("OverlaySprites/PinkCircle");
             m_texSmallDot = this.Content.Load<Texture2D>("OverlaySprites/SmallDot");
-            m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle"); 
-            m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle"); 
+            m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle");
+            m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle");
         }
 
         protected override void Update(GameTime gameTime)
@@ -125,7 +140,67 @@ namespace Maze
 
             // TODO: Add your update logic here
 
+            processInput();
+
+
             base.Update(gameTime);
+        }
+
+        private void processInput()
+        {
+            var keyboardState = Keyboard.GetState();
+
+            // UP
+            if (keyboardState.IsKeyDown(Keys.W) || keyboardState.IsKeyDown(Keys.I) || keyboardState.IsKeyDown(Keys.Up))
+            {
+                if (upDebouncer.Press())
+                {
+                    thisMaze.moveUp();
+                }
+            }
+            else
+            {
+                upDebouncer.Release();
+            }
+
+            // LEFT
+            if (keyboardState.IsKeyDown(Keys.A) || keyboardState.IsKeyDown(Keys.J) || keyboardState.IsKeyDown(Keys.Left))
+            {
+                if (leftDebouncer.Press())
+                {
+                    thisMaze.moveLeft();
+                }
+            }
+            else
+            {
+                leftDebouncer.Release();
+            }
+
+            // RIGHT
+            if (keyboardState.IsKeyDown(Keys.D) || keyboardState.IsKeyDown(Keys.L) || keyboardState.IsKeyDown(Keys.Right))
+            {
+                if (rightDebouncer.Press())
+                {
+                    thisMaze.moveRight();
+                }
+            }
+            else
+            {
+                rightDebouncer.Release();
+            }
+
+            // DOWN
+            if (keyboardState.IsKeyDown(Keys.S) || keyboardState.IsKeyDown(Keys.K) || keyboardState.IsKeyDown(Keys.Down))
+            {
+                if (downDebouncer.Press())
+                {
+                    thisMaze.moveDown();
+                }
+            }
+            else
+            {
+                downDebouncer.Release();
+            }
         }
 
         protected override void Draw(GameTime gameTime)
@@ -133,9 +208,9 @@ namespace Maze
             GraphicsDevice.Clear(Color.DarkGray);
 
             m_spriteBatch.Begin();
-            
+
             // TODO: Add your drawing code here
-            
+
             // draw the board
             for (int row = 0; row < boardSize; row++)
             {
@@ -178,7 +253,7 @@ namespace Maze
                         "none" => m_texNone,
                         _ => m_texTLRB
                     };
-                    
+
                     // tuple holds position that this rect starts at
                     var position = (col * tileSizePixels + TOP_LEFT_CORNER.x,
                         row * tileSizePixels + TOP_LEFT_CORNER.y);
@@ -186,25 +261,25 @@ namespace Maze
                     // draw this tile
                     var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
                     m_spriteBatch.Draw(textureToLoad, rect, Color.White);
-                    
+
                     // if player is on this square, draw the pink circle
                     if (thisMaze.currentSquare == (row, col))
                     {
                         m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
                     }
-                    
+
                     // if this is the end square, draw the green circle
                     if (thisMaze.endSquare == (row, col))
                     {
                         m_spriteBatch.Draw(m_texGreenCircle, rect, Color.White);
                     }
-                    
+
                     // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
                     if (showBreadcrumbs && thisMaze.mazeSquares[row, col].Visited)
                     {
                         m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
                     }
- 
+
                     // if this is a solution square and showShortestPath is enabled, show a transparent green circle
                     if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
                     {
@@ -212,9 +287,9 @@ namespace Maze
                     }
                 }
             }
-            
+
             m_spriteBatch.End();
-            
+
             base.Draw(gameTime);
         }
     }
