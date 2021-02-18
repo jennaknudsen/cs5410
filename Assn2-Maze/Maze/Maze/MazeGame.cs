@@ -41,6 +41,7 @@ namespace Maze
  
         # endregion
 
+        // consts that hold unchanging values
         private const int BOARD_SIZE_PIXELS = 600;
         private const int WINDOW_WIDTH = 1200;
         private readonly (int x, int y) TOP_LEFT_CORNER = (300, 100);
@@ -53,6 +54,9 @@ namespace Maze
         
         // underlying data structure to hold a Maze
         private Maze thisMaze;
+
+        private bool showBreadcrumbs = false;
+        private bool showShortestPath = false;
  
         public MazeGame()
         {
@@ -128,10 +132,7 @@ namespace Maze
             m_spriteBatch.Begin();
             
             // TODO: Add your drawing code here
-            // Rectangle position = new Rectangle(50, 50, 50, 50);
-            // Rectangle position2 = new Rectangle(100, 50, 50, 50);
-            // m_spriteBatch.Draw(m_texTLB, position, Color.White);
-            // m_spriteBatch.Draw(m_texTRB, position2, Color.White);
+            
             // draw the board
             for (int row = 0; row < boardSize; row++)
             {
@@ -179,8 +180,15 @@ namespace Maze
                     var position = (col * tileSizePixels + TOP_LEFT_CORNER.x,
                         row * tileSizePixels + TOP_LEFT_CORNER.y);
 
+                    // draw this tile
                     var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
                     m_spriteBatch.Draw(textureToLoad, rect, Color.White);
+                    
+                    // if player is on this square, draw the pink circle
+                    if (thisMaze.currentSquare == (row, col))
+                    {
+                        m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                    }
                 }
             }
             

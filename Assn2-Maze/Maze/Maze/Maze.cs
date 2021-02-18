@@ -10,12 +10,13 @@ namespace Maze
         public MazeSquare[,] mazeSquares;
 
         // multidimensional array holds the solution squares
-        // use this for our recursive memoizing algorithm
+        // use this for our recursive algorithm
         private bool[,] visitedSquares;
 
         // tuple holds start and end squares
         public (int, int) startSquare = (0, 0);
         public (int, int) endSquare;
+        public (int, int) currentSquare;
 
         // DisjointSet for all of the squares
         // When all squares are part of the same disjoint set, the maze
@@ -64,6 +65,9 @@ namespace Maze
 
             // finally, generate the actual maze
             GenerateMaze();
+            
+            // start player at (0, 0)
+            currentSquare = startSquare;
         }
 
         public void FillBoardWithSquares()
@@ -216,7 +220,7 @@ namespace Maze
         }
 
         // helper function to start recursion to solve the maze
-        public void SolveMaze()
+        public void SolveMazeFromStart()
         {
             // start the recursive solution at start (0, 0)
             SolveMazeRecursive((0, 0));
