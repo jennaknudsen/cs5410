@@ -205,6 +205,13 @@
 /processorParam:TextureFormat=Color
 /build:FloorTiles/TRB.png
 
+#begin GameFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:GameFont.spritefont
+
 #begin OverlaySprites/BlueCircle.png
 /importer:TextureImporter
 /processor:TextureProcessor
