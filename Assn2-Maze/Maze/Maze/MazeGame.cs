@@ -248,9 +248,14 @@ namespace Maze
                             case ButtonAction.ShortestPath:
                                 showShortestPath = !showShortestPath;
                                 break;
-                            default:
-                                // do nothing if no buttons are pressed
-                                break;
+                        }
+
+                        if (thisMaze.currentSquare == thisMaze.endSquare)
+                        {
+                            showBreadcrumbs = false;
+                            showHint = false;
+                            showShortestPath = false;
+                            gameState = GameState.GameOver;
                         }
                     }
                     break;
@@ -336,6 +341,7 @@ F6 - Display Credits";
                 case GameState.Init:
                     break;
                 case GameState.Playing:
+                case GameState.GameOver:
                     m_spriteBatch.Begin();
 
                     // draw the board
@@ -421,9 +427,6 @@ F6 - Display Credits";
                     }
 
                     m_spriteBatch.End();
-                    break;
-                case GameState.GameOver:
-
                     break;
                 case GameState.HighScores:
                     break;
