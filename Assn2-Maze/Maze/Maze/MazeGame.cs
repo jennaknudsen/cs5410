@@ -199,8 +199,14 @@ namespace Maze
                         m_spriteBatch.Draw(m_texGreenCircle, rect, Color.White);
                     }
                     
+                    // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
+                    if (showBreadcrumbs && thisMaze.mazeSquares[row, col].Visited)
+                    {
+                        m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
+                    }
+ 
                     // if this is a solution square and showShortestPath is enabled, show a transparent green circle
-                    if (thisMaze.mazeSquares[row, col].PartOfSolution)
+                    if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfSolution)
                     {
                         m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
                     }

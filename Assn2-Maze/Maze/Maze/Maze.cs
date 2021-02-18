@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using static Maze.MazeSquare.Wall;
 namespace Maze
 {
     public class Maze
@@ -14,9 +14,9 @@ namespace Maze
         private bool[,] visitedSquares;
 
         // tuple holds start and end squares
-        public (int, int) startSquare = (0, 0);
-        public (int, int) endSquare;
-        public (int, int) currentSquare;
+        public (int row, int col) startSquare = (0, 0);
+        public (int row, int col) endSquare;
+        public (int row, int col) currentSquare;
 
         // DisjointSet for all of the squares
         // When all squares are part of the same disjoint set, the maze
@@ -65,7 +65,7 @@ namespace Maze
 
             // finally, generate the actual maze
             GenerateMaze();
-            
+
             // start player at (0, 0)
             currentSquare = startSquare;
         }
@@ -313,6 +313,46 @@ namespace Maze
             else
             {
                 return false;
+            }
+
+        }
+
+        // for each move function:
+        // check if wall above/left/right/down is DISABLED, and if so, move in that direction
+        public void moveUp()
+        {
+            if (mazeSquares[currentSquare.row, currentSquare.col].TopWall.wallStatus == WallStatus.DISABLED)
+            {
+                currentSquare.row -= 1;
+                mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+            }
+        }
+
+        public void moveLeft()
+        {
+            if (mazeSquares[currentSquare.row, currentSquare.col].LeftWall.wallStatus == WallStatus.DISABLED)
+            {
+                currentSquare.col -= 1;
+                mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+            }
+        }
+
+        public void moveRight()
+        {
+            if (mazeSquares[currentSquare.row, currentSquare.col].RightWall.wallStatus == WallStatus.DISABLED)
+            {
+                currentSquare.col += 1;
+                mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
+            }
+
+        }
+
+        public void moveDown()
+        {
+            if (mazeSquares[currentSquare.row, currentSquare.col].BottomWall.wallStatus == WallStatus.DISABLED)
+            {
+                currentSquare.row += 1;
+                mazeSquares[currentSquare.row, currentSquare.col].Visited = true;
             }
 
         }
