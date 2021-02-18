@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Maze.MazeSquare.Wall;
+
 namespace Maze
 {
     public class Maze
@@ -91,8 +92,8 @@ namespace Maze
                     if (row == 0)
                     {
                         topWall = new MazeSquare.Wall(
-                            MazeSquare.Wall.WallStatus.EDGE,
-                            MazeSquare.Wall.Orientation.HORIZONTAL,
+                            WallStatus.EDGE,
+                            Orientation.HORIZONTAL,
                             null,
                             mazeSquares[row, col]);
                     }
@@ -109,8 +110,8 @@ namespace Maze
                     if (col == 0)
                     {
                         leftWall = new MazeSquare.Wall(
-                            MazeSquare.Wall.WallStatus.EDGE,
-                            MazeSquare.Wall.Orientation.VERTICAL,
+                            WallStatus.EDGE,
+                            Orientation.VERTICAL,
                             null,
                             mazeSquares[row, col]);
                     }
@@ -124,19 +125,19 @@ namespace Maze
 
                     // right wall: if col = BoardSize - 1, make it the edge
                     // otherwise, make it a new wall
-                    MazeSquare.Wall.WallStatus rightStatus;
+                    WallStatus rightStatus;
                     if (col == BoardSize - 1)
                     {
-                        rightStatus = MazeSquare.Wall.WallStatus.EDGE;
+                        rightStatus = WallStatus.EDGE;
                     }
                     else
                     {
-                        rightStatus = MazeSquare.Wall.WallStatus.ENABLED;
+                        rightStatus = WallStatus.ENABLED;
                     }
 
                     rightWall = new MazeSquare.Wall(
                         rightStatus,
-                        MazeSquare.Wall.Orientation.VERTICAL,
+                        Orientation.VERTICAL,
                         mazeSquares[row, col],
                         null);
 
@@ -149,19 +150,19 @@ namespace Maze
 
                     // bottom wall: if row = BoardSize - 1, make it the edge
                     // otherwise, make it a new wall
-                    MazeSquare.Wall.WallStatus bottomStatus;
+                    WallStatus bottomStatus;
                     if (row == BoardSize - 1)
                     {
-                        bottomStatus = MazeSquare.Wall.WallStatus.EDGE;
+                        bottomStatus = WallStatus.EDGE;
                     }
                     else
                     {
-                        bottomStatus = MazeSquare.Wall.WallStatus.ENABLED;
+                        bottomStatus = WallStatus.ENABLED;
                     }
 
                     bottomWall = new MazeSquare.Wall(
                         bottomStatus,
-                        MazeSquare.Wall.Orientation.HORIZONTAL,
+                        Orientation.HORIZONTAL,
                         mazeSquares[row, col],
                         null);
 
@@ -199,22 +200,22 @@ namespace Maze
             while (n > 1)
             {
                 n--;
-                int k = random.Next(n + 1);
-                MazeSquare.Wall value = listOfWalls[k];
+                var k = random.Next(n + 1);
+                var value = listOfWalls[k];
                 listOfWalls[k] = listOfWalls[n];
                 listOfWalls[n] = value;
             }
 
-            foreach (MazeSquare.Wall wall in listOfWalls)
+            foreach (var wall in listOfWalls)
             {
-                int leftID = wall.firstSquareRef.ID;
-                int rightID = wall.secondSquareRef.ID;
+                var leftID = wall.firstSquareRef.ID;
+                var rightID = wall.secondSquareRef.ID;
 
-                if (!(mazeSquaresDisjointSet.Find(leftID) ==
-                      mazeSquaresDisjointSet.Find(rightID)))
+                if (mazeSquaresDisjointSet.Find(leftID) !=
+                      mazeSquaresDisjointSet.Find(rightID))
                 {
                     mazeSquaresDisjointSet.Union(leftID, rightID);
-                    wall.wallStatus = MazeSquare.Wall.WallStatus.DISABLED;
+                    wall.wallStatus = WallStatus.DISABLED;
                 }
             }
         }
@@ -259,7 +260,7 @@ namespace Maze
             // top
             if (currentSquare.row != 0 &&
                 !visitedSquares[currentSquare.row - 1, currentSquare.col] &&
-                thisSquare.TopWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+                thisSquare.TopWall.wallStatus == WallStatus.DISABLED)
             {
                 topSolution = SolveMazeRecursive((currentSquare.row - 1, currentSquare.col));
             }
@@ -271,7 +272,7 @@ namespace Maze
             // left
             if (currentSquare.col != 0 &&
                 !visitedSquares[currentSquare.row, currentSquare.col - 1] &&
-                thisSquare.LeftWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+                thisSquare.LeftWall.wallStatus == WallStatus.DISABLED)
             {
                 leftSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col - 1));
             }
@@ -283,7 +284,7 @@ namespace Maze
             // right
             if (currentSquare.col != BoardSize - 1 &&
                 !visitedSquares[currentSquare.row, currentSquare.col + 1] &&
-                thisSquare.RightWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+                thisSquare.RightWall.wallStatus == WallStatus.DISABLED)
             {
                 rightSolution = SolveMazeRecursive((currentSquare.row, currentSquare.col + 1));
             }
@@ -295,7 +296,7 @@ namespace Maze
             // bottom
             if (currentSquare.row != BoardSize - 1 &&
                 !visitedSquares[currentSquare.row + 1, currentSquare.col] &&
-                thisSquare.BottomWall.wallStatus == MazeSquare.Wall.WallStatus.DISABLED)
+                thisSquare.BottomWall.wallStatus == WallStatus.DISABLED)
             {
                 bottomSolution = SolveMazeRecursive((currentSquare.row + 1, currentSquare.col));
             }
@@ -396,9 +397,9 @@ namespace Maze
                     // top wall
                     charToAdd = mazeSquares[row, col].TopWall.wallStatus switch
                     {
-                        MazeSquare.Wall.WallStatus.ENABLED => '-',
-                        MazeSquare.Wall.WallStatus.EDGE => '=',
-                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        WallStatus.ENABLED => '-',
+                        WallStatus.EDGE => '=',
+                        WallStatus.DISABLED => ' ',
                         _ => 'F',
                     };
                     mazeChars[scaledRow, scaledCol + 1] = charToAdd;
@@ -407,9 +408,9 @@ namespace Maze
                     // left wall
                     charToAdd = mazeSquares[row, col].LeftWall.wallStatus switch
                     {
-                        MazeSquare.Wall.WallStatus.ENABLED => '|',
-                        MazeSquare.Wall.WallStatus.EDGE => '!',
-                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        WallStatus.ENABLED => '|',
+                        WallStatus.EDGE => '!',
+                        WallStatus.DISABLED => ' ',
                         _ => 'F',
                     };
                     mazeChars[scaledRow + 1, scaledCol] = charToAdd;
@@ -417,9 +418,9 @@ namespace Maze
                     // right wall
                     charToAdd = mazeSquares[row, col].RightWall.wallStatus switch
                     {
-                        MazeSquare.Wall.WallStatus.ENABLED => '|',
-                        MazeSquare.Wall.WallStatus.EDGE => '!',
-                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        WallStatus.ENABLED => '|',
+                        WallStatus.EDGE => '!',
+                        WallStatus.DISABLED => ' ',
                         _ => 'F',
                     };
                     mazeChars[scaledRow + 1, scaledCol + 3] = charToAdd;
@@ -427,9 +428,9 @@ namespace Maze
                     // bottom wall
                     charToAdd = mazeSquares[row, col].BottomWall.wallStatus switch
                     {
-                        MazeSquare.Wall.WallStatus.ENABLED => '-',
-                        MazeSquare.Wall.WallStatus.EDGE => '=',
-                        MazeSquare.Wall.WallStatus.DISABLED => ' ',
+                        WallStatus.ENABLED => '-',
+                        WallStatus.EDGE => '=',
+                        WallStatus.DISABLED => ' ',
                         _ => 'F',
                     };
                     mazeChars[scaledRow + 2, scaledCol + 1] = charToAdd;
