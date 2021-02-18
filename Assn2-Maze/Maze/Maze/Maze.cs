@@ -56,20 +56,19 @@ namespace Maze
             // initialize the DisjointSet
             mazeSquaresDisjointSet = new DisjointSet(BoardSize * BoardSize);
 
-
-
             // next, fill the board with squares
             FillBoardWithSquares();
 
-            // finally, generate the actual maze
+            // finally, generate and solve the actual maze
             GenerateMaze();
             SolveMazeFromStart();
 
             // start player at (0, 0)
             currentSquare = startSquare;
+            mazeSquares[startSquare.row, startSquare.col].Visited = true;
         }
 
-        public void FillBoardWithSquares()
+        private void FillBoardWithSquares()
         {
             // next, fill the board with squares
             for (int row = 0; row < BoardSize; row++)
@@ -332,6 +331,7 @@ namespace Maze
 
         }
 
+        # region movementFunctions
         // for each move function:
         // check if wall above/left/right/down is DISABLED, and if so, move in that direction
         // then, re-solve maze from this position
@@ -378,6 +378,7 @@ namespace Maze
                 SolveMazeFromPoint(currentSquare);
             }
         }
+        # endregion
 
         private void GenerateNextHint()
         {
@@ -418,8 +419,6 @@ namespace Maze
                 {
                     throw new Exception("Unable to generate hint! Something bad has happened.");
                 }
-
-                Console.WriteLine("Hint is: " + hintSquare);
             }
         }
 

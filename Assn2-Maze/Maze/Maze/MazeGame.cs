@@ -57,8 +57,8 @@ namespace Maze
 
         // whether or not to show certain UI elements
         private bool showBreadcrumbs = true;
-        private bool showShortestPath = true;
-        private bool showHint = true;
+        private bool showShortestPath = false;
+        private bool showHint = false;
 
         // all buttons that need debouncing (aka all of them)
         private Debouncer leftDebouncer;
@@ -201,6 +201,45 @@ namespace Maze
             else
             {
                 downDebouncer.Release();
+            }
+
+            // BREADCRUMBS
+            if (keyboardState.IsKeyDown(Keys.B))
+            {
+                if (breadcrumbsDebouncer.Press())
+                {
+                    showBreadcrumbs = !showBreadcrumbs;
+                }
+            }
+            else
+            {
+                breadcrumbsDebouncer.Release();
+            }
+
+            // HINT
+            if (keyboardState.IsKeyDown(Keys.H))
+            {
+                if (hintDebouncer.Press())
+                {
+                    showHint = !showHint;
+                }
+            }
+            else
+            {
+                hintDebouncer.Release();
+            }
+
+            // SHORTEST PATH
+            if (keyboardState.IsKeyDown(Keys.P))
+            {
+                if (shortestPathDebouncer.Press())
+                {
+                    showShortestPath = !showShortestPath;
+                }
+            }
+            else
+            {
+                shortestPathDebouncer.Release();
             }
         }
 
