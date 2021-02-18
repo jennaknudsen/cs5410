@@ -118,6 +118,9 @@ namespace Maze
         // the high scores
         private List<(int size, int score)> highScores;
 
+        // the elapsed time, stored in a TimeSpan for easy operation with gameTime
+        private TimeSpan elapsedTime;
+
         public MazeGame()
         {
             m_graphics = new GraphicsDeviceManager(this);
@@ -289,21 +292,23 @@ namespace Maze
                                 gameState = GameState.Credits;
                                 break;
                         }
+                    }
+                    // get elapsed time and add to tracker
+                    elapsedTime += gameTime.ElapsedGameTime;
 
-                        if (thisMaze.currentSquare == thisMaze.endSquare)
-                        {
-                            showBreadcrumbs = false;
-                            showHint = false;
-                            showShortestPath = false;
-                            gameState = GameState.GameOver;
+                    if (thisMaze.currentSquare == thisMaze.endSquare)
+                    {
+                        showBreadcrumbs = false;
+                        showHint = false;
+                        showShortestPath = false;
+                        gameState = GameState.GameOver;
 
-                            // add to high scores list
-                            highScores.Add((boardSize, thisMaze.GameScore));
-                            // LINQ sort list of tuples:
-                            // https://stackoverflow.com/a/4668558
-                            highScores.Sort((x, y) =>
-                                y.score.CompareTo(x.score));
-                        }
+                        // add to high scores list
+                        highScores.Add((boardSize, thisMaze.GameScore));
+                        // LINQ sort list of tuples:
+                        // https://stackoverflow.com/a/4668558
+                        highScores.Sort((x, y) =>
+                            y.score.CompareTo(x.score));
                     }
                     break;
             }
@@ -316,9 +321,11 @@ namespace Maze
 
         private void GenerateMaze(int theBoardSize)
         {
-            this.boardSize = theBoardSize;
+            boardSize = theBoardSize;
             tileSizePixels = BOARD_SIZE_PIXELS / theBoardSize;
             thisMaze = new Maze(theBoardSize);
+            // reset the elapsed time on new maze generation
+            elapsedTime = TimeSpan.Zero;
         }
 
         private void processInput()
@@ -475,6 +482,13 @@ P - Toggle Path to Goal";
                         }
                     }
 
+                    // draw the elapsed time
+                    // use string formatters to format the elapsed time nicely
+                    // https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-timespan-format-strings
+                    var elapsedTimeFormatted = elapsedTime.ToString(@"h\:mm\:ss");
+                    m_spriteBatch.DrawString(m_fontGameFont, "Time: " + elapsedTimeFormatted,
+                        new Vector2(300, 50), Color.Black);
+
                     // draw the game score
                     m_spriteBatch.DrawString(m_fontGameFont, "Score: " + thisMaze.GameScore,
                         new Vector2(700, 50), Color.Black);
@@ -506,6 +520,9 @@ by me (Jonas Knudsen).
 Used StackOverflow for a couple of small code 
 snippets. These snippets are cited in comments 
 found in the source code.
+
+Also used the official documentation found at
+https://docs.microsoft.com/en-us/dotnet/
 
 Maze Generation Algorithm: Randomized Kruskal's Algorithm
 Maze Solving Algorithm: Depth-First Search";
