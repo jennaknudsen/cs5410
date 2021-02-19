@@ -35,12 +35,6 @@ namespace Maze
         private Texture2D m_texTLRB;
 
         // overlay sprites
-        private Texture2D m_texBlueCircle;
-        private Texture2D m_texGreenCircle;
-        private Texture2D m_texPinkCircle;
-        private Texture2D m_texSmallDot;
-        private Texture2D m_texTransparentGreenCircle;
-        private Texture2D m_texSuperTransparentGreenCircle;
         private Texture2D m_texGoalFlag;
         private Texture2D m_texYellowStar;
         private Texture2D m_texBeachBall;
@@ -186,12 +180,6 @@ namespace Maze
             m_texTLRB = this.Content.Load<Texture2D>("FloorTiles/TLRB");
 
             // overlay sprites
-            m_texBlueCircle = this.Content.Load<Texture2D>("OverlaySprites/BlueCircle");
-            m_texGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/GreenCircle");
-            m_texPinkCircle = this.Content.Load<Texture2D>("OverlaySprites/PinkCircle");
-            m_texSmallDot = this.Content.Load<Texture2D>("OverlaySprites/SmallDot");
-            m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle");
-            m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle");
             m_texGoalFlag = this.Content.Load<Texture2D>("OverlaySprites/GoalFLag");
             m_texYellowStar = this.Content.Load<Texture2D>("OverlaySprites/YellowStar");
             m_texBeachBall = this.Content.Load<Texture2D>("OverlaySprites/BeachBall");

@@ -236,18 +236,6 @@
 /processorParam:TextureFormat=Color
 /build:OverlaySprites/BeachBallOverlay.png
 
-#begin OverlaySprites/BlueCircle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/BlueCircle.png
-
 #begin OverlaySprites/GoalFlag.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -260,42 +248,6 @@
 /processorParam:TextureFormat=Color
 /build:OverlaySprites/GoalFlag.png
 
-#begin OverlaySprites/GreenCircle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/GreenCircle.png
-
-#begin OverlaySprites/PinkCircle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/PinkCircle.png
-
-#begin OverlaySprites/SmallDot.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/SmallDot.png
-
 #begin OverlaySprites/SmallSquare.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -307,30 +259,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OverlaySprites/SmallSquare.png
-
-#begin OverlaySprites/SuperTransparentGreenCircle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/SuperTransparentGreenCircle.png
-
-#begin OverlaySprites/TransparentGreenCircle.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:OverlaySprites/TransparentGreenCircle.png
 
 #begin OverlaySprites/YellowStar.png
 /importer:TextureImporter
