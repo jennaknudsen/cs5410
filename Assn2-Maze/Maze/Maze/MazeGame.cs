@@ -62,7 +62,7 @@ namespace Maze
         private Maze thisMaze;
 
         // whether or not to show certain UI elements
-        private bool showBreadcrumbs = false;
+        private bool showBreadcrumbs = true;
         private bool showShortestPath = false;
         private bool showHint = false;
 
@@ -136,8 +136,7 @@ namespace Maze
 
             m_graphics.ApplyChanges();
 
-            // initialize the maze
-            // TODO: handle ALL of this somewhere else
+            // initialize the MazeGame components
             newGame5Debouncer = new Debouncer();
             newGame10Debouncer = new Debouncer();
             newGame15Debouncer = new Debouncer();
@@ -162,7 +161,6 @@ namespace Maze
         {
             m_spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             // all textures (floor tiles, circles, etc)
             // floor tiles
             m_texNone = this.Content.Load<Texture2D>("FloorTiles/none");
@@ -196,8 +194,6 @@ namespace Maze
 
         protected override void Update(GameTime gameTime)
         {
-            // TODO: Add your update logic here
-
             // first, get user input
             processInput();
 
@@ -298,7 +294,6 @@ namespace Maze
 
                     if (thisMaze.currentSquare == thisMaze.endSquare)
                     {
-                        showBreadcrumbs = false;
                         showHint = false;
                         showShortestPath = false;
                         gameState = GameState.GameOver;
@@ -369,7 +364,6 @@ namespace Maze
         {
             GraphicsDevice.Clear(Color.DarkGray);
 
-            // TODO: Add your drawing code here
             // always show menu on the left
             m_spriteBatch.Begin();
 
@@ -451,16 +445,16 @@ P - Toggle Path to Goal";
                             var rect = new Rectangle(position.Item1, position.Item2, tileSizePixels, tileSizePixels);
                             m_spriteBatch.Draw(textureToLoad, rect, Color.White);
 
-                            // if player is on this square, draw the pink circle
-                            if (thisMaze.currentSquare == (row, col))
+                            // if this is a solution square and showShortestPath is enabled, show a transparent green circle
+                            if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfCurrentSolution)
                             {
-                                m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
                             }
 
-                            // if this is the end square, draw the blue circle
-                            if (thisMaze.endSquare == (row, col))
+                            // if this is a hint square and showHint is enabled, show a transparent green circle
+                            if (showHint && thisMaze.hintSquare == (row, col))
                             {
-                                m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
                             }
 
                             // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
@@ -469,15 +463,16 @@ P - Toggle Path to Goal";
                                 m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
                             }
 
-                            // if this is a solution square and showShortestPath is enabled, show a transparent green circle
-                            if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfCurrentSolution)
+                            // if this is the end square, draw the blue circle
+                            if (thisMaze.endSquare == (row, col))
                             {
-                                m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
                             }
 
-                            if (showHint && thisMaze.hintSquare == (row, col))
+                            // if player is on this square, draw the pink circle
+                            if (thisMaze.currentSquare == (row, col))
                             {
-                                m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
                             }
                         }
                     }
@@ -492,6 +487,13 @@ P - Toggle Path to Goal";
                     // draw the game score
                     m_spriteBatch.DrawString(m_fontGameFont, "Score: " + thisMaze.GameScore,
                         new Vector2(700, 50), Color.Black);
+
+                    // if game over, show a "You Win!" message at the bottom
+                    if (gameState == GameState.GameOver)
+                    {
+                        m_spriteBatch.DrawString(m_fontGameFont, "You Win!",
+                            new Vector2(560, 740), Color.Green);
+                    }
 
                     m_spriteBatch.End();
                     break;
