@@ -42,6 +42,10 @@ namespace Maze
         private Texture2D m_texTransparentGreenCircle;
         private Texture2D m_texSuperTransparentGreenCircle;
         private Texture2D m_texGoalFlag;
+        private Texture2D m_texYellowStar;
+        private Texture2D m_texBeachBall;
+        private Texture2D m_texBeachBallOverlay;
+        private Texture2D m_texSmallSquare;
 
         // font
         private SpriteFont m_fontGameFont;
@@ -189,6 +193,10 @@ namespace Maze
             m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle");
             m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle");
             m_texGoalFlag = this.Content.Load<Texture2D>("OverlaySprites/GoalFLag");
+            m_texYellowStar = this.Content.Load<Texture2D>("OverlaySprites/YellowStar");
+            m_texBeachBall = this.Content.Load<Texture2D>("OverlaySprites/BeachBall");
+            m_texBeachBallOverlay = this.Content.Load<Texture2D>("OverlaySprites/BeachBallOverlay");
+            m_texSmallSquare = this.Content.Load<Texture2D>("OverlaySprites/SmallSquare");
 
             // sprite font
             m_fontGameFont = this.Content.Load<SpriteFont>("GameFont");
@@ -450,19 +458,19 @@ P - Toggle Path to Goal";
                             // if this is a solution square and showShortestPath is enabled, show a transparent green circle
                             if (showShortestPath && thisMaze.mazeSquares[row, col].PartOfCurrentSolution)
                             {
-                                m_spriteBatch.Draw(m_texSuperTransparentGreenCircle, rect, Color.White);
-                            }
-
-                            // if this is a hint square and showHint is enabled, show a transparent green circle
-                            if (showHint && thisMaze.hintSquare == (row, col))
-                            {
-                                m_spriteBatch.Draw(m_texTransparentGreenCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texBeachBallOverlay, rect, Color.White);
                             }
 
                             // if this is a breadcrumb square and showBreadcrumbs is enabled, show a dot
                             if (showBreadcrumbs && thisMaze.mazeSquares[row, col].Visited)
                             {
-                                m_spriteBatch.Draw(m_texSmallDot, rect, Color.White);
+                                m_spriteBatch.Draw(m_texSmallSquare, rect, Color.White);
+                            }
+
+                            // if this is a hint square and showHint is enabled, show a transparent green circle
+                            if (showHint && thisMaze.hintSquare == (row, col))
+                            {
+                                m_spriteBatch.Draw(m_texYellowStar, rect, Color.White);
                             }
 
                             // if this is the end square, draw the blue circle
@@ -474,7 +482,7 @@ P - Toggle Path to Goal";
                             // if player is on this square, draw the pink circle
                             if (thisMaze.currentSquare == (row, col))
                             {
-                                m_spriteBatch.Draw(m_texPinkCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texBeachBall, rect, Color.White);
                             }
                         }
                     }
