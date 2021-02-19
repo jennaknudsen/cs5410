@@ -5,6 +5,7 @@ using static Maze.MazeSquare.Wall;
 
 namespace Maze
 {
+    // The data structure that holds a maze itself
     public class Maze
     {
         // multidimensional array holds all maze squares

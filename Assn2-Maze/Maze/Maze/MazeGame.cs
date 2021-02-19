@@ -180,7 +180,7 @@ namespace Maze
             m_texTLRB = this.Content.Load<Texture2D>("FloorTiles/TLRB");
 
             // overlay sprites
-            m_texGoalFlag = this.Content.Load<Texture2D>("OverlaySprites/GoalFLag");
+            m_texGoalFlag = this.Content.Load<Texture2D>("OverlaySprites/GoalFlag");
             m_texYellowStar = this.Content.Load<Texture2D>("OverlaySprites/YellowStar");
             m_texBeachBall = this.Content.Load<Texture2D>("OverlaySprites/BeachBall");
             m_texBeachBallOverlay = this.Content.Load<Texture2D>("OverlaySprites/BeachBallOverlay");
@@ -190,12 +190,18 @@ namespace Maze
             m_fontGameFont = this.Content.Load<SpriteFont>("GameFont");
         }
 
+        // the main game loop
         protected override void Update(GameTime gameTime)
         {
             // first, get user input
+            // processUpdate handles debouncing (but that's it)
+            // it logs which buttons were pressed, so that Update() can do what it needs
+            // with that information
             processInput();
 
             // check what game state we are in
+            // for init, game over, high score, credits, we just need the F-keys to work
+            // for gameplay state, we need all controls to work
             switch (gameState)
             {
                 case GameState.Init:
@@ -290,6 +296,7 @@ namespace Maze
                     // get elapsed time and add to tracker
                     elapsedTime += gameTime.ElapsedGameTime;
 
+                    // check to see if we're done with the maze
                     if (thisMaze.currentSquare == thisMaze.endSquare)
                     {
                         showHint = false;
@@ -303,6 +310,7 @@ namespace Maze
                         highScores.Sort((x, y) =>
                             y.score.CompareTo(x.score));
                     }
+
                     break;
             }
 
@@ -312,6 +320,7 @@ namespace Maze
             base.Update(gameTime);
         }
 
+        // called by Update() when new maze is needed
         private void GenerateMaze(int theBoardSize)
         {
             boardSize = theBoardSize;
@@ -321,6 +330,7 @@ namespace Maze
             elapsedTime = TimeSpan.Zero;
         }
 
+        // handles all user input
         private void processInput()
         {
             var ks = Keyboard.GetState();
@@ -343,6 +353,7 @@ namespace Maze
                 }
             }
 
+            // check for each key, add to list if possible
             AddIfNotDebounced(newGame5Debouncer, ButtonAction.NewGame5, Keys.F1);
             AddIfNotDebounced(newGame10Debouncer, ButtonAction.NewGame10, Keys.F2);
             AddIfNotDebounced(newGame15Debouncer, ButtonAction.NewGame15, Keys.F3);
@@ -358,8 +369,10 @@ namespace Maze
             AddIfNotDebounced(shortestPathDebouncer, ButtonAction.ShortestPath, Keys.P);
         }
 
+        // this is the render loop -- no game logic happens here!
         protected override void Draw(GameTime gameTime)
         {
+            // dark gray background
             GraphicsDevice.Clear(Color.DarkGray);
 
             // always show menu on the left
@@ -384,10 +397,15 @@ P - Toggle Path to Goal";
             m_spriteBatch.DrawString(m_fontGameFont, controlsString, new Vector2(950, 300), Color.Black);
             m_spriteBatch.End();
 
+            // on Playing and Game Over, render the maze
+            // on others, render the appropriate text
             switch (gameState)
             {
+                // don't need to render anything else on game start
                 case GameState.Init:
                     break;
+
+                // render the maze, timer, score
                 case GameState.Playing:
                 case GameState.GameOver:
                     m_spriteBatch.Begin();
@@ -495,6 +513,8 @@ P - Toggle Path to Goal";
 
                     m_spriteBatch.End();
                     break;
+
+                // for high scores, just create a string with the high schores formatted and display it
                 case GameState.HighScores:
                     m_spriteBatch.Begin();
 
@@ -509,10 +529,11 @@ P - Toggle Path to Goal";
 
                     m_spriteBatch.End();
                     break;
+
+                // just display simple credits here
                 case GameState.Credits:
                     m_spriteBatch.Begin();
 
-                    // just display simple credits here
                     var creditsString = @"CREDITS:
 All game logic, assets, and artwork created 
 by me (Jonas Knudsen), with the exception of the
@@ -531,8 +552,11 @@ Maze Generation Algorithm: Randomized Kruskal's Algorithm
 Maze Solving Algorithm: Depth-First Search";
                     m_spriteBatch.DrawString(m_fontGameFont, creditsString,
                         new Vector2(350, 200), Color.Black);
+
                     m_spriteBatch.End();
                     break;
+
+                // should NEVER get here
                 default:
                     throw new ArgumentOutOfRangeException();
             }

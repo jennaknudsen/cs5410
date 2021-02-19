@@ -19,6 +19,7 @@ namespace Maze
             }
         }
 
+        // return the root node of the set that the given index is in
         public int Find(int index)
         {
             // if the value is less than 0 then we just return it (we are at root)
@@ -35,6 +36,7 @@ namespace Maze
             }
         }
 
+        // given two indices, join the two sets together
         public void Union(int firstIndex, int secondIndex)
         {
             int firstRootIndex = this.Find(firstIndex);

@@ -6,12 +6,13 @@ namespace Maze
          A MazeSquare has the following:
          Four walls
          An ID number (for the disjoint set)
+         PartOfOriginalSolution property
          PartOfCurrentSolution property
          Visited property
 
          A Wall has the following:
-         MazeEdge property (whether it is at the edge of the maze or not)
-         Enabled / Disabled property (whether the wall exists or not)
+         Orientation property (whether it is Horizontal or Vertical)
+         Enabled / Disabled / Edge property (whether the wall is an edge, is just a wall, or does not exist)
          FirstSquareRef / SecondSquareRef properties (which two MazeSquares
                     the wall divides)
         */
