@@ -41,6 +41,7 @@ namespace Maze
         private Texture2D m_texSmallDot;
         private Texture2D m_texTransparentGreenCircle;
         private Texture2D m_texSuperTransparentGreenCircle;
+        private Texture2D m_texGoalFlag;
 
         // font
         private SpriteFont m_fontGameFont;
@@ -187,6 +188,7 @@ namespace Maze
             m_texSmallDot = this.Content.Load<Texture2D>("OverlaySprites/SmallDot");
             m_texTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/TransparentGreenCircle");
             m_texSuperTransparentGreenCircle = this.Content.Load<Texture2D>("OverlaySprites/SuperTransparentGreenCircle");
+            m_texGoalFlag = this.Content.Load<Texture2D>("OverlaySprites/GoalFLag");
 
             // sprite font
             m_fontGameFont = this.Content.Load<SpriteFont>("GameFont");
@@ -466,7 +468,7 @@ P - Toggle Path to Goal";
                             // if this is the end square, draw the blue circle
                             if (thisMaze.endSquare == (row, col))
                             {
-                                m_spriteBatch.Draw(m_texBlueCircle, rect, Color.White);
+                                m_spriteBatch.Draw(m_texGoalFlag, rect, Color.White);
                             }
 
                             // if player is on this square, draw the pink circle
