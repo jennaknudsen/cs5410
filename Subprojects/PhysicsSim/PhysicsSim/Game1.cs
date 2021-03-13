@@ -87,7 +87,7 @@ namespace PhysicsSim
                // _ => throw new ArgumentOutOfRangeException()
             };
 
-            var dimen = 300;
+            var dimen = 400;
             var grayRect = new Texture2D(_graphics.GraphicsDevice, dimen, dimen);
             var data2 = new Color[dimen * dimen];
             for (var i = 0; i < data2.Length; i++)
@@ -96,12 +96,16 @@ namespace PhysicsSim
             }
             grayRect.SetData(data2);
 
+            _rectFreeFall.X = 150 - (vectorPos / 100 * 30);
+            _rectFreeFall.Y = 150 - (vectorPos / 100 * 30);
+            Console.WriteLine("Rect XY: " + _rectFreeFall.X);
+
             _spriteBatch.Draw(grayRect,
                 _rectFreeFall,
                 null,
                 Color.Aqua,
                 0,
-                new Vector2(vectorPos, vectorPos),
+                new Vector2(_texLander.Width / 2, _texLander.Height / 2),
                 SpriteEffects.None,
                 0);
 
