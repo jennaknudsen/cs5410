@@ -23,7 +23,7 @@ namespace PhysicsSim
         // lander mass: https://en.wikipedia.org/wiki/Apollo_Lunar_Module
         private const int LanderMass = 4280;        // kg
 
-        // position: degrees (on Cartesian coordinate system)
+        // position: radians (on Cartesian coordinate system)
         private float _orientation;
 
         // ship forces and velocities
@@ -133,8 +133,9 @@ namespace PhysicsSim
             // Draw the lander
 
             // set lander position rectangle
-            var (landerX, landerY) = GetAbsolutePixelCoordinates((_landerPosition.x - LanderSize / 2,
-                _landerPosition.y - LanderSize / 2));
+            // sets the top left of lander (we are re-moving the texture in the Draw() function)
+            var (landerX, landerY) = GetAbsolutePixelCoordinates((_landerPosition.x,
+                _landerPosition.y));
             var landerSizePixels = RescaleUnitsToPixels(LanderSize);
             _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
 
@@ -143,7 +144,7 @@ namespace PhysicsSim
                               _positionRectangle,
                               null,
                               Color.Aqua,
-                              0,
+                              MathHelper.Pi / 2,
                               new Vector2(_texLander.Width / 2, _texLander.Width / 2),
                               SpriteEffects.None,
                               0);
