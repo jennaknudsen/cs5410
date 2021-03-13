@@ -9,11 +9,13 @@ namespace PhysicsSim
     {
         // assets for this demo
         private Texture2D _texLander;
+        private Rectangle _positionRectangle;
         private SpriteFont _spriteFont;
 
         // lander XY position
+        // both represent lander center
         private (int x, int y) _landerPosition;
-        private readonly (int x, int y) _startPosition = (400, 200);
+        private readonly (int x, int y) _startPosition = (500, 100);
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
         private const float MoonGravity = 1.62f;    // m/(s^2)
@@ -29,9 +31,11 @@ namespace PhysicsSim
         private (float x, float y) _velocity;
         private (float x, float y) _force;
 
-        // board size (1000)
+        // sizes in units (1000)
         private const int BoardSize = 1000;
+        private const int LanderSize = 100;
 
+        // MonoGame stuff
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
@@ -45,6 +49,11 @@ namespace PhysicsSim
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            //
+            // _graphics.PreferredBackBufferWidth = 1400;
+            // _graphics.PreferredBackBufferHeight = 700;
+            // _graphics.ApplyChanges();
+
             _acceleration = (0, 0);
             _velocity = (0, 0);
             _force = (0, 0);
@@ -77,7 +86,13 @@ namespace PhysicsSim
              * 2) use kinematic formulas, as well as change in gameTime, to get change in position
              */
 
+            // we need to use kinematic formulas to calculate position using forces
+            (int x, int y) newLanderPosition;
+            //TODO calculate
+            newLanderPosition = _landerPosition;
 
+            // set new lander position
+            _landerPosition = newLanderPosition;
 
 
             base.Update(gameTime);
@@ -103,6 +118,36 @@ namespace PhysicsSim
              *                       float layerDepth) (+ 6 overloads)
              */
 
+            // for debugging purposes, draw the background rectangle
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, 0));
+            var rectSizePixels = RescaleUnitsToPixels(1000);
+            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            var grayTexture = new Texture2D(_graphics.GraphicsDevice, 10, 10);
+            var texData = new Color[10 * 10];
+            for (var i = 0; i < texData.Length; i++)
+                texData[i] = Color.Gray;
+            grayTexture.SetData(texData);
+            _spriteBatch.Draw(grayTexture, backgroundRect, Color.Blue);
+            // delete up to here
+
+            // Draw the lander
+
+            // set lander position rectangle
+            var (landerX, landerY) = GetAbsolutePixelCoordinates((_landerPosition.x - LanderSize / 2,
+                _landerPosition.y - LanderSize / 2));
+            var landerSizePixels = RescaleUnitsToPixels(LanderSize);
+            _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
+
+            // run draw function
+            _spriteBatch.Draw(_texLander,
+                              _positionRectangle,
+                              null,
+                              Color.Aqua,
+                              0,
+                              new Vector2(_texLander.Width / 2, _texLander.Width / 2),
+                              SpriteEffects.None,
+                              0);
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
@@ -126,17 +171,33 @@ namespace PhysicsSim
 
             // get size of playable area
             var sizeOfGameAreaPixels = canvasHeightPixels;
-            var horizontalMarginPixels = (canvasWidthPixels - sizeOfGameAreaPixels) / 2;
 
             // height will be from bottom to top
             // width will be square centered in screen, same dimensions as height
+            var horizontalMarginPixels = (canvasWidthPixels - sizeOfGameAreaPixels) / 2;
 
             // multiply the coordinate (units) by ratio of pixels to units to get pixels
             var (x, y) = relativeCoordinates;
-            var rescaledX = (sizeOfGameAreaPixels / BoardSize) * x + horizontalMarginPixels;
-            var rescaledY = (sizeOfGameAreaPixels / BoardSize) * y;
+            var rescaledX = (int) ((float) sizeOfGameAreaPixels / BoardSize * x + horizontalMarginPixels);
+            var rescaledY = (int) ((float) sizeOfGameAreaPixels / BoardSize * y);
 
             return (rescaledX, rescaledY);
+        }
+
+        // given a unit count, rescale it to pixels
+        private int RescaleUnitsToPixels(int units)
+        {
+            // get absolute pixel dimensions
+            var canvasBounds = GraphicsDevice.Viewport.Bounds;
+            var canvasWidthPixels = canvasBounds.Width;
+            var canvasHeightPixels = canvasBounds.Height;
+
+            // get size of playable area
+            var sizeOfGameAreaPixels = canvasHeightPixels;
+
+            // rescale
+            var rescaledUnits = (int) ((float) sizeOfGameAreaPixels / BoardSize * units);
+            return rescaledUnits;
         }
     }
 }
