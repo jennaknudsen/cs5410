@@ -14,8 +14,8 @@ namespace PhysicsSim
 
         // lander XY position
         // both represent lander center
-        private (int x, int y) _landerPosition;
-        private readonly (int x, int y) _startPosition = (500, 100);
+        private (float x, float y) _landerPosition;
+        private readonly (float x, float y) _startPosition = (75, 100);
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
         private const float MoonGravity = 1.62f;    // m/(s^2)
@@ -23,7 +23,7 @@ namespace PhysicsSim
         // lander mass: https://en.wikipedia.org/wiki/Apollo_Lunar_Module
         private const int LanderMass = 4280;        // kg
 
-        // position: radians (on Cartesian coordinate system)
+        // position: radians (0: north, pi / 2: 3:00 position on clock, etc)
         private float _orientation;
 
         // ship forces and velocities
@@ -32,8 +32,8 @@ namespace PhysicsSim
         private (float x, float y) _force;
 
         // sizes in units (1000)
-        private const int BoardSize = 1000;
-        private const int LanderSize = 100;
+        private const float BoardSize = 1000f;
+        private const float LanderSize = 100f;
 
         // MonoGame stuff
         private GraphicsDeviceManager _graphics;
@@ -57,7 +57,9 @@ namespace PhysicsSim
             _acceleration = (0, 0);
             _velocity = (0, 0);
             _force = (0, 0);
-            _orientation = 90;
+            // TODO change back
+            _orientation = 0;
+            // _orientation = MathHelper.PiOver2;
             _landerPosition = _startPosition;
 
             base.Initialize();
@@ -87,13 +89,48 @@ namespace PhysicsSim
              */
 
             // we need to use kinematic formulas to calculate position using forces
-            (int x, int y) newLanderPosition;
-            //TODO calculate
-            newLanderPosition = _landerPosition;
+            (float x, float y) newLanderPosition;
 
-            // set new lander position
+            // first, calculate forces
+            // Force = mass * acceleration
+            var baseForceX = 0f;
+            var baseForceY = LanderMass * (-1 * MoonGravity);
+
+            // TODO: get thrust forces with some math shit
+            var modForceX = 0f;
+            var modForceY = 0f;
+
+            // add forces together
+            var finalForceX = baseForceX + modForceX;
+            var finalForceY = baseForceY + modForceY;
+
+            // next, calculate acceleration based on force
+            // var baseAccelerationX = 0f;
+            // var baseAccelerationY = -1 * MoonGravity;
+
+            // Acceleration = mass / force
+            var accelerationX = finalForceX / LanderMass;
+            var accelerationY = finalForceY / LanderMass;
+
+            // next, calculate velocity
+            // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
+            // use doubles here for more precision
+            var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
+            var velocityX = _velocity.x + accelerationX * elapsedSeconds;
+            var velocityY = _velocity.y + accelerationY * elapsedSeconds;
+
+            // finally, calculate new position
+            var deltaX = _velocity.x + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
+            var deltaY = _velocity.y + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
+
+            // translate the lander
+            newLanderPosition = (_landerPosition.x + deltaX, _landerPosition.y + deltaY);
             _landerPosition = newLanderPosition;
 
+            // set new force, acceleration, velocity
+            _force = (finalForceX, finalForceY);
+            _velocity = (velocityX, velocityY);
+            _acceleration = (accelerationX, accelerationY);
 
             base.Update(gameTime);
         }
@@ -156,7 +193,7 @@ namespace PhysicsSim
 
         // game board will have relative dimensions in a square
         // this function gets the absolute dimensions
-        private (int x, int y) GetAbsolutePixelCoordinates((int x, int y) relativeCoordinates)
+        private (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
         {
             // keep relative coordinates good
             if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
@@ -186,7 +223,7 @@ namespace PhysicsSim
         }
 
         // given a unit count, rescale it to pixels
-        private int RescaleUnitsToPixels(int units)
+        private int RescaleUnitsToPixels(float units)
         {
             // get absolute pixel dimensions
             var canvasBounds = GraphicsDevice.Viewport.Bounds;
