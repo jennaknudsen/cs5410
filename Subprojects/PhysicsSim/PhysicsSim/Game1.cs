@@ -7,10 +7,30 @@ namespace PhysicsSim
 {
     public class Game1 : Game
     {
-        private Rectangle _rectFreeFall = new Rectangle(150, 150, 100, 100);
-        private Rectangle _rect150_150 = new Rectangle(145, 145, 10, 10);
+        // assets for this demo
         private Texture2D _texLander;
         private SpriteFont _spriteFont;
+
+        // lander XY position
+        private (int x, int y) _landerPosition;
+        private readonly (int x, int y) _startPosition = (400, 200);
+
+        // moon gravity: https://en.wikipedia.org/wiki/Moon
+        private const float MoonGravity = 1.62f;    // m/(s^2)
+
+        // lander mass: https://en.wikipedia.org/wiki/Apollo_Lunar_Module
+        private const int LanderMass = 4280;        // kg
+
+        // position: degrees (on Cartesian coordinate system)
+        private float _orientation;
+
+        // ship forces and velocities
+        private (float x, float y) _acceleration;
+        private (float x, float y) _velocity;
+        private (float x, float y) _force;
+
+        // board size (1000)
+        private const int BoardSize = 1000;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -25,6 +45,11 @@ namespace PhysicsSim
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _acceleration = (0, 0);
+            _velocity = (0, 0);
+            _force = (0, 0);
+            _orientation = 90;
+            _landerPosition = _startPosition;
 
             base.Initialize();
         }
@@ -44,6 +69,16 @@ namespace PhysicsSim
                 Exit();
 
             // TODO: Add your update logic here
+            // CALCULATE NEW SHIP POSITION
+            /*
+             * steps:
+             * 1) calculate all forces
+             * 2)
+             * 2) use kinematic formulas, as well as change in gameTime, to get change in position
+             */
+
+
+
 
             base.Update(gameTime);
         }
@@ -67,75 +102,41 @@ namespace PhysicsSim
              *                       SpriteEffects effects,
              *                       float layerDepth) (+ 6 overloads)
              */
-            var elapsedTime = gameTime.TotalGameTime.Seconds;
-            // every 2 seconds, change position
-            int vectorPos = (elapsedTime % 10d) switch
-            {
-                //0 or 1 => 0,
-                0 => 0,
-                1 => 0,
-                2 => 100,
-                3 => 100,
-                4 => 200,
-                5 => 200,
-                6 => 300,
-                7 => 300,
-                8 => 400,
-                9 => 400,
-                _ => 1000
-
-               // _ => throw new ArgumentOutOfRangeException()
-            };
-
-            var dimen = 400;
-            var grayRect = new Texture2D(_graphics.GraphicsDevice, dimen, dimen);
-            var data2 = new Color[dimen * dimen];
-            for (var i = 0; i < data2.Length; i++)
-            {
-                data2[i] = Color.Gray;
-            }
-            grayRect.SetData(data2);
-
-            _rectFreeFall.X = 150 - (vectorPos / 100 * 30);
-            _rectFreeFall.Y = 150 - (vectorPos / 100 * 30);
-            Console.WriteLine("Rect XY: " + _rectFreeFall.X);
-
-            _spriteBatch.Draw(grayRect,
-                _rectFreeFall,
-                null,
-                Color.Aqua,
-                0,
-                new Vector2(_texLander.Width / 2, _texLander.Height / 2),
-                SpriteEffects.None,
-                0);
-
-            _spriteBatch.Draw(_texLander,
-                _rectFreeFall,
-                null,
-                Color.Aqua,
-                0,
-                new Vector2(vectorPos, vectorPos),
-                SpriteEffects.None,
-                0);
-
-            // this code block draws a 10*10 rectangle
-            // From: https://stackoverflow.com/a/5751867
-            var rect = new Texture2D(_graphics.GraphicsDevice, 5, 5);
-            var data = new Color[5 * 5];
-            for (var i = 0; i < data.Length; i++)
-            {
-                data[i] = Color.Black;
-            }
-            rect.SetData(data);
-            _spriteBatch.Draw(rect, _rect150_150, Color.Aqua);
-
-            _spriteBatch.DrawString(_spriteFont, "Vector position: " + vectorPos + ", " + vectorPos +
-                "\nDimensions: " + dimen + " x " + dimen,
-                new Vector2(400, 400), Color.Black);
 
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        // game board will have relative dimensions in a square
+        // this function gets the absolute dimensions
+        private (int x, int y) GetAbsolutePixelCoordinates((int x, int y) relativeCoordinates)
+        {
+            // keep relative coordinates good
+            if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
+                relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
+            {
+                throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
+            }
+
+            // get absolute pixel dimensions
+            var canvasBounds = GraphicsDevice.Viewport.Bounds;
+            var canvasWidthPixels = canvasBounds.Width;
+            var canvasHeightPixels = canvasBounds.Height;
+
+            // get size of playable area
+            var sizeOfGameAreaPixels = canvasHeightPixels;
+            var horizontalMarginPixels = (canvasWidthPixels - sizeOfGameAreaPixels) / 2;
+
+            // height will be from bottom to top
+            // width will be square centered in screen, same dimensions as height
+
+            // multiply the coordinate (units) by ratio of pixels to units to get pixels
+            var (x, y) = relativeCoordinates;
+            var rescaledX = (sizeOfGameAreaPixels / BoardSize) * x + horizontalMarginPixels;
+            var rescaledY = (sizeOfGameAreaPixels / BoardSize) * y;
+
+            return (rescaledX, rescaledY);
         }
     }
 }
