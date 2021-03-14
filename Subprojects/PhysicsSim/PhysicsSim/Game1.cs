@@ -155,19 +155,6 @@ namespace PhysicsSim
 
             _spriteBatch.Begin();
 
-            /*
-             * using the function SpriteBatch.Draw with following arguments:
-             *
-             * void SpriteBatch.Draw(Texture2D texture,
-             *                       Rectangle destinationRectangle,
-             *                       Rectangle? sourceRectangle,
-             *                       Color color,
-             *                       float rotation,
-             *                       Vector2 origin,
-             *                       SpriteEffects effects,
-             *                       float layerDepth) (+ 6 overloads)
-             */
-
             // for debugging purposes, draw the background square in center of screen
             // get pixel coordinates from board coordinates
             var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
@@ -224,19 +211,17 @@ namespace PhysicsSim
             var canvasWidthPixels = canvasBounds.Width;
             var canvasHeightPixels = canvasBounds.Height;
 
-            // get size of playable area
+            // get size of playable area (will be constrained by height)
             var sizeOfGameAreaPixels = canvasHeightPixels;
 
-            // height will be from bottom to top
             // width will be square centered in screen, same dimensions as height
             var horizontalMarginPixels = (canvasWidthPixels - sizeOfGameAreaPixels) / 2;
 
-            // multiply the coordinate (units) by ratio of pixels to units to get pixels
-            var (x, y) = relativeCoordinates;
-            var rescaledX = (int) (sizeOfGameAreaPixels / BoardSize * x + horizontalMarginPixels);
-            // y coordinate should be inversed (i.e., max unit is at TOP of window, not bottom)
-            var rescaledY = (int) (sizeOfGameAreaPixels / BoardSize * (BoardSize - y));
+            // properly rescale the coordinates to get the correct pixels
+            var rescaledX = RescaleUnitsToPixels(relativeCoordinates.x) + horizontalMarginPixels;
+            var rescaledY = RescaleUnitsToPixels(BoardSize - relativeCoordinates.y);
 
+            // return rescaled coordinates
             return (rescaledX, rescaledY);
         }
 
@@ -244,14 +229,9 @@ namespace PhysicsSim
         private int RescaleUnitsToPixels(float units)
         {
             // get absolute pixel dimensions
-            var canvasBounds = GraphicsDevice.Viewport.Bounds;
-            var canvasWidthPixels = canvasBounds.Width;
-            var canvasHeightPixels = canvasBounds.Height;
+            var sizeOfGameAreaPixels = GraphicsDevice.Viewport.Bounds.Height;
 
-            // get size of playable area
-            var sizeOfGameAreaPixels = canvasHeightPixels;
-
-            // rescale
+            // rescale by ratio of game area in pixels to board size
             var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
             return rescaledUnits;
         }
