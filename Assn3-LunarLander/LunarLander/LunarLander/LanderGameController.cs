@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 
 namespace LunarLander
@@ -49,7 +50,7 @@ namespace LunarLander
         // level 2: one safe zone, 20 meters long
         private void GenerateTerrain(int difficultyLevel)
         {
-            const float maxPointHeight = (BoardSize * 0.8f);
+            const float maxPointHeight = (BoardSize * 0.5f);
             var random = new Random();
 
             // first, generate random point at x=0 and x=maxBoardSize
@@ -129,30 +130,65 @@ namespace LunarLander
             }
 
             // recursively generate terrain levels
-            void GenerateTerrainLevel((float x, float y) start, (float x, float y) end,
-                int recursionDepth, int maxRecursionDepth)
+            void SubdivideSegment((float x, float y) startPoint, (float x, float y) endPoint)
             {
+                // return when x difference in segments is less than 1
+                var (startX, startY) = startPoint;
+                var (endX, endY) = endPoint;
 
+                var diffX = endX - startX;
+                var diffY = endX - startX;
+
+                if (diffX < 1.0)
+                    return;
+
+                // get midpoint of two segments
+                var (midX, midY) = (startX + diffX / 2, startY + diffY / 2);
+
+                // midpoint displacement algorithm
+                // get Gaussian random number with mean 0 and stddev 1, multiply that by rougnness,
+                // then multiply that by difference in X to get the modification factor for the Y coordinate
+                var roughness = 1f;
+                var gaussRandom = GaussianRandom(0, 1);
+                var modY = roughness * gaussRandom * diffX;
+
+                // modify the Y value by this mod factor
+                midY += modY;
+                if (midY < 0)
+                    midY = 0;
+
+                // add new point to the list, then recurse on two new segments
+                TerrainList.Add((midX, midY));
+                SubdivideSegment((startX, startY), (midX, midY));
+                SubdivideSegment((midX, midY), (endX, endY));
             }
-            // generate terrain for each safe zone
-            // TerrainList.Add((0, 40));
-            // TerrainList.Add((3, 20));
-            // TerrainList.Add((7, 4));
-            // TerrainList.Add((10, 50));
-            // TerrainList.Add((20, 100));
-            // TerrainList.Add((30, 120));
-            // TerrainList.Add((40, 95));
-            // TerrainList.Add((50, 76));
-            // TerrainList.Add((60, 52));
-            // TerrainList.Add((70, 30));
-            // TerrainList.Add((80, 11));
-            // TerrainList.Add((90, 5));
-            // TerrainList.Add((100, 18));
-            // TerrainList.Add((110, 22));
-            // TerrainList.Add((120, 22));
-            // TerrainList.Add((130, 22));
-            // TerrainList.Add((140, 43));
-            // TerrainList.Add((150, 73));
+
+            // track which segments we're subdividing
+            var segmentsToSubdivide = new List<((float x, float y) startPoint, (float x, float y) endPoint)>();
+
+            // line segments: from 0 to safezone1, safezone1 to safezone2 (if applicable), safezone2 to end
+            // must ignore all safezone start points
+            for (var i = 0; i < TerrainList.Count - 1; i++)
+            {
+                // tolerance of 0.001 (segments should only be at minimum 1 unit apart)
+                var inSafeZone = SafeZones.Any(sz => Math.Abs(TerrainList[i].x - sz.x_start) < 0.001);
+
+                if (!inSafeZone)
+                {
+                    segmentsToSubdivide.Add((TerrainList[i], TerrainList[i + 1]));
+                }
+            }
+
+            // now, subdivide each segment
+            foreach (var (startPoint, endPoint) in segmentsToSubdivide)
+            {
+                Console.WriteLine("Subdividing segment at: ");
+                Console.WriteLine("Start: " + startPoint + ", end: " + endPoint);
+                SubdivideSegment(startPoint, endPoint);
+            }
+
+            // need to re-order the terrain after drawing
+            TerrainList.Sort((first, second) => first.x.CompareTo(second.x));
 
             TerrainGenerated = true;
             RecalculateTerrain = true;
@@ -166,8 +202,8 @@ namespace LunarLander
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
 
-            // turning rate: pi rads / sec
-            const float turningRate = MathHelper.Pi;
+            // turning rate: 2pi/3 rads / sec
+            const float turningRate = 2 * MathHelper.Pi / 3;
             var newOrientation = Lander.Orientation;
 
             // turn left / right if the buttons are pressed
@@ -237,6 +273,21 @@ namespace LunarLander
             Lander.Velocity = (velocityX, velocityY);
             Lander.Position = newPosition;
             Lander.Orientation = newOrientation;
+        }
+
+        // Got this Gaussian random number generation from:
+        // https://stackoverflow.com/a/218600
+        private static float GaussianRandom(float mean, float stdDev)
+        {
+            var rand = new Random();
+            var u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
+            var u2 = 1.0 - rand.NextDouble();
+            var randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                                   Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            var randNormal =
+                mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+
+            return (float) randNormal;
         }
     }
 }
