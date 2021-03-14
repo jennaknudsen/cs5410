@@ -15,6 +15,10 @@ namespace LunarLander
         private SpriteFont _spriteFont;
         private BasicEffect _basicEffect;
 
+        // stuff for terrain rendering
+        private VertexPositionColor[] _terrainVertexPositionColors;
+        private int[] _terrainIndexArray;
+
         // MonoGame stuff
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -28,9 +32,10 @@ namespace LunarLander
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
-            _graphics.ApplyChanges();
+            // Uncomment to change game render resolution
+            // _graphics.PreferredBackBufferWidth = 1280;
+            // _graphics.PreferredBackBufferHeight = 720;
+            // _graphics.ApplyChanges();
 
             _landerGameController = new LanderGameController();
 
@@ -94,41 +99,22 @@ namespace LunarLander
             // next, draw the terrain (if generated)
             if (_landerGameController.TerrainGenerated)
             {
-
-                // create a list of all vertices in the terrain
-                var terrainVertexList = new List<VertexPositionColor>();
-                foreach (var (x, y) in _landerGameController.TerrainList)
+                // only calculate the terrain once (
+                if (_landerGameController.RecalculateTerrain)
                 {
-                    var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
-                    var (_, scaled0) = GetAbsolutePixelCoordinates((x, 0));
-                    terrainVertexList.Add(new VertexPositionColor
-                    {
-                        Position = new Vector3(scaledX, scaled0, 0),
-                        Color = Color.Black
-                    });
-                    terrainVertexList.Add(new VertexPositionColor
-                    {
-                        Position = new Vector3(scaledX, scaledY, 0),
-                        Color = Color.Black
-                    });
+                    GenerateTerrainVertices();
+                    _landerGameController.RecalculateTerrain = false;
                 }
 
-                // convert list to an array
-                var terrainVertexArray = terrainVertexList.ToArray();
-
-                // create an array of ints in ascending order
-                var indexArray = new int[terrainVertexArray.Length];
-                for (var i = 0; i < indexArray.Length; i++)
-                    indexArray[i] = i;
-
+                // this will draw the terrain polygon itself
                 foreach (EffectPass pass in _basicEffect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
 
                     _graphics.GraphicsDevice.DrawUserIndexedPrimitives(
                         PrimitiveType.TriangleStrip,
-                        terrainVertexArray, 0, terrainVertexArray.Length,
-                        indexArray, 0, indexArray.Length - 2
+                        _terrainVertexPositionColors, 0, _terrainVertexPositionColors.Length,
+                        _terrainIndexArray, 0, _terrainIndexArray.Length - 2
                     );
                 }
             }
@@ -158,6 +144,36 @@ namespace LunarLander
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        // generate the necessary polygon for the terrain
+        private void GenerateTerrainVertices()
+        {
+            // create a list of all vertices in the terrain
+            var terrainVertexList = new List<VertexPositionColor>();
+            foreach (var (x, y) in _landerGameController.TerrainList)
+            {
+                var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
+                var (_, scaled0) = GetAbsolutePixelCoordinates((x, 0));
+                terrainVertexList.Add(new VertexPositionColor
+                {
+                    Position = new Vector3(scaledX, scaled0, 0),
+                    Color = Color.Black
+                });
+                terrainVertexList.Add(new VertexPositionColor
+                {
+                    Position = new Vector3(scaledX, scaledY, 0),
+                    Color = Color.Black
+                });
+            }
+
+            // convert list to an array
+            _terrainVertexPositionColors = terrainVertexList.ToArray();
+
+            // create an array of ints in ascending order
+            _terrainIndexArray = new int[_terrainVertexPositionColors.Length];
+            for (var i = 0; i < _terrainIndexArray.Length; i++)
+                _terrainIndexArray[i] = i;
         }
 
         // game board will have relative dimensions in a square

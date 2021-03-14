@@ -24,6 +24,9 @@ namespace LunarLander
         // whether terrain has been generated or not
         public bool TerrainGenerated = false;
 
+        // whether the LanderGame should recalculate its terrain on the next render cycle
+        public bool RecalculateTerrain = false;
+
         // List<> containing ordered pairs, representing the terrain
         public List<(float x, float y)> TerrainList;
 
@@ -81,6 +84,7 @@ namespace LunarLander
             TerrainList.Add((150, 73));
 
             TerrainGenerated = true;
+            RecalculateTerrain = true;
         }
 
         public void Update(GameTime gameTime)
