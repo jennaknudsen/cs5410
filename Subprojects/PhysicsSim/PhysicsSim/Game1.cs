@@ -57,9 +57,7 @@ namespace PhysicsSim
             _acceleration = (0, 0);
             _velocity = (0, 0);
             _force = (0, 0);
-            // TODO change back
-            _orientation = 0;
-            // _orientation = MathHelper.PiOver2;
+            _orientation = MathHelper.PiOver2;
             _landerPosition = _startPosition;
 
             base.Initialize();
@@ -79,14 +77,26 @@ namespace PhysicsSim
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-            // CALCULATE NEW SHIP POSITION
-            /*
-             * steps:
-             * 1) calculate all forces
-             * 2)
-             * 2) use kinematic formulas, as well as change in gameTime, to get change in position
-             */
+            var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
+
+            // process input
+            var thrusterOn = false;
+            var turnLeft = false;
+            var turnRight = false;
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                thrusterOn = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                turnLeft = true;
+            if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                turnRight = true;
+
+            // turning rate: pi rads / sec
+            var turningRate = MathHelper.Pi;
+            var newOrientation = _orientation;
+            if (turnLeft && !turnRight)
+                newOrientation -= (turningRate * elapsedSeconds);
+            else if (turnRight && !turnLeft)
+                newOrientation += (turningRate * elapsedSeconds);
 
             // we need to use kinematic formulas to calculate position using forces
             (float x, float y) newLanderPosition;
@@ -96,7 +106,11 @@ namespace PhysicsSim
             var baseForceX = 0f;
             var baseForceY = LanderMass * (-1 * MoonGravity);   // gravity force is negative
 
-            // TODO: get thrust forces with some math shit
+            // thrust: 5 m/s^2
+            // F = ma ==> F = 4280 * 5 = 21400 N
+            var thrustForce = 5f;
+
+            // var modForceX = Math.Sin(newOrientation);
             var modForceX = 0f;
             var modForceY = 0f;
 
@@ -105,18 +119,13 @@ namespace PhysicsSim
             var finalForceY = baseForceY + modForceY;
 
             // next, calculate acceleration based on force
-            // a = m/F
+            // a = F/m
             var accelerationX = finalForceX / LanderMass;
             var accelerationY = finalForceY / LanderMass;
 
             // next, calculate velocity
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
-            // use doubles here for more precision TODO change back
             // vf = vo + at
-            // var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000d;
-            var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
-            // var velocityX = _velocity.x + (float) (accelerationX * elapsedSeconds);
-            // var velocityY = _velocity.y + (float) (accelerationY * elapsedSeconds);
             var velocityX = _velocity.x + accelerationX * elapsedSeconds;
             var velocityY = _velocity.y + accelerationY * elapsedSeconds;
 
@@ -129,12 +138,13 @@ namespace PhysicsSim
 
             // translate the lander
             newLanderPosition = (_landerPosition.x + deltaX, _landerPosition.y + deltaY);
-            _landerPosition = newLanderPosition;
 
             // set new force, acceleration, velocity
             _force = (finalForceX, finalForceY);
-            _velocity = (velocityX, velocityY);
             _acceleration = (accelerationX, accelerationY);
+            _velocity = (velocityX, velocityY);
+            _landerPosition = newLanderPosition;
+            _orientation = newOrientation;
 
             base.Update(gameTime);
         }
@@ -185,7 +195,7 @@ namespace PhysicsSim
                               _positionRectangle,
                               null,
                               Color.Aqua,
-                              MathHelper.Pi / 2,
+                              _orientation,
                               new Vector2(_texLander.Width / 2, _texLander.Width / 2),
                               SpriteEffects.None,
                               0);
