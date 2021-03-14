@@ -4,11 +4,15 @@ namespace LunarLander
 {
     public class LanderGameController
     {
-        private Lander _lander;
+        public Lander Lander;
+
+        // moon gravity: https://en.wikipedia.org/wiki/Moon
+        private const float MoonGravity = 1.62f;    // m/(s^2)
+        private readonly (float x, float y) _startPosition = (10, 130);
 
         public LanderGameController()
         {
-            _lander = new Lander();
+            Lander = new Lander();
         }
 
         public void Update(GameTime gameTime)
