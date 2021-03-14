@@ -1,6 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace LunarLander
 {
@@ -13,12 +13,10 @@ namespace LunarLander
         private Texture2D _texLander;
         private Rectangle _positionRectangle;
         private SpriteFont _spriteFont;
-
-        // size of board in units
-        private const float BoardSize = 150f;
+        private BasicEffect _basicEffect;
 
         // MonoGame stuff
-        private GraphicsDeviceManager _graphics;
+        private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         public LanderGame()
@@ -31,6 +29,21 @@ namespace LunarLander
         protected override void Initialize()
         {
             _landerGameController = new LanderGameController();
+
+            _graphics.GraphicsDevice.RasterizerState = new RasterizerState
+            {
+                FillMode = FillMode.Solid,
+                CullMode = CullMode.CullCounterClockwiseFace,   // CullMode.None If you want to not worry about triangle winding order
+                MultiSampleAntiAlias = true,
+            };
+
+            _basicEffect = new BasicEffect(_graphics.GraphicsDevice)
+            {
+                VertexColorEnabled = true,
+                View = Matrix.CreateLookAt(new Vector3(0.0f, 0.0f, 1.0f), Vector3.Zero, Vector3.Up),
+                Projection = Matrix.CreatePerspectiveOffCenter(0.0f, _graphics.GraphicsDevice.Viewport.Width,
+                    _graphics.GraphicsDevice.Viewport.Height, 0, 1.0f, 1000.0f)
+            };
 
             base.Initialize();
         }
@@ -59,8 +72,8 @@ namespace LunarLander
 
             // for debugging purposes, draw the background square in center of screen
             // get pixel coordinates from board coordinates
-            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
-            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, LanderGameController.BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(LanderGameController.BoardSize);
             // create the MG Rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             // make a generic Gray texture
@@ -70,6 +83,42 @@ namespace LunarLander
                 texData[i] = Color.Gray;
             grayTexture.SetData(texData);
             _spriteBatch.Draw(grayTexture, backgroundRect, Color.Gray);
+
+            // next, draw the terrain (if generated)
+            if (_landerGameController.TerrainGenerated)
+            {
+
+                // create a list of all vertices in the terrain
+                var terrainVertexList = new List<VertexPositionColor>();
+                foreach (var (x, y) in _landerGameController.TerrainList)
+                {
+                    var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
+                    terrainVertexList.Add(new VertexPositionColor()
+                    {
+                        Position = new Vector3(scaledX, scaledY, 0),
+                        Color = Color.White
+                    });
+                }
+
+                // convert list to an array
+                var terrainVertexArray = terrainVertexList.ToArray();
+
+                // create an array of ints in ascending order
+                var indexArray = new int[terrainVertexArray.Length];
+                for (var i = 0; i < indexArray.Length; i++)
+                    indexArray[i] = i;
+
+                foreach (EffectPass pass in _basicEffect.CurrentTechnique.Passes)
+                {
+                    pass.Apply();
+
+                    _graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                        PrimitiveType.LineStrip,
+                        terrainVertexArray, 0, terrainVertexArray.Length,
+                        indexArray, 0, indexArray.Length - 1
+                    );
+                }
+            }
 
             // Now, draw the lander
 
@@ -102,8 +151,8 @@ namespace LunarLander
         private (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
         {
             // keep relative coordinates good
-            if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
-                relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
+            if (relativeCoordinates.x < 0 || relativeCoordinates.x > LanderGameController.BoardSize ||
+                relativeCoordinates.y < 0 || relativeCoordinates.y > LanderGameController.BoardSize)
             {
                 // uncomment this line if we want to force spaceship to stay in safe area
                 // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
@@ -122,7 +171,7 @@ namespace LunarLander
 
             // properly rescale the coordinates to get the correct pixels
             var rescaledX = RescaleUnitsToPixels(relativeCoordinates.x) + horizontalMarginPixels;
-            var rescaledY = RescaleUnitsToPixels(BoardSize - relativeCoordinates.y);
+            var rescaledY = RescaleUnitsToPixels(LanderGameController.BoardSize - relativeCoordinates.y);
 
             // return rescaled coordinates
             return (rescaledX, rescaledY);
@@ -135,7 +184,7 @@ namespace LunarLander
             var sizeOfGameAreaPixels = GraphicsDevice.Viewport.Bounds.Height;
 
             // rescale by ratio of game area in pixels to board size
-            var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
+            var rescaledUnits = (int) (sizeOfGameAreaPixels / LanderGameController.BoardSize * units);
             return rescaledUnits;
         }
     }

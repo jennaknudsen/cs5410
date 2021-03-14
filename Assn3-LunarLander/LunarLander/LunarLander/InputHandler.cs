@@ -10,7 +10,7 @@ namespace LunarLander
         public readonly Button TurnShipRightButton;
         public readonly Button ThrustUpButton;
 
-        private List<Button> _listOfButtons;
+        private readonly List<Button> _listOfButtons;
 
         public InputHandler()
         {

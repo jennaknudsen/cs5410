@@ -1,11 +1,15 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
 namespace LunarLander
 {
     public class LanderGameController
     {
+        // the lander object for this game
         public Lander Lander;
+
+        // the input handler that handles keyboard input
         private readonly InputHandler _inputHandler;
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
@@ -14,10 +18,69 @@ namespace LunarLander
         // lander start position
         private readonly (float x, float y) _startPosition = (10, 130);
 
+        // the board size in units (and meters)
+        public const float BoardSize = 150f;
+
+        // whether terrain has been generated or not
+        public bool TerrainGenerated = false;
+
+        // List<> containing ordered pairs, representing the terrain
+        public List<(float x, float y)> TerrainList;
+
+        // holds the safe zone information
+        public List<(float x_start, float x_stop)> SafeZones;
+
         public LanderGameController()
         {
             Lander = new Lander(_startPosition);
             _inputHandler = new InputHandler();
+            TerrainList = new List<(float x, float y)>();
+            SafeZones = new List<(float x_start, float x_stop)>();
+
+            // TODO move this somewhere else?
+            GenerateTerrain(1);
+        }
+
+
+        // level 1: two safe zones, each 30 meters long
+        // level 2: one safe zone, 20 meters long
+        private void GenerateTerrain(int difficultyLevel)
+        {
+            var safeZoneLength = difficultyLevel switch
+            {
+                1 => 30,
+                2 => 20,
+                _ => throw new ArgumentOutOfRangeException(nameof(difficultyLevel), difficultyLevel, null)
+            };
+
+            // safe zones must be 15% from the border
+            var safeStart = 0.15f * BoardSize;
+            var safeStop = BoardSize - 0.15f * BoardSize - safeZoneLength;
+
+            // TODO finish terrain generation
+            // var numSafeZonesToGen = difficultyLevel;
+            // while (numSafeZonesToGen > 0)
+            // {
+            //     // generate terrain for each safe zone
+            // }
+            TerrainList.Add((0, 40));
+            TerrainList.Add((10, 50));
+            TerrainList.Add((20, 100));
+            TerrainList.Add((30, 120));
+            TerrainList.Add((40, 95));
+            TerrainList.Add((50, 76));
+            TerrainList.Add((60, 52));
+            TerrainList.Add((70, 30));
+            TerrainList.Add((80, 11));
+            TerrainList.Add((90, 5));
+            TerrainList.Add((100, 18));
+            TerrainList.Add((110, 22));
+            TerrainList.Add((120, 22));
+            TerrainList.Add((130, 22));
+            TerrainList.Add((140, 43));
+            TerrainList.Add((150, 73));
+
+            TerrainGenerated = true;
         }
 
         public void Update(GameTime gameTime)
@@ -76,7 +139,7 @@ namespace LunarLander
             var finalForceY = baseForceY + modForceY;
 
             // next, calculate acceleration from the force
-            // F = ma ==> a = F/m
+            // F = ma =6=> a = F/m
             var accelerationX = finalForceX / Lander.Mass;
             var accelerationY = finalForceY / Lander.Mass;
 

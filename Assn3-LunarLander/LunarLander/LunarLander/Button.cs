@@ -6,10 +6,10 @@ namespace LunarLander
     {
         // whether this key should send a Pressed signal or not
         // only the Button itself should be able to set the Pressed property
-        public bool Pressed { get; private set; } = false;
+        public bool Pressed { get; private set; }
 
         // whether the button state is currently pressed or not
-        private bool _buttonIsPressed = false;
+        private bool _buttonIsPressed;
 
         // whether this button needs to be debounced or not
         private readonly bool _isDebouncingButton;
