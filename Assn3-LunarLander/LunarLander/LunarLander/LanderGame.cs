@@ -146,31 +146,34 @@ namespace LunarLander
             base.Draw(gameTime);
         }
 
-        // generate the necessary polygon for the terrain
+        // generate the necessary polygon vertices for the terrain
         private void GenerateTerrainVertices()
         {
             // create a list of all vertices in the terrain
             var terrainVertexList = new List<VertexPositionColor>();
             foreach (var (x, y) in _landerGameController.TerrainList)
             {
+                // get pixel coordinates
                 var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
                 var (_, scaled0) = GetAbsolutePixelCoordinates((x, 0));
+
+                // add two new vertices: one at zero Y value, one at correct Y value
                 terrainVertexList.Add(new VertexPositionColor
                 {
                     Position = new Vector3(scaledX, scaled0, 0),
-                    Color = Color.Black
+                    Color = Color.LightGray
                 });
                 terrainVertexList.Add(new VertexPositionColor
                 {
                     Position = new Vector3(scaledX, scaledY, 0),
-                    Color = Color.Black
+                    Color = Color.LightGray
                 });
             }
 
-            // convert list to an array
+            // store this list of vertices as an array (to be used by Draw())
             _terrainVertexPositionColors = terrainVertexList.ToArray();
 
-            // create an array of ints in ascending order
+            // create an array of ints in ascending order (to be used by Draw())
             _terrainIndexArray = new int[_terrainVertexPositionColors.Length];
             for (var i = 0; i < _terrainIndexArray.Length; i++)
                 _terrainIndexArray[i] = i;

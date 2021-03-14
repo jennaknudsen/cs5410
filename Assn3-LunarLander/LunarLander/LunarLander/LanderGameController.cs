@@ -45,25 +45,24 @@ namespace LunarLander
             GenerateTerrain(1);
         }
 
-
-        // level 1: two safe zones, each 30 meters long
-        // level 2: one safe zone, 20 meters long
+        // level 1: two safe zones, each 2x the length of the ship
+        // level 2: one safe zone, 1.5x length of the ship
         private void GenerateTerrain(int difficultyLevel)
         {
-            const float maxPointHeight = (BoardSize * 0.5f);
-            var random = new Random();
+            // keep height within 80% of the top
+            const float maxPointHeight = (BoardSize * 0.8f);
 
             // first, generate random point at x=0 and x=maxBoardSize
+            var random = new Random();
             TerrainList.Add((0, (float) (random.NextDouble() * maxPointHeight)));
             TerrainList.Add((BoardSize, (float) (random.NextDouble() * maxPointHeight)));
 
             // next, generate safe zones
-
             // safe zones depend on difficulty level
             var safeZoneLength = difficultyLevel switch
             {
-                1 => Lander.Size * 2,
-                2 => Lander.Size * (4f / 3),
+                1 => Lander.Size * 2.5f,
+                2 => Lander.Size * 1.5f,
                 _ => throw new ArgumentOutOfRangeException(nameof(difficultyLevel), difficultyLevel, null)
             };
 
@@ -93,10 +92,10 @@ namespace LunarLander
                     // not a valid safezone if either start or end lies within 0.1 of the
                     // boundaries of a safezone
                     // this will stop safezones from generating right next to each other
-                    if (xStart - (safeZoneLength * 0.1) < thisStart &&
-                        xStop + (safeZoneLength * 0.1) > thisStart ||
-                        xStart - (safeZoneLength * 0.1) < thisStop &&
-                        xStop + (safeZoneLength * 0.1) > thisStop)
+                    if (xStart - safeZoneLength * 0.1 < thisStart &&
+                        xStop + safeZoneLength * 0.1 > thisStart ||
+                        xStart - safeZoneLength * 0.1 < thisStop &&
+                        xStop + safeZoneLength * 0.1 > thisStop)
                     {
                         isValid = false;
                         break;
@@ -108,6 +107,10 @@ namespace LunarLander
                 {
                     // get a random height for the safezone
                     var height = (float) random.NextDouble() * maxPointHeight;
+
+                    // minimum height is 5
+                    if (height < 5)
+                        height = 5;
 
                     // add both safezone points to the terrain list
                     TerrainList.Add((thisStart, height));
@@ -123,41 +126,43 @@ namespace LunarLander
             TerrainList.Sort((first, second) => first.x.CompareTo(second.x));
             SafeZones.Sort((first, second) => first.x_start.CompareTo(second.x_start));
 
-            Console.WriteLine("Safezones:");
-            foreach (var (xStart, xStop) in SafeZones)
-            {
-                Console.WriteLine("start: " + xStart + ", stop: " + xStop);
-            }
-
-            // recursively generate terrain levels
+            // inner function used to recursively generate terrain levels
             void SubdivideSegment((float x, float y) startPoint, (float x, float y) endPoint)
             {
-                // return when x difference in segments is less than 1
                 var (startX, startY) = startPoint;
                 var (endX, endY) = endPoint;
 
+                // calculate differences between two points
                 var diffX = endX - startX;
-                var diffY = endX - startX;
+                var diffY = endY - startY;
 
-                if (diffX < 1.0)
+                // return when x difference in segments is less than 1
+                if (diffX < 1f)
                     return;
 
                 // get midpoint of two segments
                 var (midX, midY) = (startX + diffX / 2, startY + diffY / 2);
 
+                // can adjust this to get rougher / smoother terrain
+                // roughness of 0 is perfect straight lines
+                const float roughness = 0.7f;
+
                 // midpoint displacement algorithm
-                // get Gaussian random number with mean 0 and stddev 1, multiply that by rougnness,
+                // get Gaussian random number with mean 0 and std dev 1, multiply that by roughness,
                 // then multiply that by difference in X to get the modification factor for the Y coordinate
-                var roughness = 1f;
                 var gaussRandom = GaussianRandom(0, 1);
                 var modY = roughness * gaussRandom * diffX;
 
-                // modify the Y value by this mod factor
+                // modify the midpoint Y value by this mod factor
                 midY += modY;
+
+                // keep height within bounds
                 if (midY < 0)
                     midY = 0;
+                else if (midY > maxPointHeight)
+                    midY = maxPointHeight;
 
-                // add new point to the list, then recurse on two new segments
+                // add this new point to the list, then recurse on two new segments
                 TerrainList.Add((midX, midY));
                 SubdivideSegment((startX, startY), (midX, midY));
                 SubdivideSegment((midX, midY), (endX, endY));
@@ -166,13 +171,14 @@ namespace LunarLander
             // track which segments we're subdividing
             var segmentsToSubdivide = new List<((float x, float y) startPoint, (float x, float y) endPoint)>();
 
-            // line segments: from 0 to safezone1, safezone1 to safezone2 (if applicable), safezone2 to end
-            // must ignore all safezone start points
+            // line segments: from 0 to first safezone, between safezones, last safezone to end
             for (var i = 0; i < TerrainList.Count - 1; i++)
             {
+                // don't want to add a line segment that begins at the beginning of a safezone
                 // tolerance of 0.001 (segments should only be at minimum 1 unit apart)
                 var inSafeZone = SafeZones.Any(sz => Math.Abs(TerrainList[i].x - sz.x_start) < 0.001);
 
+                // if not in the safezone, then add this segment
                 if (!inSafeZone)
                 {
                     segmentsToSubdivide.Add((TerrainList[i], TerrainList[i + 1]));
@@ -182,14 +188,14 @@ namespace LunarLander
             // now, subdivide each segment
             foreach (var (startPoint, endPoint) in segmentsToSubdivide)
             {
-                Console.WriteLine("Subdividing segment at: ");
-                Console.WriteLine("Start: " + startPoint + ", end: " + endPoint);
                 SubdivideSegment(startPoint, endPoint);
             }
 
-            // need to re-order the terrain after drawing
+            // need to re-order the terrain after subdivision
+            // this will keep the terrain in the correct order for drawing
             TerrainList.Sort((first, second) => first.x.CompareTo(second.x));
 
+            // flags that terrain is now generated
             TerrainGenerated = true;
             RecalculateTerrain = true;
         }
