@@ -1,6 +1,8 @@
+using Microsoft.Xna.Framework;
+
 namespace LunarLander
 {
-    public struct Lander
+    public class Lander
     {
         // lander mass: https://en.wikipedia.org/wiki/Apollo_Lunar_Module
         public const int Mass = 4280;       // kg
@@ -14,5 +16,17 @@ namespace LunarLander
 
         // Lander size: 15 x 15 meters
         public const float Size = 15f;
+
+        public Lander((float x, float y) position)
+        {
+            // Rotated pi/2 to the right initially
+            Orientation = MathHelper.PiOver2;
+
+            // no initial velocity
+            Velocity = (0, 0);
+
+            // initial position in game units is from constructor argument
+            Position = position;
+        }
     }
 }
