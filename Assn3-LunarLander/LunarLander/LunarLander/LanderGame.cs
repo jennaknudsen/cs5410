@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Input;
 
 namespace LunarLander
 {
-    public class Game1 : Game
+    public class LanderGame : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        public Game1()
+        public LanderGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
