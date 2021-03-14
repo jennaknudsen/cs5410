@@ -14,8 +14,8 @@ namespace LunarLander
         public (float x, float y) Velocity;
         public (float x, float y) Position;
 
-        // Lander size: 15 x 15 meters
-        public const float Size = 15f;
+        // Lander size: 7x7 meters
+        public const float Size = 7f;
 
         public Lander((float x, float y) position)
         {

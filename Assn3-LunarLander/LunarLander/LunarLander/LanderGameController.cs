@@ -16,10 +16,10 @@ namespace LunarLander
         private const float MoonGravity = 1.62f;    // m/(s^2)
 
         // lander start position
-        private readonly (float x, float y) _startPosition = (10, 130);
+        private readonly (float x, float y) _startPosition = (10, 90);
 
         // the board size in units (and meters)
-        public const float BoardSize = 150f;
+        public const float BoardSize = 100f;
 
         // whether terrain has been generated or not
         public bool TerrainGenerated = false;
@@ -49,39 +49,110 @@ namespace LunarLander
         // level 2: one safe zone, 20 meters long
         private void GenerateTerrain(int difficultyLevel)
         {
+            const float maxPointHeight = (BoardSize * 0.8f);
+            var random = new Random();
+
+            // first, generate random point at x=0 and x=maxBoardSize
+            TerrainList.Add((0, (float) (random.NextDouble() * maxPointHeight)));
+            TerrainList.Add((BoardSize, (float) (random.NextDouble() * maxPointHeight)));
+
+            // next, generate safe zones
+
+            // safe zones depend on difficulty level
             var safeZoneLength = difficultyLevel switch
             {
-                1 => 30,
-                2 => 20,
+                1 => Lander.Size * 2,
+                2 => Lander.Size * (4f / 3),
                 _ => throw new ArgumentOutOfRangeException(nameof(difficultyLevel), difficultyLevel, null)
             };
 
             // safe zones must be 15% from the border
-            var safeStart = 0.15f * BoardSize;
-            var safeStop = BoardSize - 0.15f * BoardSize - safeZoneLength;
+            var safeStart = (int) (0.15f * BoardSize);
+            var safeStop = (int) (BoardSize - 0.15f * BoardSize - safeZoneLength);
 
-            // TODO finish terrain generation
-            // var numSafeZonesToGen = difficultyLevel;
-            // while (numSafeZonesToGen > 0)
-            // {
-            //     // generate terrain for each safe zone
-            // }
-            TerrainList.Add((0, 40));
-            TerrainList.Add((10, 50));
-            TerrainList.Add((20, 100));
-            TerrainList.Add((30, 120));
-            TerrainList.Add((40, 95));
-            TerrainList.Add((50, 76));
-            TerrainList.Add((60, 52));
-            TerrainList.Add((70, 30));
-            TerrainList.Add((80, 11));
-            TerrainList.Add((90, 5));
-            TerrainList.Add((100, 18));
-            TerrainList.Add((110, 22));
-            TerrainList.Add((120, 22));
-            TerrainList.Add((130, 22));
-            TerrainList.Add((140, 43));
-            TerrainList.Add((150, 73));
+            var numSafeZonesToGen = difficultyLevel switch
+            {
+                1 => 2,
+                2 => 1,
+                _ => throw new ArgumentOutOfRangeException(nameof(difficultyLevel), difficultyLevel, null)
+            };
+
+            // generate all needed safe zones
+            while (numSafeZonesToGen > 0)
+            {
+                // attempt to generate a new safezone within board bounds
+                var thisStart = random.Next(safeStart, safeStop);
+                var thisStop = thisStart + safeZoneLength;
+
+                var isValid = true;
+
+                // check validity
+                foreach (var (xStart, xStop) in SafeZones)
+                {
+                    // not a valid safezone if either start or end lies within 0.1 of the
+                    // boundaries of a safezone
+                    // this will stop safezones from generating right next to each other
+                    if (xStart - (safeZoneLength * 0.1) < thisStart &&
+                        xStop + (safeZoneLength * 0.1) > thisStart ||
+                        xStart - (safeZoneLength * 0.1) < thisStop &&
+                        xStop + (safeZoneLength * 0.1) > thisStop)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
+
+                // add this safe zone if it's valid
+                if (isValid)
+                {
+                    // get a random height for the safezone
+                    var height = (float) random.NextDouble() * maxPointHeight;
+
+                    // add both safezone points to the terrain list
+                    TerrainList.Add((thisStart, height));
+                    TerrainList.Add((thisStop, height));
+
+                    // add this range to safezones list
+                    SafeZones.Add((thisStart, thisStop));
+                    numSafeZonesToGen--;
+                }
+            }
+
+            // order safe zones and terrain by x coordinates
+            TerrainList.Sort((first, second) => first.x.CompareTo(second.x));
+            SafeZones.Sort((first, second) => first.x_start.CompareTo(second.x_start));
+
+            Console.WriteLine("Safezones:");
+            foreach (var (xStart, xStop) in SafeZones)
+            {
+                Console.WriteLine("start: " + xStart + ", stop: " + xStop);
+            }
+
+            // recursively generate terrain levels
+            void GenerateTerrainLevel((float x, float y) start, (float x, float y) end,
+                int recursionDepth, int maxRecursionDepth)
+            {
+
+            }
+            // generate terrain for each safe zone
+            // TerrainList.Add((0, 40));
+            // TerrainList.Add((3, 20));
+            // TerrainList.Add((7, 4));
+            // TerrainList.Add((10, 50));
+            // TerrainList.Add((20, 100));
+            // TerrainList.Add((30, 120));
+            // TerrainList.Add((40, 95));
+            // TerrainList.Add((50, 76));
+            // TerrainList.Add((60, 52));
+            // TerrainList.Add((70, 30));
+            // TerrainList.Add((80, 11));
+            // TerrainList.Add((90, 5));
+            // TerrainList.Add((100, 18));
+            // TerrainList.Add((110, 22));
+            // TerrainList.Add((120, 22));
+            // TerrainList.Add((130, 22));
+            // TerrainList.Add((140, 43));
+            // TerrainList.Add((150, 73));
 
             TerrainGenerated = true;
             RecalculateTerrain = true;

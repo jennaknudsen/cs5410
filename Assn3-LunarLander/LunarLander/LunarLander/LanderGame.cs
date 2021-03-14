@@ -99,7 +99,7 @@ namespace LunarLander
             // next, draw the terrain (if generated)
             if (_landerGameController.TerrainGenerated)
             {
-                // only calculate the terrain once (
+                // only calculate the terrain once
                 if (_landerGameController.RecalculateTerrain)
                 {
                     GenerateTerrainVertices();
@@ -107,7 +107,7 @@ namespace LunarLander
                 }
 
                 // this will draw the terrain polygon itself
-                foreach (EffectPass pass in _basicEffect.CurrentTechnique.Passes)
+                foreach (var pass in _basicEffect.CurrentTechnique.Passes)
                 {
                     pass.Apply();
 
