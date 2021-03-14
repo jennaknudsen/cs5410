@@ -14,7 +14,6 @@ namespace PhysicsSim
 
         // lander XY position
         // both represent lander center
-        private (float x, float y) _landerPosition;
         private readonly (float x, float y) _startPosition = (10, 130);
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
@@ -26,14 +25,13 @@ namespace PhysicsSim
         // position: radians (0: north, pi / 2: 3:00 position on clock, etc)
         private float _orientation;
 
-        // ship forces and velocities
-        private (float x, float y) _acceleration;
+        // need to track lander velocity and position
         private (float x, float y) _velocity;
-        private (float x, float y) _force;
+        private (float x, float y) _position;
 
         // sizes in units (board size: 150x150 units (meters), lander: 10x10 units (meters))
         private const float BoardSize = 150f;
-        private const float LanderSize = 10f;
+        private const float LanderSize = 15f;
 
         // MonoGame stuff
         private GraphicsDeviceManager _graphics;
@@ -48,17 +46,9 @@ namespace PhysicsSim
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-            //
-            // _graphics.PreferredBackBufferWidth = 1400;
-            // _graphics.PreferredBackBufferHeight = 700;
-            // _graphics.ApplyChanges();
-
-            _acceleration = (0, 0);
             _velocity = (0, 0);
-            _force = (0, 0);
             _orientation = MathHelper.PiOver2;
-            _landerPosition = _startPosition;
+            _position = _startPosition;
 
             base.Initialize();
         }
@@ -67,7 +57,6 @@ namespace PhysicsSim
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
             _texLander = this.Content.Load<Texture2D>("Images/Lander-2");
             _spriteFont = this.Content.Load<SpriteFont>("GameFont");
         }
@@ -77,6 +66,7 @@ namespace PhysicsSim
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
 
             // process input
@@ -91,7 +81,7 @@ namespace PhysicsSim
                 turnRight = true;
 
             // turning rate: pi rads / sec
-            var turningRate = MathHelper.Pi;
+            const float turningRate = MathHelper.Pi;
             var newOrientation = _orientation;
             if (turnLeft && !turnRight)
                 newOrientation -= (turningRate * elapsedSeconds);
@@ -99,32 +89,44 @@ namespace PhysicsSim
                 newOrientation += (turningRate * elapsedSeconds);
 
             // we need to use kinematic formulas to calculate position using forces
-            (float x, float y) newLanderPosition;
-
             // first, calculate forces
             // F = ma
-            var baseForceX = 0f;
-            var baseForceY = LanderMass * (-1 * MoonGravity);   // gravity force is negative
+            const float baseForceX = 0f;
+            const float baseForceY = LanderMass * (-1 * MoonGravity);       // gravity force is negative
 
             // thrust: 5 m/s^2
             // F = ma ==> F = 4280 * 5 = 21400 N
-            var thrustForce = 5f;
+            const float thrustAcceleration = 5f;
+            const float thrustForce = LanderMass * thrustAcceleration;
 
-            // var modForceX = Math.Sin(newOrientation);
+            // additional x / y forces from the thruster
             var modForceX = 0f;
             var modForceY = 0f;
 
-            // add forces together
+            if (thrusterOn)
+            {
+                // because of the way MonoGame uses radians, we need to do some conversion here
+                // Cartesian radians: 0, pi/2, pi, 3pi/2 (x, y, -x, -y directions)
+                // MonoGame radians: pi/2, 0, 3pi/2, pi  (x, y, -x, -y directions)
+                // convert MG radians to standard:
+                // standard_radians = -(MonoGame radians) + pi/2
+                var cartesianOrientation = -1 * newOrientation + MathHelper.PiOver2;
+
+                // Force equations: multiply total force by sin / cos theta to get x / y component
+                modForceX = thrustForce * (float) Math.Cos(cartesianOrientation);
+                modForceY = thrustForce * (float) Math.Sin(cartesianOrientation);
+            }
+
+            // add forces together to get final x/y forces
             var finalForceX = baseForceX + modForceX;
             var finalForceY = baseForceY + modForceY;
 
-            // next, calculate acceleration based on force
-            // a = F/m
+            // next, calculate acceleration from the force
+            // F = ma ==> a = F/m
             var accelerationX = finalForceX / LanderMass;
             var accelerationY = finalForceY / LanderMass;
 
             // next, calculate velocity
-            // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             // vf = vo + at
             var velocityX = _velocity.x + accelerationX * elapsedSeconds;
             var velocityY = _velocity.y + accelerationY * elapsedSeconds;
@@ -137,13 +139,11 @@ namespace PhysicsSim
                          + 0.5f * accelerationY * (float) Math.Pow(elapsedSeconds, 2);
 
             // translate the lander
-            newLanderPosition = (_landerPosition.x + deltaX, _landerPosition.y + deltaY);
+            (float x, float y) newPosition = (_position.x + deltaX, _position.y + deltaY);
 
             // set new force, acceleration, velocity
-            _force = (finalForceX, finalForceY);
-            _acceleration = (accelerationX, accelerationY);
             _velocity = (velocityX, velocityY);
-            _landerPosition = newLanderPosition;
+            _position = newPosition;
             _orientation = newOrientation;
 
             base.Update(gameTime);
@@ -153,7 +153,6 @@ namespace PhysicsSim
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
 
             /*
@@ -169,24 +168,26 @@ namespace PhysicsSim
              *                       float layerDepth) (+ 6 overloads)
              */
 
-            // for debugging purposes, draw the background rectangle
+            // for debugging purposes, draw the background square in center of screen
+            // get pixel coordinates from board coordinates
             var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
             var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            // create the MG Rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            // make a generic Gray texture
             var grayTexture = new Texture2D(_graphics.GraphicsDevice, 10, 10);
             var texData = new Color[10 * 10];
             for (var i = 0; i < texData.Length; i++)
                 texData[i] = Color.Gray;
             grayTexture.SetData(texData);
-            _spriteBatch.Draw(grayTexture, backgroundRect, Color.Blue);
-            // delete up to here
+            _spriteBatch.Draw(grayTexture, backgroundRect, Color.Gray);
 
-            // Draw the lander
+            // Now, draw the lander
 
             // set lander position rectangle
-            // sets the top left of lander (we are re-moving the texture in the Draw() function)
-            var (landerX, landerY) = GetAbsolutePixelCoordinates((_landerPosition.x,
-                _landerPosition.y));
+            // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
+            var (landerX, landerY) = GetAbsolutePixelCoordinates((_position.x,
+                _position.y));
             var landerSizePixels = RescaleUnitsToPixels(LanderSize);
             _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
 
@@ -196,6 +197,7 @@ namespace PhysicsSim
                               null,
                               Color.Aqua,
                               _orientation,
+                              // center origin in the texture
                               new Vector2(_texLander.Width / 2, _texLander.Width / 2),
                               SpriteEffects.None,
                               0);
@@ -213,6 +215,7 @@ namespace PhysicsSim
             if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
                 relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
             {
+                // uncomment this line if we want to force spaceship to stay in safe area
                 // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
             }
 
