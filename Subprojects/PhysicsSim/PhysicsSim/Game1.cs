@@ -15,7 +15,7 @@ namespace PhysicsSim
         // lander XY position
         // both represent lander center
         private (float x, float y) _landerPosition;
-        private readonly (float x, float y) _startPosition = (75, 100);
+        private readonly (float x, float y) _startPosition = (10, 130);
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
         private const float MoonGravity = 1.62f;    // m/(s^2)
@@ -31,9 +31,9 @@ namespace PhysicsSim
         private (float x, float y) _velocity;
         private (float x, float y) _force;
 
-        // sizes in units (1000)
-        private const float BoardSize = 1000f;
-        private const float LanderSize = 100f;
+        // sizes in units (board size: 150x150 units (meters), lander: 10x10 units (meters))
+        private const float BoardSize = 150f;
+        private const float LanderSize = 10f;
 
         // MonoGame stuff
         private GraphicsDeviceManager _graphics;
@@ -92,9 +92,9 @@ namespace PhysicsSim
             (float x, float y) newLanderPosition;
 
             // first, calculate forces
-            // Force = mass * acceleration
+            // F = ma
             var baseForceX = 0f;
-            var baseForceY = LanderMass * (-1 * MoonGravity);
+            var baseForceY = LanderMass * (-1 * MoonGravity);   // gravity force is negative
 
             // TODO: get thrust forces with some math shit
             var modForceX = 0f;
@@ -105,23 +105,27 @@ namespace PhysicsSim
             var finalForceY = baseForceY + modForceY;
 
             // next, calculate acceleration based on force
-            // var baseAccelerationX = 0f;
-            // var baseAccelerationY = -1 * MoonGravity;
-
-            // Acceleration = mass / force
+            // a = m/F
             var accelerationX = finalForceX / LanderMass;
             var accelerationY = finalForceY / LanderMass;
 
             // next, calculate velocity
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
-            // use doubles here for more precision
+            // use doubles here for more precision TODO change back
+            // vf = vo + at
+            // var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000d;
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
+            // var velocityX = _velocity.x + (float) (accelerationX * elapsedSeconds);
+            // var velocityY = _velocity.y + (float) (accelerationY * elapsedSeconds);
             var velocityX = _velocity.x + accelerationX * elapsedSeconds;
             var velocityY = _velocity.y + accelerationY * elapsedSeconds;
 
             // finally, calculate new position
-            var deltaX = _velocity.x + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
-            var deltaY = _velocity.y + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
+            // deltaPos = vt + (1/2)at^2
+            var deltaX = _velocity.x * elapsedSeconds
+                         + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
+            var deltaY = _velocity.y * elapsedSeconds
+                         + 0.5f * accelerationY * (float) Math.Pow(elapsedSeconds, 2);
 
             // translate the lander
             newLanderPosition = (_landerPosition.x + deltaX, _landerPosition.y + deltaY);
@@ -156,8 +160,8 @@ namespace PhysicsSim
              */
 
             // for debugging purposes, draw the background rectangle
-            var (backX, backY) = GetAbsolutePixelCoordinates((0, 0));
-            var rectSizePixels = RescaleUnitsToPixels(1000);
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             var grayTexture = new Texture2D(_graphics.GraphicsDevice, 10, 10);
             var texData = new Color[10 * 10];
@@ -199,7 +203,7 @@ namespace PhysicsSim
             if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
                 relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
             {
-                throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
+                // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
             }
 
             // get absolute pixel dimensions
@@ -216,8 +220,9 @@ namespace PhysicsSim
 
             // multiply the coordinate (units) by ratio of pixels to units to get pixels
             var (x, y) = relativeCoordinates;
-            var rescaledX = (int) ((float) sizeOfGameAreaPixels / BoardSize * x + horizontalMarginPixels);
-            var rescaledY = (int) ((float) sizeOfGameAreaPixels / BoardSize * y);
+            var rescaledX = (int) (sizeOfGameAreaPixels / BoardSize * x + horizontalMarginPixels);
+            // y coordinate should be inversed (i.e., max unit is at TOP of window, not bottom)
+            var rescaledY = (int) (sizeOfGameAreaPixels / BoardSize * (BoardSize - y));
 
             return (rescaledX, rescaledY);
         }
@@ -234,7 +239,7 @@ namespace PhysicsSim
             var sizeOfGameAreaPixels = canvasHeightPixels;
 
             // rescale
-            var rescaledUnits = (int) ((float) sizeOfGameAreaPixels / BoardSize * units);
+            var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
             return rescaledUnits;
         }
     }
