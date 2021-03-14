@@ -28,6 +28,10 @@ namespace LunarLander
 
         protected override void Initialize()
         {
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.ApplyChanges();
+
             _landerGameController = new LanderGameController();
 
             _graphics.GraphicsDevice.RasterizerState = new RasterizerState
@@ -84,6 +88,9 @@ namespace LunarLander
             grayTexture.SetData(texData);
             _spriteBatch.Draw(grayTexture, backgroundRect, Color.Gray);
 
+            // end spritebatch here so we can draw terrain over background
+            _spriteBatch.End();
+
             // next, draw the terrain (if generated)
             if (_landerGameController.TerrainGenerated)
             {
@@ -127,6 +134,7 @@ namespace LunarLander
             }
 
             // Now, draw the lander
+            _spriteBatch.Begin();
 
             // set lander position rectangle
             // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
