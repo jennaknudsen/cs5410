@@ -33,7 +33,7 @@ namespace LunarLander
             _graphics.GraphicsDevice.RasterizerState = new RasterizerState
             {
                 FillMode = FillMode.Solid,
-                CullMode = CullMode.CullCounterClockwiseFace,   // CullMode.None If you want to not worry about triangle winding order
+                CullMode = CullMode.None,   // CullMode.None If you want to not worry about triangle winding order
                 MultiSampleAntiAlias = true,
             };
 
@@ -93,10 +93,16 @@ namespace LunarLander
                 foreach (var (x, y) in _landerGameController.TerrainList)
                 {
                     var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
-                    terrainVertexList.Add(new VertexPositionColor()
+                    var (_, scaled0) = GetAbsolutePixelCoordinates((x, 0));
+                    terrainVertexList.Add(new VertexPositionColor
+                    {
+                        Position = new Vector3(scaledX, scaled0, 0),
+                        Color = Color.Black
+                    });
+                    terrainVertexList.Add(new VertexPositionColor
                     {
                         Position = new Vector3(scaledX, scaledY, 0),
-                        Color = Color.White
+                        Color = Color.Black
                     });
                 }
 
@@ -113,9 +119,9 @@ namespace LunarLander
                     pass.Apply();
 
                     _graphics.GraphicsDevice.DrawUserIndexedPrimitives(
-                        PrimitiveType.LineStrip,
+                        PrimitiveType.TriangleStrip,
                         terrainVertexArray, 0, terrainVertexArray.Length,
-                        indexArray, 0, indexArray.Length - 1
+                        indexArray, 0, indexArray.Length - 2
                     );
                 }
             }
