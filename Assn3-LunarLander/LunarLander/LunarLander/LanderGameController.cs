@@ -239,12 +239,7 @@ namespace LunarLander
             var thrusterOn = _inputHandler.ThrustUpButton.Pressed;
             if (thrusterOn)
             {
-                // because of the way MonoGame uses radians, we need to do some conversion here
-                // Cartesian radians: 0, pi/2, pi, 3pi/2 (x, y, -x, -y directions)
-                // MonoGame radians: pi/2, 0, 3pi/2, pi  (x, y, -x, -y directions)
-                // convert MG radians to standard:
-                // standard_radians = -(MonoGame radians) + pi/2
-                var cartesianOrientation = -1 * newOrientation + MathHelper.PiOver2;
+                var cartesianOrientation = GetCartesianOrientation(newOrientation);
 
                 // Force equations: multiply total force by sin / cos theta to get x / y component
                 modForceX = thrustForce * (float) Math.Cos(cartesianOrientation);
@@ -279,6 +274,40 @@ namespace LunarLander
             Lander.Velocity = (velocityX, velocityY);
             Lander.Position = newPosition;
             Lander.Orientation = newOrientation;
+
+            // check for collision using three circles
+            // one big circle, two little circles at each bottom corner
+            var bigRadius = Lander.Size / 2;
+            var littleRadius = Lander.Size * ((float) Math.Sqrt(2) - 1) / 2;
+            // big collision circle: centered about the object's center
+            var bigCenter = Lander.Position;
+            // little circle: tangent to big circle at 3pi/4, 5pi/4 in MG coordinates
+            // (-pi/4, -3pi/4 in Cartesian coordinates)
+            var sinOrientation1 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
+            var cosOrientation1 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
+            var littleCenter1X = bigCenter.x
+                                 + cosOrientation1 * bigRadius
+                                 + cosOrientation1 * littleRadius;
+            var littleCenter1Y = bigCenter.y
+                                 + sinOrientation1 * bigRadius
+                                 + sinOrientation1 * littleRadius;
+            (float x, float y) littleCenter1 = (littleCenter1X, littleCenter1Y);
+
+            var sinOrientation2 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
+            var cosOrientation2 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
+            var littleCenter2X = bigCenter.x
+                                 + cosOrientation2 * bigRadius
+                                 + cosOrientation2 * littleRadius;
+            var littleCenter2Y = bigCenter.y
+                                 + sinOrientation2 * bigRadius
+                                 + sinOrientation2 * littleRadius;
+            (float x, float y) littleCenter2 = (littleCenter2X, littleCenter2Y);
+
+            // Uncomment to view logs with cirle data
+            // Console.WriteLine("Big circle: center (" + bigCenter.x + ", " + bigCenter.y + "), radius: " + bigRadius);
+            // Console.WriteLine("Little circle 1: center (" + littleCenter1.x + ", " + littleCenter1.y + "), radius: " + littleRadius);
+            // Console.WriteLine("Little circle 2: center (" + littleCenter2.x + ", " + littleCenter2.y + "), radius: " + littleRadius);
+            // Console.WriteLine("Orientation: " + newOrientation);
         }
 
         // Got this Gaussian random number generation from:
@@ -294,6 +323,17 @@ namespace LunarLander
                 mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
 
             return (float) randNormal;
+        }
+
+        // used to convert the MG orientation system to a regular Cartesian orientation
+        // because of the way MonoGame uses radians, we need to do some conversion here
+        // Cartesian radians: 0, pi/2, pi, 3pi/2 (x, y, -x, -y directions)
+        // MonoGame radians: pi/2, 0, 3pi/2, pi  (x, y, -x, -y directions)
+        // convert MG radians to standard:
+        // standard_radians = -(MonoGame radians) + pi/2
+        private static float GetCartesianOrientation(float monoGameOrientation)
+        {
+            return -1 * monoGameOrientation + MathHelper.PiOver2;
         }
     }
 }
