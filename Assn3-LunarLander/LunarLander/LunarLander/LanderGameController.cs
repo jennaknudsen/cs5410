@@ -285,6 +285,7 @@ namespace LunarLander
             // (-pi/4, -3pi/4 in Cartesian coordinates)
             var sinOrientation1 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
             var cosOrientation1 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
+            // to get center position of circle, translate the big center by cos/sin of big and little
             var littleCenter1X = bigCenter.x
                                  + cosOrientation1 * bigRadius
                                  + cosOrientation1 * littleRadius;
@@ -295,19 +296,35 @@ namespace LunarLander
 
             var sinOrientation2 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
             var cosOrientation2 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
+            // to get center position of circle, translate the big center by cos/sin of big and little
             var littleCenter2X = bigCenter.x
                                  + cosOrientation2 * bigRadius
                                  + cosOrientation2 * littleRadius;
             var littleCenter2Y = bigCenter.y
                                  + sinOrientation2 * bigRadius
                                  + sinOrientation2 * littleRadius;
+
             (float x, float y) littleCenter2 = (littleCenter2X, littleCenter2Y);
 
-            // Uncomment to view logs with cirle data
+            // Uncomment to view logs with circle data
             // Console.WriteLine("Big circle: center (" + bigCenter.x + ", " + bigCenter.y + "), radius: " + bigRadius);
             // Console.WriteLine("Little circle 1: center (" + littleCenter1.x + ", " + littleCenter1.y + "), radius: " + littleRadius);
             // Console.WriteLine("Little circle 2: center (" + littleCenter2.x + ", " + littleCenter2.y + "), radius: " + littleRadius);
             // Console.WriteLine("Orientation: " + newOrientation);
+
+            // testing collision
+            if (CheckCollision(((bigCenter), bigRadius)))
+            {
+                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 +  ": Collision in big circle!!");
+            }
+            if (CheckCollision(((littleCenter1), littleRadius)))
+            {
+                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 + ": Collision in little circle 1!!");
+            }
+            if (CheckCollision(((littleCenter2), littleRadius)))
+            {
+                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 + ": Collision in little circle 2!!");
+            }
         }
 
         // Got this Gaussian random number generation from:
@@ -334,6 +351,58 @@ namespace LunarLander
         private static float GetCartesianOrientation(float monoGameOrientation)
         {
             return -1 * monoGameOrientation + MathHelper.PiOver2;
+        }
+
+        private bool CheckCollision(((float x, float y) center, float radius) circle)
+        {
+            // iterate through each line segment, check for intersection with each of the spaceships three collisions
+            for (var x = 0; x < TerrainList.Count - 1; x++)
+            {
+                var terrainPoint1 = TerrainList[x];
+                var terrainPoint2 = TerrainList[x + 1];
+                if (LineCircleIntersection(terrainPoint1, terrainPoint2, circle))
+                {
+                    return true;
+                }
+            }
+
+            // if no collisions, return false
+            return false;
+        }
+
+        // Reference: https://stackoverflow.com/questions/37224912/circle-line-segment-collision
+        private static bool LineCircleIntersection((float x, float y) pt1,
+            (float x, float y) pt2, ((float x, float y) center, float radius) circle) {
+            // let v1 = { x: pt2.x - pt1.x, y: pt2.y - pt1.y };
+            (float x, float y) v1 = (pt2.x - pt1.x, pt2.y - pt1.y);
+            // let v2 = { x: pt1.x - circle.center.x, y: pt1.y - circle.center.y };
+            (float x, float y) v2 = (pt1.x - circle.center.x, pt1.y - circle.center.y);
+            // let b = -2 * (v1.x * v2.x + v1.y * v2.y);
+            var b = -2 * (v1.x * v2.x + v1.y * v2.y);
+            // let c =  2 * (v1.x * v1.x + v1.y * v1.y);
+            var c =  2 * (v1.x * v1.x + v1.y * v1.y);
+            // let d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+            float d;
+            try
+            {
+                d = (float) Math.Sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+            }
+            catch (Exception ex)
+            {
+                // return false if no intercept
+                return false;
+            }
+
+            // These represent the unit distance of point one and two on the line
+            var u1 = (b - d) / c;
+            var u2 = (b + d) / c;
+            if (u1 <= 1 && u1 >= 0) {  // If point on the line segment
+                return true;
+            }
+            if (u2 <= 1 && u2 >= 0) {  // If point on the line segment
+                return true;
+            }
+            return false;
         }
     }
 }
