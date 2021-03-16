@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using static LunarLander.GameState;
 
 namespace LunarLander
 {
@@ -34,6 +35,9 @@ namespace LunarLander
         // holds the safe zone information
         public List<(float x_start, float x_stop)> SafeZones;
 
+        // holds game state information
+        public GameState GameState;
+
         public LanderGameController()
         {
             Lander = new Lander(_startPosition);
@@ -43,6 +47,7 @@ namespace LunarLander
 
             // TODO move this somewhere else?
             GenerateTerrain(1);
+            GameState = Running;
         }
 
         // level 1: two safe zones, each 2x the length of the ship
@@ -208,122 +213,167 @@ namespace LunarLander
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
 
-            // turning rate: 2pi/3 rads / sec
-            const float turningRate = 2 * MathHelper.Pi / 3;
-            var newOrientation = Lander.Orientation;
-
-            // turn left / right if the buttons are pressed
-            var turnLeft = _inputHandler.TurnShipLeftButton.Pressed;
-            var turnRight = _inputHandler.TurnShipRightButton.Pressed;
-
-            if (turnLeft && !turnRight)
-                newOrientation -= (turningRate * elapsedSeconds);
-            else if (turnRight && !turnLeft)
-                newOrientation += (turningRate * elapsedSeconds);
-
-            // we need to use kinematic formulas to calculate position using forces
-            // first, calculate forces
-            // F = ma
-            const float baseForceX = 0f;
-            const float baseForceY = Lander.Mass * (-1 * MoonGravity);       // gravity force is negative
-
-            // thrust: 5 m/s^2
-            // F = ma ==> F = 4280 * 5 = 21400 N
-            const float thrustAcceleration = 5f;
-            const float thrustForce = Lander.Mass * thrustAcceleration;
-
-            // additional x / y forces from the thruster
-            var modForceX = 0f;
-            var modForceY = 0f;
-
-            var thrusterOn = _inputHandler.ThrustUpButton.Pressed;
-            if (thrusterOn)
+            if (GameState == Running)
             {
-                var cartesianOrientation = GetCartesianOrientation(newOrientation);
+                // turning rate: 2pi/3 rads / sec
+                const float turningRate = 2 * MathHelper.Pi / 3;
+                var newOrientation = Lander.Orientation;
 
-                // Force equations: multiply total force by sin / cos theta to get x / y component
-                modForceX = thrustForce * (float) Math.Cos(cartesianOrientation);
-                modForceY = thrustForce * (float) Math.Sin(cartesianOrientation);
-            }
+                // turn left / right if the buttons are pressed
+                var turnLeft = _inputHandler.TurnShipLeftButton.Pressed;
+                var turnRight = _inputHandler.TurnShipRightButton.Pressed;
 
-            // add forces together to get final x/y forces
-            var finalForceX = baseForceX + modForceX;
-            var finalForceY = baseForceY + modForceY;
+                if (turnLeft && !turnRight)
+                    newOrientation -= (turningRate * elapsedSeconds);
+                else if (turnRight && !turnLeft)
+                    newOrientation += (turningRate * elapsedSeconds);
 
-            // next, calculate acceleration from the force
-            // F = ma =6=> a = F/m
-            var accelerationX = finalForceX / Lander.Mass;
-            var accelerationY = finalForceY / Lander.Mass;
+                // we need to use kinematic formulas to calculate position using forces
+                // first, calculate forces
+                // F = ma
+                const float baseForceX = 0f;
+                const float baseForceY = Lander.Mass * (-1 * MoonGravity); // gravity force is negative
 
-            // next, calculate velocity
-            // vf = vo + at
-            var velocityX = Lander.Velocity.x + accelerationX * elapsedSeconds;
-            var velocityY = Lander.Velocity.y + accelerationY * elapsedSeconds;
+                // thrust: 5 m/s^2
+                // F = ma ==> F = 4280 * 5 = 21400 N
+                const float thrustAcceleration = 5f;
+                const float thrustForce = Lander.Mass * thrustAcceleration;
 
-            // finally, calculate new position
-            // deltaPos = vt + (1/2)at^2
-            var deltaX = Lander.Velocity.x * elapsedSeconds
-                         + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
-            var deltaY = Lander.Velocity.y * elapsedSeconds
-                         + 0.5f * accelerationY * (float) Math.Pow(elapsedSeconds, 2);
+                // additional x / y forces from the thruster
+                var modForceX = 0f;
+                var modForceY = 0f;
 
-            // translate the lander
-            (float x, float y) newPosition = (Lander.Position.x + deltaX, Lander.Position.y + deltaY);
+                var thrusterOn = _inputHandler.ThrustUpButton.Pressed;
+                if (thrusterOn)
+                {
+                    var cartesianOrientation = GetCartesianOrientation(newOrientation);
 
-            // set new force, acceleration, velocity
-            Lander.Velocity = (velocityX, velocityY);
-            Lander.Position = newPosition;
-            Lander.Orientation = newOrientation;
+                    // Force equations: multiply total force by sin / cos theta to get x / y component
+                    modForceX = thrustForce * (float) Math.Cos(cartesianOrientation);
+                    modForceY = thrustForce * (float) Math.Sin(cartesianOrientation);
+                }
 
-            // check for collision using three circles
-            // one big circle, two little circles at each bottom corner
-            var bigRadius = Lander.Size / 2;
-            var littleRadius = Lander.Size * ((float) Math.Sqrt(2) - 1) / 2;
-            // big collision circle: centered about the object's center
-            var bigCenter = Lander.Position;
-            // little circle: tangent to big circle at 3pi/4, 5pi/4 in MG coordinates
-            // (-pi/4, -3pi/4 in Cartesian coordinates)
-            var sinOrientation1 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
-            var cosOrientation1 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
-            // to get center position of circle, translate the big center by cos/sin of big and little
-            var littleCenter1X = bigCenter.x
-                                 + cosOrientation1 * bigRadius
-                                 + cosOrientation1 * littleRadius;
-            var littleCenter1Y = bigCenter.y
-                                 + sinOrientation1 * bigRadius
-                                 + sinOrientation1 * littleRadius;
-            (float x, float y) littleCenter1 = (littleCenter1X, littleCenter1Y);
+                // add forces together to get final x/y forces
+                var finalForceX = baseForceX + modForceX;
+                var finalForceY = baseForceY + modForceY;
 
-            var sinOrientation2 = (float) Math.Sin(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
-            var cosOrientation2 = (float) Math.Cos(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
-            // to get center position of circle, translate the big center by cos/sin of big and little
-            var littleCenter2X = bigCenter.x
-                                 + cosOrientation2 * bigRadius
-                                 + cosOrientation2 * littleRadius;
-            var littleCenter2Y = bigCenter.y
-                                 + sinOrientation2 * bigRadius
-                                 + sinOrientation2 * littleRadius;
+                // next, calculate acceleration from the force
+                // F = ma =6=> a = F/m
+                var accelerationX = finalForceX / Lander.Mass;
+                var accelerationY = finalForceY / Lander.Mass;
 
-            (float x, float y) littleCenter2 = (littleCenter2X, littleCenter2Y);
+                // next, calculate velocity
+                // vf = vo + at
+                var velocityX = Lander.Velocity.x + accelerationX * elapsedSeconds;
+                var velocityY = Lander.Velocity.y + accelerationY * elapsedSeconds;
 
-            // Uncomment to view logs with circle data
-            // Console.WriteLine("Big circle: center (" + bigCenter.x + ", " + bigCenter.y + "), radius: " + bigRadius);
-            // Console.WriteLine("Little circle 1: center (" + littleCenter1.x + ", " + littleCenter1.y + "), radius: " + littleRadius);
-            // Console.WriteLine("Little circle 2: center (" + littleCenter2.x + ", " + littleCenter2.y + "), radius: " + littleRadius);
-            // Console.WriteLine("Orientation: " + newOrientation);
+                // finally, calculate new position
+                // deltaPos = vt + (1/2)at^2
+                var deltaX = Lander.Velocity.x * elapsedSeconds
+                             + 0.5f * accelerationX * (float) Math.Pow(elapsedSeconds, 2);
+                var deltaY = Lander.Velocity.y * elapsedSeconds
+                             + 0.5f * accelerationY * (float) Math.Pow(elapsedSeconds, 2);
 
-            // testing collision
-            if (CheckCollision(((bigCenter), bigRadius)))
-            {
-                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 +  ": Collision in big circle!!");
-            }
-            if (CheckCollision(((littleCenter1), littleRadius)))
-            {
-                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 + ": Collision in little circle 1!!");
-            }
-            if (CheckCollision(((littleCenter2), littleRadius)))
-            {
-                Console.WriteLine(gameTime.TotalGameTime.TotalMilliseconds / 1000 + ": Collision in little circle 2!!");
+                // translate the lander
+                (float x, float y) newPosition = (Lander.Position.x + deltaX, Lander.Position.y + deltaY);
+
+                // set new force, acceleration, velocity
+                Lander.Velocity = (velocityX, velocityY);
+                Lander.Position = newPosition;
+                // keep orientation between 0 and 2pi
+                if (newOrientation < 0)
+                    newOrientation = MathHelper.TwoPi + newOrientation;
+                else if (newOrientation > MathHelper.TwoPi)
+                    newOrientation = -1 * MathHelper.TwoPi + newOrientation;
+                Lander.Orientation = newOrientation;
+
+                // check for collision using three circles
+                // one big circle, two little circles at each bottom corner
+                var bigRadius = Lander.Size / 2;
+                // little radius at corner is -(2sqrt(2) - 3) / 2 = 0.08578645, give or take
+                // precise enough for this project
+                var littleRadius = Lander.Size * 0.08579f;
+                // big collision circle: centered about the object's center
+                var bigCenter = Lander.Position;
+                // little circle: tangent to big circle at 3pi/4, 5pi/4 in MG coordinates
+                // (-pi/4, -3pi/4 in Cartesian coordinates)
+                var sinOrientation1 =
+                    (float) Math.Sin(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
+                var cosOrientation1 =
+                    (float) Math.Cos(GetCartesianOrientation(newOrientation + 3 * MathHelper.PiOver4));
+                // to get center position of circle, translate the big center by cos/sin of big and little
+                var littleCenter1X = bigCenter.x
+                                     + cosOrientation1 * bigRadius
+                                     + cosOrientation1 * littleRadius;
+                var littleCenter1Y = bigCenter.y
+                                     + sinOrientation1 * bigRadius
+                                     + sinOrientation1 * littleRadius;
+                (float x, float y) littleCenter1 = (littleCenter1X, littleCenter1Y);
+
+                var sinOrientation2 =
+                    (float) Math.Sin(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
+                var cosOrientation2 =
+                    (float) Math.Cos(GetCartesianOrientation(newOrientation + 5 * MathHelper.PiOver4));
+                // to get center position of circle, translate the big center by cos/sin of big and little
+                var littleCenter2X = bigCenter.x
+                                     + cosOrientation2 * bigRadius
+                                     + cosOrientation2 * littleRadius;
+                var littleCenter2Y = bigCenter.y
+                                     + sinOrientation2 * bigRadius
+                                     + sinOrientation2 * littleRadius;
+
+                (float x, float y) littleCenter2 = (littleCenter2X, littleCenter2Y);
+
+                // Uncomment to view logs with circle data
+                // Console.WriteLine("Big circle: center (" + bigCenter.x + ", " + bigCenter.y + "), radius: " + bigRadius);
+                // Console.WriteLine("Little circle 1: center (" + littleCenter1.x + ", " + littleCenter1.y + "), radius: " + littleRadius);
+                // Console.WriteLine("Little circle 2: center (" + littleCenter2.x + ", " + littleCenter2.y + "), radius: " + littleRadius);
+                // Console.WriteLine("Orientation: " + newOrientation);
+
+                // testing collision with all three collision circles
+                if (CheckCollision(((bigCenter), bigRadius)) ||
+                    CheckCollision(((littleCenter1), littleRadius)) ||
+                    CheckCollision(((littleCenter2), littleRadius)))
+                {
+                    // speed must be less than 2 units (meters) / second
+                    // angle must be within 355 - 5 degrees
+                    var orientationDeg = (Lander.Orientation * 180 / MathHelper.Pi) % 360;
+                    var landerVelocity = Math.Sqrt(Math.Pow(Lander.Velocity.x, 2) +
+                                                   Math.Pow(Lander.Velocity.y, 2));
+
+                    // must have landed within the bounds of a safe area
+                    var inSafeArea = false;
+                    foreach (var (xStart, xStop) in SafeZones)
+                    {
+                        // if leftmost position and rightmost position are within safezone bounds
+                        if (Lander.Position.x - Lander.Size / 2 > xStart &&
+                            Lander.Position.x + Lander.Size / 2 < xStop)
+                        {
+                            inSafeArea = true;
+                            break;
+                        }
+                    }
+
+                    // check for all conditions
+                    if ((orientationDeg < 5 || orientationDeg > 355)
+                        && landerVelocity < 2
+                        && inSafeArea)
+                    {
+                        GameState = PassedLevel;
+                        Console.WriteLine("PASSED! Final stats:");
+                        Console.WriteLine("Orientation: " + orientationDeg);
+                        Console.WriteLine("Velocity: " + landerVelocity);
+                        Console.WriteLine("In safe area: " + inSafeArea);
+                    }
+                    else
+                    {
+                        GameState = ShipCrashed;
+                        Console.WriteLine("Crashed :( Final stats:");
+                        Console.WriteLine("Orientation: " + orientationDeg);
+                        Console.WriteLine("Velocity: " + landerVelocity);
+                        Console.WriteLine("In safe area: " + inSafeArea);
+                    }
+                }
             }
         }
 
