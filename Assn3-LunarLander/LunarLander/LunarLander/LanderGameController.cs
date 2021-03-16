@@ -318,13 +318,18 @@ namespace LunarLander
 
                     // set new force, acceleration, velocity
                     Lander.Velocity = (velocityX, velocityY);
+                    Lander.VelocityTotal = (float) Math.Sqrt(Math.Pow(Lander.Velocity.x, 2) +
+                                                   Math.Pow(Lander.Velocity.y, 2));
+
                     Lander.Position = newPosition;
+
                     // keep orientation between 0 and 2pi
                     if (newOrientation < 0)
                         newOrientation = MathHelper.TwoPi + newOrientation;
                     else if (newOrientation > MathHelper.TwoPi)
                         newOrientation = -1 * MathHelper.TwoPi + newOrientation;
                     Lander.Orientation = newOrientation;
+                    Lander.OrientationDegrees = (Lander.Orientation * 180 / MathHelper.Pi) % 360;
 
                     // check for collision using three circles
                     // one big circle, two little circles at each bottom corner
@@ -376,9 +381,6 @@ namespace LunarLander
                     {
                         // speed must be less than 2 units (meters) / second
                         // angle must be within 355 - 5 degrees
-                        var orientationDeg = (Lander.Orientation * 180 / MathHelper.Pi) % 360;
-                        var landerVelocity = Math.Sqrt(Math.Pow(Lander.Velocity.x, 2) +
-                                                       Math.Pow(Lander.Velocity.y, 2));
 
                         // must have landed within the bounds of a safe area
                         var inSafeArea = false;
@@ -394,14 +396,14 @@ namespace LunarLander
                         }
 
                         // check for all conditions
-                        if ((orientationDeg < 5 || orientationDeg > 355)
-                            && landerVelocity < 2
+                        if ((Lander.OrientationDegrees < 5 || Lander.OrientationDegrees > 355)
+                            && Lander.VelocityTotal < 2
                             && inSafeArea)
                         {
                             GameState = PassedLevel;
                             Console.WriteLine("PASSED! Final stats:");
-                            Console.WriteLine("Orientation: " + orientationDeg);
-                            Console.WriteLine("Velocity: " + landerVelocity);
+                            Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
+                            Console.WriteLine("Velocity: " + Lander.VelocityTotal);
                             Console.WriteLine("In safe area: " + inSafeArea);
                             LoadingTime = TimeSpan.FromSeconds(3);
                         }
@@ -409,8 +411,8 @@ namespace LunarLander
                         {
                             GameState = ShipCrashed;
                             Console.WriteLine("Crashed :( Final stats:");
-                            Console.WriteLine("Orientation: " + orientationDeg);
-                            Console.WriteLine("Velocity: " + landerVelocity);
+                            Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
+                            Console.WriteLine("Velocity: " + Lander.VelocityTotal);
                             Console.WriteLine("In safe area: " + inSafeArea);
                             LoadingTime = TimeSpan.FromSeconds(3);
                         }

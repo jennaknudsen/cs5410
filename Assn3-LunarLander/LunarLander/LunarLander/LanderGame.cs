@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static LunarLander.GameState;
 
 namespace LunarLander
 {
@@ -140,9 +141,44 @@ namespace LunarLander
 
             _spriteBatch.End();
 
-            // draw on-screen elements
-            var fuelCapacity = _landerGameController.Lander.FuelCapacity.TotalSeconds + " (s)";
-            Console.WriteLine(fuelCapacity);
+            // if (_landerGameController.GameState == Running)
+            // {
+                // get current fuel, speed, angle values
+                var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
+                var speed = _landerGameController.Lander.VelocityTotal;
+                var angle = _landerGameController.Lander.OrientationDegrees;
+
+                // set the correct colors
+                var fuelColor = fuel > 0d ? Color.Green : Color.White;
+                var speedColor = speed < 2f ? Color.Green : Color.White;
+                var angleColor = angle > 355f || angle < 5f ? Color.Green : Color.White;
+
+                // set the formatted strings
+                var fuelString = "Fuel: " +
+                                   fuel.ToString("0.000") + " s";
+                var speedString = "Speed: " +
+                                   speed.ToString("0.000") + " m/s";
+                var angleString = "Angle: " +
+                                   angle.ToString("0.000") + " degrees";
+
+                // draw on-screen elements
+                _spriteBatch.Begin();
+
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.65f,
+                    LanderGameController.BoardSize * 0.95f));
+
+                _spriteBatch.DrawString(_spriteFont, fuelString,
+                    new Vector2(textPosX, textPosY),
+                    fuelColor);
+                _spriteBatch.DrawString(_spriteFont, speedString,
+                    new Vector2(textPosX, textPosY + 20),
+                    speedColor);
+                _spriteBatch.DrawString(_spriteFont, angleString,
+                    new Vector2(textPosX, textPosY + 40),
+                    angleColor);
+
+                _spriteBatch.End();
+            // }
 
             base.Draw(gameTime);
         }

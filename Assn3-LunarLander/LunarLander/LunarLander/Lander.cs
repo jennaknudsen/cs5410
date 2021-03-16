@@ -10,9 +10,11 @@ namespace LunarLander
 
         // position: radians (0: north, pi / 2: 3:00 position on clock, etc)
         public float Orientation;
+        public float OrientationDegrees;
 
         // need to track lander velocity and position
         public (float x, float y) Velocity;
+        public float VelocityTotal;
         public (float x, float y) Position;
 
         // Lander size: 7x7 meters
