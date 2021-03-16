@@ -38,6 +38,7 @@ namespace LunarLander
             // _graphics.ApplyChanges();
 
             _landerGameController = new LanderGameController();
+            _landerGameController.StartLevel(1);
 
             _graphics.GraphicsDevice.RasterizerState = new RasterizerState
             {

@@ -9,6 +9,11 @@ namespace LunarLander
         public readonly Button TurnShipLeftButton;
         public readonly Button TurnShipRightButton;
         public readonly Button ThrustUpButton;
+        public readonly Button MenuUpButton;
+        public readonly Button MenuDownButton;
+        public readonly Button MenuConfirmButton;
+        public readonly Button MenuBackButton;
+        public readonly Button PauseButton;
 
         private readonly List<Button> _listOfButtons;
 
@@ -19,12 +24,25 @@ namespace LunarLander
             TurnShipLeftButton = new Button(new[] {Keys.Left}, false);
             TurnShipRightButton = new Button(new[] {Keys.Right}, false);
 
+            // buttons for menu controls
+            MenuUpButton = new Button(new[] {Keys.Up}, true);
+            MenuDownButton = new Button(new[] {Keys.Down}, true);
+            MenuConfirmButton = new Button(new[] {Keys.Enter}, true);
+            MenuBackButton = new Button(new[] {Keys.Escape}, true);
+            PauseButton = new Button(new[] {Keys.Escape}, true);
+
+
             // add all buttons to the listOfButtons
             _listOfButtons = new List<Button>
             {
                 ThrustUpButton,
                 TurnShipLeftButton,
-                TurnShipRightButton
+                TurnShipRightButton,
+                MenuUpButton,
+                MenuDownButton,
+                MenuConfirmButton,
+                MenuBackButton,
+                PauseButton,
             };
         }
 
