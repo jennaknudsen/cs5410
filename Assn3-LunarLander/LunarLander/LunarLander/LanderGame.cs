@@ -11,6 +11,7 @@ namespace LunarLander
 
         // assets for this game
         private Texture2D _texLander;
+        private Texture2D _texBackground;
         private Rectangle _positionRectangle;
         private SpriteFont _spriteFont;
         private BasicEffect _basicEffect;
@@ -63,6 +64,7 @@ namespace LunarLander
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _texLander = this.Content.Load<Texture2D>("Lander-2");
+            _texBackground = this.Content.Load<Texture2D>("space-background");
             _spriteFont = this.Content.Load<SpriteFont>("GameFont");
         }
 
@@ -80,19 +82,12 @@ namespace LunarLander
 
             _spriteBatch.Begin();
 
-            // for debugging purposes, draw the background square in center of screen
             // get pixel coordinates from board coordinates
             var (backX, backY) = GetAbsolutePixelCoordinates((0, LanderGameController.BoardSize));
             var rectSizePixels = RescaleUnitsToPixels(LanderGameController.BoardSize);
-            // create the MG Rectangle
+            // create the background rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
-            // make a generic Gray texture
-            var grayTexture = new Texture2D(_graphics.GraphicsDevice, 10, 10);
-            var texData = new Color[10 * 10];
-            for (var i = 0; i < texData.Length; i++)
-                texData[i] = Color.Gray;
-            grayTexture.SetData(texData);
-            _spriteBatch.Draw(grayTexture, backgroundRect, Color.Gray);
+            _spriteBatch.Draw(_texBackground, backgroundRect, Color.Gray);
 
             // end spritebatch here so we can draw terrain over background
             _spriteBatch.End();
