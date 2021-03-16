@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 
 namespace LunarLander
@@ -16,6 +17,9 @@ namespace LunarLander
 
         // Lander size: 7x7 meters
         public const float Size = 7f;
+
+        // Fuel capacity
+        public TimeSpan FuelCapacity = TimeSpan.FromSeconds(20);
 
         public Lander((float x, float y) position)
         {

@@ -219,6 +219,10 @@ namespace LunarLander
                 SubdivideSegment(startPoint, endPoint);
             }
 
+            // add points for (0, 0) and (max_x, 0)
+            TerrainList.Insert(0, (0, 0));
+            TerrainList.Add((BoardSize, 0));
+
             // need to re-order the terrain after subdivision
             // this will keep the terrain in the correct order for drawing
             TerrainList.Sort((first, second) => first.x.CompareTo(second.x));
@@ -274,13 +278,18 @@ namespace LunarLander
                     var modForceY = 0f;
 
                     var thrusterOn = _inputHandler.ThrustUpButton.Pressed;
-                    if (thrusterOn)
+                    if (thrusterOn && Lander.FuelCapacity > TimeSpan.Zero)
                     {
                         var cartesianOrientation = GetCartesianOrientation(newOrientation);
 
                         // Force equations: multiply total force by sin / cos theta to get x / y component
                         modForceX = thrustForce * (float) Math.Cos(cartesianOrientation);
                         modForceY = thrustForce * (float) Math.Sin(cartesianOrientation);
+
+                        // decrease fuel capacity
+                        Lander.FuelCapacity -= gameTime.ElapsedGameTime;
+                        if (Lander.FuelCapacity < TimeSpan.Zero)
+                            Lander.FuelCapacity = TimeSpan.Zero;
                     }
 
                     // add forces together to get final x/y forces

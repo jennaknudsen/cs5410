@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -139,6 +140,10 @@ namespace LunarLander
 
             _spriteBatch.End();
 
+            // draw on-screen elements
+            var fuelCapacity = _landerGameController.Lander.FuelCapacity.TotalSeconds + " (s)";
+            Console.WriteLine(fuelCapacity);
+
             base.Draw(gameTime);
         }
 
@@ -157,12 +162,12 @@ namespace LunarLander
                 terrainVertexList.Add(new VertexPositionColor
                 {
                     Position = new Vector3(scaledX, scaled0, 0),
-                    Color = Color.LightGray
+                    Color = Color.Gray
                 });
                 terrainVertexList.Add(new VertexPositionColor
                 {
                     Position = new Vector3(scaledX, scaledY, 0),
-                    Color = Color.LightGray
+                    Color = Color.Gray
                 });
             }
 
