@@ -191,152 +191,186 @@ namespace LunarLander
 
             _spriteBatch.End();
 
-            if (_landerGameController.GameState == ShipCrashed)
-            {
-                _spriteBatch.Begin();
+            // TODO particles here
 
-                // draw the backdrop rectangle for the text
-                var (gameOverRectPosX, gameOverRectPosY) = GetAbsolutePixelCoordinates((
-                        0, BoardSize * 0.65f));
-                var gameOverRectHeight = (int) (rectSizePixels * 0.3);
-                var gameOverRect = new Rectangle(gameOverRectPosX, gameOverRectPosY, rectSizePixels, gameOverRectHeight);
-
-                _spriteBatch.Draw(_texBackgroundDimmer, gameOverRect, Color.Aqua);
-
-                // draw the game over text itself
-                var crashedString = "Game Over. Your ship crashed.";
-                var restartingString = "Press ESC to start a new game.";
-
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                    BoardSize * 0.55f));
-                _spriteBatch.DrawString(_menuFont, crashedString,
-                    new Vector2(textPosX, textPosY),
-                    Color.Red);
-                _spriteBatch.DrawString(_menuFont, restartingString,
-                    new Vector2(textPosX, textPosY + 30),
-                    Color.Red);
-
-                _spriteBatch.End();
-            }
-            else if (_landerGameController.GameState == PassedLevel)
-            {
-                _spriteBatch.Begin();
-
-                // draw the backdrop rectangle for the text
-                var (passedRectPosX, passedRectPosY) = GetAbsolutePixelCoordinates((
-                    0, BoardSize * 0.60f));
-                var passedRectHeight = (int) (rectSizePixels * 0.2);
-                var passedRect = new Rectangle(passedRectPosX, passedRectPosY, rectSizePixels, passedRectHeight);
-
-                _spriteBatch.Draw(_texBackgroundDimmer, passedRect, Color.Aqua);
-
-                // draw the passed level text
-                var passedAdvancingIn = "Level passed! Advancing in: ";
-
-                // get how many seconds left before loading
-                if (_landerGameController.LoadingTime.TotalSeconds > 2)
-                    passedAdvancingIn += "3";
-                else if (_landerGameController.LoadingTime.TotalSeconds > 1)
-                    passedAdvancingIn += "2";
-                else
-                    passedAdvancingIn += "1";
-
-                // now, get text coordinates and draw the string
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                    BoardSize * 0.52f));
-
-                _spriteBatch.DrawString(_menuFont, passedAdvancingIn,
-                    new Vector2(textPosX, textPosY),
-                    Color.GreenYellow);
-
-                _spriteBatch.End();
-            }
-            else if (_landerGameController.GameState == BeatGame)
-            {
-                _spriteBatch.Begin();
-
-                // draw the backdrop rectangle for the text
-                var (beatGameRectPosX, beatGameRectPosY) = GetAbsolutePixelCoordinates((
-                        0, BoardSize * 0.65f));
-                var beatGameRectHeight = (int) (rectSizePixels * 0.3);
-                var beatGameRect = new Rectangle(beatGameRectPosX, beatGameRectPosY, rectSizePixels, beatGameRectHeight);
-
-                _spriteBatch.Draw(_texBackgroundDimmer, beatGameRect, Color.Aqua);
-
-                // draw the won the game text itself
-                var beatGameString = "You beat the game! Congrats!";
-                var restartingString = "Press ESC to start a new game.";
-
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                    BoardSize * 0.55f));
-                _spriteBatch.DrawString(_menuFont, beatGameString,
-                    new Vector2(textPosX, textPosY),
-                    Color.Yellow);
-                _spriteBatch.DrawString(_menuFont, restartingString,
-                    new Vector2(textPosX, textPosY + 30),
-                    Color.Yellow);
-
-                _spriteBatch.End();
-            }
-            // dim entire screen on pause
-            else if (_landerGameController.GameState == Paused)
-            {
-                _spriteBatch.Begin();
-                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
-
-                // code to determine which menu elements to draw on pause
-                if (_landerGameController.MenuController.MenuState == Main)
-                {
-                    // for main menu, draw 4 elements on screen
-
-                    // get correct colors
-                    var ngColor = _landerGameController.MenuController.NewGameMenuItem.Selected
-                        ? Color.Yellow
-                        : Color.LightGray;
-                    var hsColor = _landerGameController.MenuController.HighScoresMenuItem.Selected
-                        ? Color.Yellow
-                        : Color.LightGray;
-                    var ccColor = _landerGameController.MenuController.CustomizeControlsMenuItem.Selected
-                        ? Color.Yellow
-                        : Color.LightGray;
-                    var vcColor = _landerGameController.MenuController.ViewCreditsMenuItem.Selected
-                        ? Color.Yellow
-                        : Color.LightGray;
-
-                    // get correct pixel coordinates for menu items
-                    var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
-                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
-                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
-                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
-
-                    // set proper strings
-                    var newGameString = "New Game";
-                    var highScoresString = "High Scores";
-                    var customizeControlsString = "Customize Controls";
-                    var viewCreditsString = "View Credits";
-
-                    // now, draw the strings
-                    _spriteBatch.DrawString(_menuFont, newGameString,
-                        new Vector2(xPos, yPos1),
-                        ngColor);
-                    _spriteBatch.DrawString(_menuFont, highScoresString,
-                        new Vector2(xPos, yPos2),
-                        hsColor);
-                    _spriteBatch.DrawString(_menuFont, customizeControlsString,
-                        new Vector2(xPos, yPos3),
-                        ccColor);
-                    _spriteBatch.DrawString(_menuFont, viewCreditsString,
-                        new Vector2(xPos, yPos4),
-                        vcColor);
-
-                    _spriteBatch.End();
-                }
-            }
+            // now, depending on game state, draw other things
+            DrawBasedOnState();
 
             base.Draw(gameTime);
         }
 
+        private void DrawBasedOnState()
+        {
+            // some declaration so things don't break on us
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            int textPosX;
+            int textPosY;
+
+            switch (_landerGameController.GameState)
+            {
+                // draw different items based on game state
+                case ShipCrashed:
+                {
+                    _spriteBatch.Begin();
+
+                    // draw the backdrop rectangle for the text
+                    var (gameOverRectPosX, gameOverRectPosY) = GetAbsolutePixelCoordinates((
+                        0, BoardSize * 0.65f));
+                    var gameOverRectHeight = (int) (rectSizePixels * 0.3);
+                    var gameOverRect = new Rectangle(gameOverRectPosX, gameOverRectPosY, rectSizePixels, gameOverRectHeight);
+
+                    _spriteBatch.Draw(_texBackgroundDimmer, gameOverRect, Color.Aqua);
+
+                    // draw the game over text itself
+                    var crashedString = "Game over. Your ship crashed.";
+                    var restartingString = "Press ESC to start a new game.";
+
+                    (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                        BoardSize * 0.55f));
+                    _spriteBatch.DrawString(_menuFont, crashedString,
+                        new Vector2(textPosX, textPosY),
+                        Color.Red);
+                    _spriteBatch.DrawString(_menuFont, restartingString,
+                        new Vector2(textPosX, textPosY + 30),
+                        Color.Red);
+
+                    _spriteBatch.End();
+                    break;
+                }
+                case PassedLevel:
+                {
+                    _spriteBatch.Begin();
+
+                    // draw the backdrop rectangle for the text
+                    var (passedRectPosX, passedRectPosY) = GetAbsolutePixelCoordinates((
+                        0, BoardSize * 0.60f));
+                    var passedRectHeight = (int) (rectSizePixels * 0.2);
+                    var passedRect = new Rectangle(passedRectPosX, passedRectPosY, rectSizePixels, passedRectHeight);
+
+                    _spriteBatch.Draw(_texBackgroundDimmer, passedRect, Color.Aqua);
+
+                    // draw the passed level text
+                    var passedAdvancingIn = "Level passed! Advancing in: ";
+
+                    // get how many seconds left before loading
+                    if (_landerGameController.LoadingTime.TotalSeconds > 2)
+                        passedAdvancingIn += "3";
+                    else if (_landerGameController.LoadingTime.TotalSeconds > 1)
+                        passedAdvancingIn += "2";
+                    else
+                        passedAdvancingIn += "1";
+
+                    // now, get text coordinates and draw the string
+                    (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                        BoardSize * 0.52f));
+
+                    _spriteBatch.DrawString(_menuFont, passedAdvancingIn,
+                        new Vector2(textPosX, textPosY),
+                        Color.GreenYellow);
+
+                    _spriteBatch.End();
+                    break;
+                }
+                // dim entire screen on pause
+                case BeatGame:
+                {
+                    _spriteBatch.Begin();
+
+                    // draw the backdrop rectangle for the text
+                    var (beatGameRectPosX, beatGameRectPosY) = GetAbsolutePixelCoordinates((
+                        0, BoardSize * 0.65f));
+                    var beatGameRectHeight = (int) (rectSizePixels * 0.3);
+                    var beatGameRect = new Rectangle(beatGameRectPosX, beatGameRectPosY, rectSizePixels, beatGameRectHeight);
+
+                    _spriteBatch.Draw(_texBackgroundDimmer, beatGameRect, Color.Aqua);
+
+                    // draw the won the game text itself
+                    var beatGameString = "You beat the game! Congrats!";
+                    var restartingString = "Press ESC to start a new game.";
+
+                    (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                        BoardSize * 0.55f));
+                    _spriteBatch.DrawString(_menuFont, beatGameString,
+                        new Vector2(textPosX, textPosY),
+                        Color.Yellow);
+                    _spriteBatch.DrawString(_menuFont, restartingString,
+                        new Vector2(textPosX, textPosY + 30),
+                        Color.Yellow);
+
+                    _spriteBatch.End();
+                    break;
+                }
+                case Paused:
+                    DrawMenu();
+                    break;
+                case Running:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        // Drawing the menu is very long, so put it in its own function
+        private void DrawMenu()
+        {
+            _spriteBatch.Begin();
+
+            // get pixel coordinates from board coordinates
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            // create the background rectangle
+            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
+
+            // code to determine which menu elements to draw on pause
+            if (_landerGameController.MenuController.MenuState == Main)
+            {
+                // for main menu, draw 4 elements on screen
+
+                // get correct colors
+                var ngColor = _landerGameController.MenuController.NewGameMenuItem.Selected
+                    ? Color.Yellow
+                    : Color.LightGray;
+                var hsColor = _landerGameController.MenuController.HighScoresMenuItem.Selected
+                    ? Color.Yellow
+                    : Color.LightGray;
+                var ccColor = _landerGameController.MenuController.CustomizeControlsMenuItem.Selected
+                    ? Color.Yellow
+                    : Color.LightGray;
+                var vcColor = _landerGameController.MenuController.ViewCreditsMenuItem.Selected
+                    ? Color.Yellow
+                    : Color.LightGray;
+
+                // get correct pixel coordinates for menu items
+                var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
+                var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
+                var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
+                var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+
+                // set proper strings
+                var newGameString = "New Game";
+                var highScoresString = "High Scores";
+                var customizeControlsString = "Customize Controls";
+                var viewCreditsString = "View Credits";
+
+                // now, draw the strings
+                _spriteBatch.DrawString(_menuFont, newGameString,
+                    new Vector2(xPos, yPos1),
+                    ngColor);
+                _spriteBatch.DrawString(_menuFont, highScoresString,
+                    new Vector2(xPos, yPos2),
+                    hsColor);
+                _spriteBatch.DrawString(_menuFont, customizeControlsString,
+                    new Vector2(xPos, yPos3),
+                    ccColor);
+                _spriteBatch.DrawString(_menuFont, viewCreditsString,
+                    new Vector2(xPos, yPos4),
+                    vcColor);
+
+                _spriteBatch.End();
+            }
+        }
         // generate the necessary polygon vertices for the terrain
         private void GenerateTerrainVertices()
         {
