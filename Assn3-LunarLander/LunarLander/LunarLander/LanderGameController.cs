@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using static LunarLander.GameState;
+using static LunarLander.MenuState;
 
 namespace LunarLander
 {
@@ -37,6 +38,8 @@ namespace LunarLander
 
         // holds game state information
         public GameState GameState;
+        private GameState _previousGameState;
+        public MenuState MenuState;
         public TimeSpan LoadingTime;
         public int CurrentLevel;
 
@@ -252,11 +255,12 @@ namespace LunarLander
             {
                 // first, see if the pause button is pressed
                 case Running when _inputHandler.PauseButton.Pressed:
-                    Console.WriteLine("PAUSE");
                     GameState = Paused;
+                    MenuState = Main;
+                    _previousGameState = Running;
                     break;
+                // running when pause is NOT pressed
                 case Running:
-                {
                     // turning rate: 2pi/3 rads / sec
                     const float turningRate = 2 * MathHelper.Pi / 3;
                     var newOrientation = Lander.Orientation;
@@ -423,39 +427,34 @@ namespace LunarLander
                             GameState = ShipCrashed;
                         }
                     }
-
                     break;
-                }
+                case ShipCrashed when _inputHandler.PauseButton.Pressed:
+                    GameState = Paused;
+                    MenuState = Main;
+                    _previousGameState = Paused;    // when pressing Esc when dead, don't let us go back
+                    break;
                 case ShipCrashed:
-                {
-                    // add menu availability option here
+                    // do nothing when dead
                     break;
-                }
                 case PassedLevel:
-                {
                     LoadingTime -= gameTime.ElapsedGameTime;
                     if (LoadingTime.TotalSeconds < 0)
-                    {
                         StartLevel(2);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Loading: " + LoadingTime.TotalSeconds);
-                    }
-
                     break;
-                }
-                case BeatGame:
-                {
-                    // add menu availability option here
+                case BeatGame when _inputHandler.PauseButton.Pressed:
+                    GameState = Paused;
+                    MenuState = Main;
+                    _previousGameState = Paused;    // when pressing Esc when game is over, don't let us go back
                     break;
-                }
                 // check if pause button is pressed
                 case Paused when _inputHandler.PauseButton.Pressed:
-                    GameState = Running;
+                    GameState = _previousGameState;
                     break;
                 case Paused:
                     // menu navigation here
+                    break;
+                default:
+                    // do nothing on default
                     break;
             }
         }
