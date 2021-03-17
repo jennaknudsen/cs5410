@@ -86,7 +86,7 @@ namespace LunarLander
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
             _spriteBatch.Begin();
 
@@ -100,98 +100,101 @@ namespace LunarLander
             // end spritebatch here so we can draw terrain over background
             _spriteBatch.End();
 
-            // next, draw the terrain (if generated)
-            if (_landerGameController.TerrainGenerated)
+            // don't draw ANY of this if we are in the main menu
+            if (_landerGameController.GameState != MainMenu)
             {
-                // only calculate the terrain once
-                if (_landerGameController.RecalculateTerrain)
+                // next, draw the terrain (if generated)
+                if (_landerGameController.TerrainGenerated)
                 {
-                    GenerateTerrainVertices();
-                    _landerGameController.RecalculateTerrain = false;
+                    // only calculate the terrain once
+                    if (_landerGameController.RecalculateTerrain)
+                    {
+                        GenerateTerrainVertices();
+                        _landerGameController.RecalculateTerrain = false;
+                    }
+
+                    // this will draw the terrain polygon itself
+                    foreach (var pass in _basicEffect.CurrentTechnique.Passes)
+                    {
+                        pass.Apply();
+
+                        _graphics.GraphicsDevice.DrawUserIndexedPrimitives(
+                            PrimitiveType.TriangleStrip,
+                            _terrainVertexPositionColors, 0, _terrainVertexPositionColors.Length,
+                            _terrainIndexArray, 0, _terrainIndexArray.Length - 2
+                        );
+                    }
                 }
 
-                // this will draw the terrain polygon itself
-                foreach (var pass in _basicEffect.CurrentTechnique.Passes)
-                {
-                    pass.Apply();
+                // Now, draw the lander
+                _spriteBatch.Begin();
 
-                    _graphics.GraphicsDevice.DrawUserIndexedPrimitives(
-                        PrimitiveType.TriangleStrip,
-                        _terrainVertexPositionColors, 0, _terrainVertexPositionColors.Length,
-                        _terrainIndexArray, 0, _terrainIndexArray.Length - 2
-                    );
-                }
+                // set lander position rectangle
+                // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
+                var lander = _landerGameController.Lander;
+                var (landerX, landerY) = GetAbsolutePixelCoordinates((lander.Position.x,
+                    lander.Position.y));
+                var landerSizePixels = RescaleUnitsToPixels(Lander.Size);
+                _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
+
+                // run draw function
+                _spriteBatch.Draw(_texLander,
+                    _positionRectangle,
+                    null,
+                    Color.Aqua,
+                    lander.Orientation,
+                    // center origin in the texture
+                    new Vector2(_texLander.Width / 2, _texLander.Width / 2),
+                    SpriteEffects.None,
+                    0);
+
+                _spriteBatch.End();
+
+                // get current fuel, speed, angle values
+                var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
+                var speed = _landerGameController.Lander.VelocityTotal;
+                var angle = _landerGameController.Lander.OrientationDegrees;
+                var safeArea = _landerGameController.InSafeArea ? "Yes" : "No";
+
+                // set the correct colors
+                var fuelColor = fuel > 0d ? Color.Green : Color.White;
+                var speedColor = speed < MaxSpeed ? Color.Green : Color.White;
+                var angleColor = angle > MinAngle || angle < MaxAngle ? Color.Green : Color.White;
+                var safeAreaColor = safeArea.Equals("Yes") ? Color.Green : Color.White;
+
+                // set the formatted strings
+                var fuelString = "Fuel: " +
+                                 fuel.ToString("0.000") + " s";
+                var speedString = "Speed: " +
+                                  speed.ToString("0.000") + " m/s";
+                var angleString = "Angle: " +
+                                  angle.ToString("0.000") + " degrees";
+                var safeAreaString = "In safe area? " +
+                                     safeArea;
+
+                // draw on-screen elements
+                _spriteBatch.Begin();
+
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.65f,
+                    BoardSize * 0.95f));
+
+                _spriteBatch.DrawString(_gameFont, fuelString,
+                    new Vector2(textPosX, textPosY),
+                    fuelColor);
+                _spriteBatch.DrawString(_gameFont, speedString,
+                    new Vector2(textPosX, textPosY + 20),
+                    speedColor);
+                _spriteBatch.DrawString(_gameFont, angleString,
+                    new Vector2(textPosX, textPosY + 40),
+                    angleColor);
+                _spriteBatch.DrawString(_gameFont, safeAreaString,
+                    new Vector2(textPosX, textPosY + 60),
+                    safeAreaColor);
+
+                _spriteBatch.End();
+
+                // TODO particles here
             }
-
-            // Now, draw the lander
-            _spriteBatch.Begin();
-
-            // set lander position rectangle
-            // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
-            var lander = _landerGameController.Lander;
-            var (landerX, landerY) = GetAbsolutePixelCoordinates((lander.Position.x,
-                lander.Position.y));
-            var landerSizePixels = RescaleUnitsToPixels(Lander.Size);
-            _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
-
-            // run draw function
-            _spriteBatch.Draw(_texLander,
-                _positionRectangle,
-                null,
-                Color.Aqua,
-                lander.Orientation,
-                // center origin in the texture
-                new Vector2(_texLander.Width / 2, _texLander.Width / 2),
-                SpriteEffects.None,
-                0);
-
-            _spriteBatch.End();
-
-            // get current fuel, speed, angle values
-            var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
-            var speed = _landerGameController.Lander.VelocityTotal;
-            var angle = _landerGameController.Lander.OrientationDegrees;
-            var safeArea = _landerGameController.InSafeArea ? "Yes" : "No";
-
-            // set the correct colors
-            var fuelColor = fuel > 0d ? Color.Green : Color.White;
-            var speedColor = speed < MaxSpeed ? Color.Green : Color.White;
-            var angleColor = angle > MinAngle || angle < MaxAngle ?
-                Color.Green : Color.White;
-            var safeAreaColor = safeArea.Equals("Yes") ? Color.Green : Color.White;
-
-            // set the formatted strings
-            var fuelString = "Fuel: " +
-                               fuel.ToString("0.000") + " s";
-            var speedString = "Speed: " +
-                               speed.ToString("0.000") + " m/s";
-            var angleString = "Angle: " +
-                               angle.ToString("0.000") + " degrees";
-            var safeAreaString = "In safe area? " +
-                               safeArea;
-
-            // draw on-screen elements
-            _spriteBatch.Begin();
-
-            var (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.65f,
-                BoardSize * 0.95f));
-
-            _spriteBatch.DrawString(_gameFont, fuelString,
-                new Vector2(textPosX, textPosY),
-                fuelColor);
-            _spriteBatch.DrawString(_gameFont, speedString,
-                new Vector2(textPosX, textPosY + 20),
-                speedColor);
-            _spriteBatch.DrawString(_gameFont, angleString,
-                new Vector2(textPosX, textPosY + 40),
-                angleColor);
-            _spriteBatch.DrawString(_gameFont, safeAreaString,
-                new Vector2(textPosX, textPosY + 60),
-                safeAreaColor);
-
-            _spriteBatch.End();
-
-            // TODO particles here
 
             // now, depending on game state, draw other things
             DrawBasedOnState();
@@ -224,10 +227,10 @@ namespace LunarLander
 
                     // draw the game over text itself
                     var crashedString = "Game over. Your ship crashed.";
-                    var restartingString = "Press ESC to start a new game.";
+                    var restartingString = "Press ESC for the main menu.";
 
                     (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                        BoardSize * 0.55f));
+                        BoardSize * 0.56f));
                     _spriteBatch.DrawString(_menuFont, crashedString,
                         new Vector2(textPosX, textPosY),
                         Color.Red);
@@ -287,10 +290,10 @@ namespace LunarLander
 
                     // draw the won the game text itself
                     var beatGameString = "You beat the game! Congrats!";
-                    var restartingString = "Press ESC to start a new game.";
+                    var restartingString = "Press ESC for the main menu.";
 
                     (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                        BoardSize * 0.55f));
+                        BoardSize * 0.56f));
                     _spriteBatch.DrawString(_menuFont, beatGameString,
                         new Vector2(textPosX, textPosY),
                         Color.Yellow);
@@ -336,9 +339,9 @@ namespace LunarLander
 
             // get correct pixel coordinates for menu items
             var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-            var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
-            var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.3f));
-            var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+            var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+            var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.32f));
+            var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
 
             // set proper strings
             var pausedString = "=== PAUSED ===";
@@ -394,10 +397,10 @@ namespace LunarLander
 
                     // get correct pixel coordinates for menu items
                     var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
-                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
-                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
-                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
+                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.42f));
+                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
 
                     // set proper strings
                     var newGameString = "New Game";

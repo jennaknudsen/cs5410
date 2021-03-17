@@ -42,16 +42,19 @@ namespace LunarLander
                 }
                 else
                 {
+                    // use MainMenuController's OpenMenu() because it's smarter than we are
                     GameController.MainMenuController.OpenMenu();
                 }
             }
             else if (inputHandler.MenuDownButton.Pressed || inputHandler.MenuUpButton.Pressed)
             {
+                // since we only have two buttons in menu, just toggle them both
                 ContinueMenuItem.Selected = !ContinueMenuItem.Selected;
                 QuitMenuItem.Selected = !QuitMenuItem.Selected;
             }
             else if (inputHandler.MenuBackButton.Pressed)
             {
+                // on ESC, just resume
                 GameController.GameState = Running;
             }
         }
