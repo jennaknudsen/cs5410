@@ -504,21 +504,18 @@ namespace LunarLander
         // Reference: https://stackoverflow.com/questions/37224912/circle-line-segment-collision
         private static bool LineCircleIntersection((float x, float y) pt1,
             (float x, float y) pt2, ((float x, float y) center, float radius) circle) {
-            // let v1 = { x: pt2.x - pt1.x, y: pt2.y - pt1.y };
             (float x, float y) v1 = (pt2.x - pt1.x, pt2.y - pt1.y);
-            // let v2 = { x: pt1.x - circle.center.x, y: pt1.y - circle.center.y };
             (float x, float y) v2 = (pt1.x - circle.center.x, pt1.y - circle.center.y);
-            // let b = -2 * (v1.x * v2.x + v1.y * v2.y);
+
             var b = -2 * (v1.x * v2.x + v1.y * v2.y);
-            // let c =  2 * (v1.x * v1.x + v1.y * v1.y);
             var c =  2 * (v1.x * v1.x + v1.y * v1.y);
-            // let d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+
             float d;
             try
             {
                 d = (float) Math.Sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
             }
-            catch (Exception ex)
+            catch
             {
                 // return false if no intercept
                 return false;
@@ -533,6 +530,7 @@ namespace LunarLander
             if (u2 <= 1 && u2 >= 0) {  // If point on the line segment
                 return true;
             }
+
             return false;
         }
     }

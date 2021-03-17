@@ -13,7 +13,8 @@ namespace LunarLander
 
         // assets for this game
         private Texture2D _texLander;
-        private Texture2D _texBackground;
+        private Texture2D _texSpaceBackground;
+        private Texture2D _texBackgroundDimmer;
         private Rectangle _positionRectangle;
         private SpriteFont _spriteFont;
         private BasicEffect _basicEffect;
@@ -66,7 +67,8 @@ namespace LunarLander
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _texLander = this.Content.Load<Texture2D>("Lander-2");
-            _texBackground = this.Content.Load<Texture2D>("space-background");
+            _texSpaceBackground = this.Content.Load<Texture2D>("space-background");
+            _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _spriteFont = this.Content.Load<SpriteFont>("GameFont");
         }
 
@@ -89,7 +91,7 @@ namespace LunarLander
             var rectSizePixels = RescaleUnitsToPixels(LanderGameController.BoardSize);
             // create the background rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
-            _spriteBatch.Draw(_texBackground, backgroundRect, Color.Gray);
+            _spriteBatch.Draw(_texSpaceBackground, backgroundRect, Color.Gray);
 
             // end spritebatch here so we can draw terrain over background
             _spriteBatch.End();
@@ -141,45 +143,52 @@ namespace LunarLander
 
             _spriteBatch.End();
 
-            // if (_landerGameController.GameState == Running)
-            // {
-                // get current fuel, speed, angle values
-                var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
-                var speed = _landerGameController.Lander.VelocityTotal;
-                var angle = _landerGameController.Lander.OrientationDegrees;
+            // get current fuel, speed, angle values
+            var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
+            var speed = _landerGameController.Lander.VelocityTotal;
+            var angle = _landerGameController.Lander.OrientationDegrees;
 
-                // set the correct colors
-                var fuelColor = fuel > 0d ? Color.Green : Color.White;
-                var speedColor = speed < 2f ? Color.Green : Color.White;
-                var angleColor = angle > 355f || angle < 5f ? Color.Green : Color.White;
+            // set the correct colors
+            var fuelColor = fuel > 0d ? Color.Green : Color.White;
+            var speedColor = speed < 2f ? Color.Green : Color.White;
+            var angleColor = angle > 355f || angle < 5f ? Color.Green : Color.White;
 
-                // set the formatted strings
-                var fuelString = "Fuel: " +
-                                   fuel.ToString("0.000") + " s";
-                var speedString = "Speed: " +
-                                   speed.ToString("0.000") + " m/s";
-                var angleString = "Angle: " +
-                                   angle.ToString("0.000") + " degrees";
+            // set the formatted strings
+            var fuelString = "Fuel: " +
+                               fuel.ToString("0.000") + " s";
+            var speedString = "Speed: " +
+                               speed.ToString("0.000") + " m/s";
+            var angleString = "Angle: " +
+                               angle.ToString("0.000") + " degrees";
 
-                // draw on-screen elements
+            // draw on-screen elements
+            _spriteBatch.Begin();
+
+            var (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.65f,
+                LanderGameController.BoardSize * 0.95f));
+
+            _spriteBatch.DrawString(_spriteFont, fuelString,
+                new Vector2(textPosX, textPosY),
+                fuelColor);
+            _spriteBatch.DrawString(_spriteFont, speedString,
+                new Vector2(textPosX, textPosY + 20),
+                speedColor);
+            _spriteBatch.DrawString(_spriteFont, angleString,
+                new Vector2(textPosX, textPosY + 40),
+                angleColor);
+
+            _spriteBatch.End();
+
+            // dim entire screen on pause
+            if (_landerGameController.GameState == Paused)
+            {
                 _spriteBatch.Begin();
+                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
 
-                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.65f,
-                    LanderGameController.BoardSize * 0.95f));
-
-                _spriteBatch.DrawString(_spriteFont, fuelString,
-                    new Vector2(textPosX, textPosY),
-                    fuelColor);
-                _spriteBatch.DrawString(_spriteFont, speedString,
-                    new Vector2(textPosX, textPosY + 20),
-                    speedColor);
-                _spriteBatch.DrawString(_spriteFont, angleString,
-                    new Vector2(textPosX, textPosY + 40),
-                    angleColor);
+                // code to determine which menu elements to draw on pause
 
                 _spriteBatch.End();
-            // }
-
+            }
             base.Draw(gameTime);
         }
 
