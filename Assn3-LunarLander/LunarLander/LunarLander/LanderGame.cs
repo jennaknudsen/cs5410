@@ -153,8 +153,9 @@ namespace LunarLander
 
             // set the correct colors
             var fuelColor = fuel > 0d ? Color.Green : Color.White;
-            var speedColor = speed < 2f ? Color.Green : Color.White;
-            var angleColor = angle > 355f || angle < 5f ? Color.Green : Color.White;
+            var speedColor = speed < LanderGameController.MaxSpeed ? Color.Green : Color.White;
+            var angleColor = angle > LanderGameController.MinAngle || angle < LanderGameController.MaxAngle ?
+                Color.Green : Color.White;
             var safeAreaColor = safeArea.Equals("Yes") ? Color.Green : Color.White;
 
             // set the formatted strings

@@ -43,6 +43,11 @@ namespace LunarLander
         // flags whether lander is in safe area or not
         public bool InSafeArea = false;
 
+        // thresholds for safe landings
+        public const float MaxSpeed = 2.0f;
+        public const float MaxAngle = 5f;
+        public const float MinAngle = 355f;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
@@ -399,8 +404,8 @@ namespace LunarLander
                         // angle must be within 355 - 5 degrees
                         // must be in safe area
                         // check for all conditions
-                        if ((Lander.OrientationDegrees < 5 || Lander.OrientationDegrees > 355)
-                            && Lander.VelocityTotal < 2
+                        if ((Lander.OrientationDegrees < MaxAngle || Lander.OrientationDegrees > MinAngle)
+                            && Lander.VelocityTotal < MaxSpeed
                             && InSafeArea)
                         {
                             if (CurrentLevel == 1)
