@@ -66,5 +66,11 @@ namespace LunarLander
                 }
             }
         }
+
+        // get all keys that are pressed
+        public Keys[] GetDepressedKeys()
+        {
+            return Keyboard.GetState().GetPressedKeys();
+        }
     }
 }

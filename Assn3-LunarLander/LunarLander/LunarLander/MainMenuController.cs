@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Input;
 using static LunarLander.GameState;
 using static LunarLander.MenuState;
 
@@ -11,10 +12,10 @@ namespace LunarLander
         public MenuState MenuState;
 
         // lists of menus
-        public readonly List<MenuItem> MainMenuList;
-        public readonly List<MenuItem> HighScoresList;
-        public readonly List<MenuItem> ControlsList;
-        public readonly List<MenuItem> CreditsList;
+        private readonly List<MenuItem> _mainMenuList;
+        private readonly List<MenuItem> _highScoresList;
+        private readonly List<MenuItem> _controlsList;
+        private readonly List<MenuItem> _creditsList;
 
         // all menu items
         public readonly MenuItem NewGameMenuItem;
@@ -24,7 +25,14 @@ namespace LunarLander
         public readonly MenuItem ThrustMenuItem;
         public readonly MenuItem RotateLeftMenuItem;
         public readonly MenuItem RotateRightMenuItem;
+        public readonly MenuItem ResetDefaultsMenuItem;
         public readonly MenuItem ViewCreditsMenuItem;
+
+        // used for control binding
+        private bool _inControlBinding = false;
+        private List<Keys> _bindingKeysList;
+        public string BindingKeysString;
+        private Button _rebindingButton;
 
         public MainMenuController(LanderGameController controller)
         {
@@ -39,28 +47,30 @@ namespace LunarLander
             ThrustMenuItem = new MenuItem("Thrust");
             RotateLeftMenuItem = new MenuItem("Rotate Left");
             RotateRightMenuItem = new MenuItem("Rotate Right");
+            ResetDefaultsMenuItem = new MenuItem("Reset to Defaults");
             ViewCreditsMenuItem = new MenuItem("High Scores");
 
             // populate each menu item list
-            MainMenuList = new List<MenuItem>
+            _mainMenuList = new List<MenuItem>
             {
                 NewGameMenuItem,
                 HighScoresMenuItem,
                 CustomizeControlsMenuItem,
                 ViewCreditsMenuItem
             };
-            HighScoresList = new List<MenuItem>
+            _highScoresList = new List<MenuItem>
             {
                 BackToMainMenuItem
             };
-            ControlsList = new List<MenuItem>
+            _controlsList = new List<MenuItem>
             {
                 ThrustMenuItem,
                 RotateLeftMenuItem,
                 RotateRightMenuItem,
+                ResetDefaultsMenuItem,
                 BackToMainMenuItem
             };
-            CreditsList = new List<MenuItem>
+            _creditsList = new List<MenuItem>
             {
                 BackToMainMenuItem
             };
@@ -76,7 +86,7 @@ namespace LunarLander
             MenuState = Main;
 
             // deselect all items in the menu
-            foreach (var item in MainMenuList)
+            foreach (var item in _mainMenuList)
             {
                 item.Selected = false;
             }
@@ -96,10 +106,11 @@ namespace LunarLander
          * |      |--- Thrust
          * |      |--- Rotate Left
          * |      |--- Rotate Right
-         * |      └---- Back to Main
+         * |      |--- Reset to Defaults
+         * |      └--- Back to Main
          * |
          * |----- View Credits
-         *        └---- Back to Main
+         *        └--- Back to Main
          */
         public override void ProcessMenu(InputHandler inputHandler)
         {
@@ -109,28 +120,89 @@ namespace LunarLander
                     // on up/down press, just select the next / prev item
                     if (inputHandler.MenuUpButton.Pressed)
                     {
-                        SelectPreviousItem(MainMenuList);
+                        SelectPreviousItem(_mainMenuList);
                     }
                     else if (inputHandler.MenuDownButton.Pressed)
                     {
-                        SelectNextItem(MainMenuList);
+                        SelectNextItem(_mainMenuList);
                     }
                     // on confirm press, we need to determine which action to do
                     else if (inputHandler.MenuConfirmButton.Pressed)
                     {
                         // get selected index in Main Menu
-                        var selectedIndex = GetSelectedIndex(MainMenuList);
-                        var selectedItem = MainMenuList[selectedIndex];
+                        var selectedIndex = GetSelectedIndex(_mainMenuList);
+                        var selectedItem = _mainMenuList[selectedIndex];
 
-                        // create a new game
+                        // switch state based on what item we selected
                         if (selectedItem == NewGameMenuItem)
                         {
                             GameController.StartLevel(1);
                         }
-                        // TODO handle other buttons
+                        else if (selectedItem == HighScoresMenuItem)
+                        {
+                            MenuState = HighScores;
+                        }
+                        else if (selectedItem == CustomizeControlsMenuItem)
+                        {
+                            MenuState = Controls;
+                        }
+                        else if (selectedItem == ViewCreditsMenuItem)
+                        {
+                            MenuState = Credits;
+                        }
                     }
                     break;
                 case Controls:
+                    if (_inControlBinding)
+                    {
+                        var depressedKeys = inputHandler.GetDepressedKeys();
+                        // if we've bound at least one key, but there are no depressed keys, then we're done
+                        if (_bindingKeysList.Count != 0 && depressedKeys.Length == 0)
+                        {
+                            _rebindingButton.BoundKeys = _bindingKeysList.ToArray();
+                            _inControlBinding = false;
+                        }
+                        else
+                        {
+                            // if we're still binding keys, we need to get all depressed keys, and for each one
+                            // we haven't accounted for, add it as a bind
+                            foreach (var key in depressedKeys)
+                            {
+                                if (!_bindingKeysList.Contains(key))
+                                {
+                                    _bindingKeysList.Add(key);
+                                }
+                            }
+                        }
+                    }
+                    // if we aren't currently binding, check if the enter button is pressed
+                    else if (inputHandler.MenuConfirmButton.Pressed)
+                    {
+                        // get which button is pressed
+                        var selectedIndex = GetSelectedIndex(_controlsList);
+                        var selectedItem = _controlsList[selectedIndex];
+
+                        // easy ones first
+                        if (selectedItem == BackToMainMenuItem)
+                        {
+                            MenuState = Main;
+                        }
+                        else if (selectedItem == ResetDefaultsMenuItem)
+                        {
+                            // defaults: thrust -> up arrow, left -> left arrow, right -> right arrow
+                            inputHandler.ThrustUpButton.BoundKeys = new[] {Keys.Up};
+                            inputHandler.TurnShipLeftButton.BoundKeys = new[] {Keys.Left};
+                            inputHandler.TurnShipRightButton.BoundKeys = new[] {Keys.Right};
+
+                            // reselect "Back to Main" after resetting defaults (for convenience)
+                            ResetDefaultsMenuItem.Selected = false;
+                            BackToMainMenuItem.Selected = true;
+                        }
+                        else
+                        {
+
+                        }
+                    }
                     break;
                 case HighScores:
                     break;
