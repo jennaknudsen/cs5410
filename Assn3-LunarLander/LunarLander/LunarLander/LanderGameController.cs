@@ -403,21 +403,19 @@ namespace LunarLander
                             && Lander.VelocityTotal < 2
                             && InSafeArea)
                         {
-                            GameState = PassedLevel;
-                            Console.WriteLine("PASSED! Final stats:");
-                            Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
-                            Console.WriteLine("Velocity: " + Lander.VelocityTotal);
-                            Console.WriteLine("In safe area: " + InSafeArea);
-                            LoadingTime = TimeSpan.FromSeconds(3);
+                            if (CurrentLevel == 1)
+                            {
+                                GameState = PassedLevel;
+                                LoadingTime = TimeSpan.FromSeconds(3);
+                            }
+                            else
+                            {
+                                GameState = BeatGame;
+                            }
                         }
                         else
                         {
                             GameState = ShipCrashed;
-                            Console.WriteLine("Crashed :( Final stats:");
-                            Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
-                            Console.WriteLine("Velocity: " + Lander.VelocityTotal);
-                            Console.WriteLine("In safe area: " + InSafeArea);
-                            LoadingTime = TimeSpan.FromSeconds(3);
                         }
                     }
 
@@ -425,16 +423,7 @@ namespace LunarLander
                 }
                 case ShipCrashed:
                 {
-                    LoadingTime -= gameTime.ElapsedGameTime;
-                    if (LoadingTime.TotalSeconds < 0)
-                    {
-                        StartLevel(1);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Loading: " + LoadingTime.TotalSeconds);
-                    }
-
+                    // add menu availability option here
                     break;
                 }
                 case PassedLevel:
@@ -449,6 +438,11 @@ namespace LunarLander
                         Console.WriteLine("Loading: " + LoadingTime.TotalSeconds);
                     }
 
+                    break;
+                }
+                case BeatGame:
+                {
+                    // add menu availability option here
                     break;
                 }
                 // check if pause button is pressed

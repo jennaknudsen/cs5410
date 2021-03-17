@@ -225,6 +225,66 @@ namespace LunarLander
 
                 _spriteBatch.End();
             }
+            else if (_landerGameController.GameState == PassedLevel)
+            {
+                _spriteBatch.Begin();
+
+                // draw the backdrop rectangle for the text
+                var (passedRectPosX, passedRectPosY) = GetAbsolutePixelCoordinates((
+                    0, LanderGameController.BoardSize * 0.60f));
+                var passedRectHeight = (int) (rectSizePixels * 0.2);
+                var passedRect = new Rectangle(passedRectPosX, passedRectPosY, rectSizePixels, passedRectHeight);
+
+                _spriteBatch.Draw(_texBackgroundDimmer, passedRect, Color.Aqua);
+
+                // draw the passed level text
+                var passedAdvancingIn = "Level passed! Advancing in: ";
+
+                // get how many seconds left before loading
+                if (_landerGameController.LoadingTime.TotalSeconds > 2)
+                    passedAdvancingIn += "3";
+                else if (_landerGameController.LoadingTime.TotalSeconds > 1)
+                    passedAdvancingIn += "2";
+                else
+                    passedAdvancingIn += "1";
+
+                // now, get text coordinates and draw the string
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
+                    LanderGameController.BoardSize * 0.52f));
+
+                _spriteBatch.DrawString(_menuFont, passedAdvancingIn,
+                    new Vector2(textPosX, textPosY),
+                    Color.GreenYellow);
+
+                _spriteBatch.End();
+            }
+            else if (_landerGameController.GameState == BeatGame)
+            {
+                _spriteBatch.Begin();
+
+                // draw the backdrop rectangle for the text
+                var (beatGameRectPosX, beatGameRectPosY) = GetAbsolutePixelCoordinates((
+                        0, LanderGameController.BoardSize * 0.65f));
+                var beatGameRectHeight = (int) (rectSizePixels * 0.3);
+                var beatGameRect = new Rectangle(beatGameRectPosX, beatGameRectPosY, rectSizePixels, beatGameRectHeight);
+
+                _spriteBatch.Draw(_texBackgroundDimmer, beatGameRect, Color.Aqua);
+
+                // draw the won the game text itself
+                var beatGameString = "You beat the game! Congrats!";
+                var restartingString = "Press ESC to start a new game.";
+
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
+                    LanderGameController.BoardSize * 0.55f));
+                _spriteBatch.DrawString(_menuFont, beatGameString,
+                    new Vector2(textPosX, textPosY),
+                    Color.Yellow);
+                _spriteBatch.DrawString(_menuFont, restartingString,
+                    new Vector2(textPosX, textPosY + 30),
+                    Color.Yellow);
+
+                _spriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }

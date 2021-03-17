@@ -5,6 +5,7 @@ namespace LunarLander
         Paused,
         ShipCrashed,
         PassedLevel,
+        BeatGame,
         Running
     }
 
