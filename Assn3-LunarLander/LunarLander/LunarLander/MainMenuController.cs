@@ -223,9 +223,16 @@ namespace LunarLander
                         else if (selectedItem == ResetDefaultsMenuItem)
                         {
                             // defaults: thrust -> up arrow, left -> left arrow, right -> right arrow
-                            inputHandler.ThrustUpButton.BoundKeys = new[] {Keys.Up};
-                            inputHandler.TurnShipLeftButton.BoundKeys = new[] {Keys.Left};
-                            inputHandler.TurnShipRightButton.BoundKeys = new[] {Keys.Right};
+                            var thrustKeys = new[] {Keys.Up};
+                            var leftKeys = new[] {Keys.Left};
+                            var rightKeys = new[] {Keys.Right};
+
+                            inputHandler.ThrustUpButton.BoundKeys = thrustKeys;
+                            inputHandler.TurnShipLeftButton.BoundKeys = leftKeys;
+                            inputHandler.TurnShipRightButton.BoundKeys = rightKeys;
+
+                            // save keys to storage
+                            GameController.LocalStorageManager.SaveControlScheme(thrustKeys, leftKeys, rightKeys);
                         }
                         else
                         {

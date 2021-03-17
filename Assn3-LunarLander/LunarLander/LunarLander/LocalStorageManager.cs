@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.IO.IsolatedStorage;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Microsoft.Xna.Framework.Input;
@@ -28,74 +29,60 @@ namespace LunarLander
         // public-facing method to load controls
         public void LoadControlScheme()
         {
-            Console.WriteLine("Here");
             // don't want to be loading multiple things at once
             lock (this)
             {
-                if (!this._loading)
-                {
-                    this._loading = true;
+                if (this._loading) return;
+                this._loading = true;
 
 #pragma warning disable CS4014
-                    FinalizeLoadControlsAsync();
+                FinalizeLoadControlsAsync();
 #pragma warning restore CS4014
-                }
             }
         }
 
         // internal Task used to read the XML and load the controls
         private async Task FinalizeLoadControlsAsync()
         {
-            Console.WriteLine("In async");
             await Task.Run(() =>
             {
                 using (var storage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    Console.WriteLine(storage.Scope.ToString());
                     try
                     {
-                        Console.WriteLine("In try in task");
                         if (storage.FileExists("ControlScheme.xml"))
                         {
-                            Console.WriteLine("About to load");
+                            // open the XML file
                             using var fs = storage.OpenFile("ControlScheme.xml", FileMode.Open);
-                            Console.WriteLine("Loaded fs");
-                            if (fs != null)
-                            {
-                                Console.WriteLine("Here");
-                                var mySerializer = new XmlSerializer(typeof(ControlScheme));
-                                Console.WriteLine("Here 2");
-                                StoredControlScheme = (ControlScheme) mySerializer.Deserialize(fs);
-                                Console.WriteLine("Here 3");
-                            }
-                            Console.WriteLine("Finished loading");
-                            if (StoredControlScheme == null)
-                                Console.WriteLine("SCS is Null");
-                            else
-                                Console.WriteLine("SCS is not Null");
+                            var mySerializer = new XmlSerializer(typeof(ControlScheme));
+                            StoredControlScheme = (ControlScheme) mySerializer.Deserialize(fs);
                         }
                         else
                         {
-                            Console.WriteLine("Here. File didn't exist");
-
                             // Make default control scheme if file doesn't exist
                             var thrustKeys = new[] {Keys.Up};
                             var leftKeys = new[] {Keys.Left};
                             var rightKeys = new[] {Keys.Right};
+
+                            // save this as default scheme
                             SaveControlScheme(thrustKeys, leftKeys, rightKeys);
 
-                            using var fs = storage.OpenFile("ControlScheme.xml", FileMode.Open);
-                            if (fs != null)
+                            // wait for save to finish before loading
+                            while (this._saving)
                             {
-                                var mySerializer = new XmlSerializer(typeof(ControlScheme));
-                                StoredControlScheme = (ControlScheme) mySerializer.Deserialize(fs);
+                                Thread.Sleep(10);
                             }
+
+                            // now, load this as default
+                            using var fs = storage.OpenFile("ControlScheme.xml", FileMode.Open);
+                            var mySerializer = new XmlSerializer(typeof(ControlScheme));
+                            StoredControlScheme = (ControlScheme) mySerializer.Deserialize(fs);
                         }
                     }
                     catch (IsolatedStorageException ex)
                     {
-                        // Ideally show something to the user, but this is demo code :)
                         Console.WriteLine("File didn't exist!!");
+                        Console.WriteLine(ex.Message);
                         Console.WriteLine(ex.StackTrace);
                     }
                 }
@@ -109,16 +96,17 @@ namespace LunarLander
         {
             lock (this)
             {
-                if (!this._saving)
-                {
-                    this._saving = true;
+                // don't run if already saving
+                if (this._saving) return;
 
-                    // Create something to save
-                    var myState = new ControlScheme(thrustKeys, rotateLeftKeys, rotateRightKeys);
+                // flag that this is saving
+                this._saving = true;
 
-                    // save this control scheme
-                    FinalizeSaveControlsAsync(myState);
-                }
+                // Create something to save
+                var myState = new ControlScheme(thrustKeys, rotateLeftKeys, rotateRightKeys);
+
+                // save this control scheme
+                FinalizeSaveControlsAsync(myState);
             }
         }
 
@@ -131,21 +119,21 @@ namespace LunarLander
                 {
                     try
                     {
-                        using (IsolatedStorageFileStream fs = storage.OpenFile("ControlScheme.xml", FileMode.OpenOrCreate))
-                        {
-                            if (fs != null)
-                            {
-                                XmlSerializer mySerializer = new XmlSerializer(typeof(ControlScheme));
-                                mySerializer.Serialize(fs, controlScheme);
-                            }
-                        }
+                        // open the XML file
+                        using var fs = storage.OpenFile("ControlScheme.xml", FileMode.Create);
+
+                        // serialize our controlScheme into XML and save it
+                        var mySerializer = new XmlSerializer(typeof(ControlScheme));
+                        mySerializer.Serialize(fs, controlScheme);
                     }
-                    catch (IsolatedStorageException)
+                    catch (IsolatedStorageException ex)
                     {
-                        // Ideally show something to the user, but this is demo code :)
+                        Console.WriteLine(ex.Message);
+                        Console.WriteLine(ex.StackTrace);
                     }
                 }
 
+                // flag that we're no longer saving
                 this._saving = false;
             });
         }

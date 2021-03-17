@@ -65,17 +65,13 @@ namespace LunarLander
             PauseMenuController = new PauseMenuController(this);
             LocalStorageManager = new LocalStorageManager();
 
-
-            Console.WriteLine("Before load");
             // in constructor, read in the control scheme and high scores initially
             LocalStorageManager.LoadControlScheme();
-            Console.WriteLine("After load");
 
-            // Thread.Sleep(1000);
             // need to wait for a control scheme to be loaded
             while (LocalStorageManager.StoredControlScheme == null)
             {
-                Thread.Sleep(100);   // Added Sleep so that this thread can "breathe" will Async happens
+                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
             }
 
             // set the correct control scheme after load
