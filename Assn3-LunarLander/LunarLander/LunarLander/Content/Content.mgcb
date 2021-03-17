@@ -20,6 +20,13 @@
 /processorParam:TextureFormat=Compressed
 /build:GameFont.spritefont
 
+#begin MenuFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:MenuFont.spritefont
+
 #begin background-dimmer.png
 /importer:TextureImporter
 /processor:TextureProcessor

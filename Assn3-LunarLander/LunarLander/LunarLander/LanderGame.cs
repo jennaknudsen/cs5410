@@ -16,7 +16,8 @@ namespace LunarLander
         private Texture2D _texSpaceBackground;
         private Texture2D _texBackgroundDimmer;
         private Rectangle _positionRectangle;
-        private SpriteFont _spriteFont;
+        private SpriteFont _gameFont;
+        private SpriteFont _menuFont;
         private BasicEffect _basicEffect;
 
         // stuff for terrain rendering
@@ -69,7 +70,8 @@ namespace LunarLander
             _texLander = this.Content.Load<Texture2D>("Lander-2");
             _texSpaceBackground = this.Content.Load<Texture2D>("space-background");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
-            _spriteFont = this.Content.Load<SpriteFont>("GameFont");
+            _gameFont = this.Content.Load<SpriteFont>("GameFont");
+            _menuFont = this.Content.Load<SpriteFont>("MenuFont");
         }
 
         protected override void Update(GameTime gameTime)
@@ -167,13 +169,13 @@ namespace LunarLander
             var (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.65f,
                 LanderGameController.BoardSize * 0.95f));
 
-            _spriteBatch.DrawString(_spriteFont, fuelString,
+            _spriteBatch.DrawString(_gameFont, fuelString,
                 new Vector2(textPosX, textPosY),
                 fuelColor);
-            _spriteBatch.DrawString(_spriteFont, speedString,
+            _spriteBatch.DrawString(_gameFont, speedString,
                 new Vector2(textPosX, textPosY + 20),
                 speedColor);
-            _spriteBatch.DrawString(_spriteFont, angleString,
+            _spriteBatch.DrawString(_gameFont, angleString,
                 new Vector2(textPosX, textPosY + 40),
                 angleColor);
 
