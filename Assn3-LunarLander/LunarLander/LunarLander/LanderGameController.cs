@@ -38,10 +38,11 @@ namespace LunarLander
 
         // holds game state information
         public GameState GameState;
-        private GameState _previousGameState;
-        public MenuState MenuState;
         public TimeSpan LoadingTime;
         public int CurrentLevel;
+
+        // holds menu state information
+        public LanderMenuController MenuController;
 
         // flags whether lander is in safe area or not
         public bool InSafeArea = false;
@@ -55,6 +56,7 @@ namespace LunarLander
         public LanderGameController()
         {
             _inputHandler = new InputHandler();
+            MenuController = new LanderMenuController();
         }
 
         // use this function to actually start a level
@@ -256,8 +258,7 @@ namespace LunarLander
                 // first, see if the pause button is pressed
                 case Running when _inputHandler.PauseButton.Pressed:
                     GameState = Paused;
-                    MenuState = Main;
-                    _previousGameState = Running;
+                    MenuController.OpenMenu(Running);
                     break;
                 // running when pause is NOT pressed
                 case Running:
@@ -430,8 +431,7 @@ namespace LunarLander
                     break;
                 case ShipCrashed when _inputHandler.PauseButton.Pressed:
                     GameState = Paused;
-                    MenuState = Main;
-                    _previousGameState = Paused;    // when pressing Esc when dead, don't let us go back
+                    MenuController.OpenMenu();
                     break;
                 case ShipCrashed:
                     // do nothing when dead
@@ -443,18 +443,14 @@ namespace LunarLander
                     break;
                 case BeatGame when _inputHandler.PauseButton.Pressed:
                     GameState = Paused;
-                    MenuState = Main;
-                    _previousGameState = Paused;    // when pressing Esc when game is over, don't let us go back
+                    MenuController.OpenMenu();
                     break;
                 // check if pause button is pressed
-                case Paused when _inputHandler.PauseButton.Pressed:
-                    GameState = _previousGameState;
-                    break;
                 case Paused:
                     // menu navigation here
-                    break;
-                default:
-                    // do nothing on default
+                    MenuController.ProcessMenu(_inputHandler);
+                    if (MenuController.ExitMenu)
+                        GameState = MenuController.ReturnToGameState;
                     break;
             }
         }
