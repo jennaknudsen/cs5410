@@ -149,11 +149,13 @@ namespace LunarLander
             var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
             var speed = _landerGameController.Lander.VelocityTotal;
             var angle = _landerGameController.Lander.OrientationDegrees;
+            var safeArea = _landerGameController.InSafeArea ? "Yes" : "No";
 
             // set the correct colors
             var fuelColor = fuel > 0d ? Color.Green : Color.White;
             var speedColor = speed < 2f ? Color.Green : Color.White;
             var angleColor = angle > 355f || angle < 5f ? Color.Green : Color.White;
+            var safeAreaColor = safeArea.Equals("Yes") ? Color.Green : Color.White;
 
             // set the formatted strings
             var fuelString = "Fuel: " +
@@ -162,6 +164,8 @@ namespace LunarLander
                                speed.ToString("0.000") + " m/s";
             var angleString = "Angle: " +
                                angle.ToString("0.000") + " degrees";
+            var safeAreaString = "In safe area? " +
+                               safeArea;
 
             // draw on-screen elements
             _spriteBatch.Begin();
@@ -178,6 +182,9 @@ namespace LunarLander
             _spriteBatch.DrawString(_gameFont, angleString,
                 new Vector2(textPosX, textPosY + 40),
                 angleColor);
+            _spriteBatch.DrawString(_gameFont, safeAreaString,
+                new Vector2(textPosX, textPosY + 60),
+                safeAreaColor);
 
             _spriteBatch.End();
 

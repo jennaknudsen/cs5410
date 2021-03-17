@@ -40,6 +40,9 @@ namespace LunarLander
         public TimeSpan LoadingTime;
         public int CurrentLevel;
 
+        // flags whether lander is in safe area or not
+        public bool InSafeArea = false;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
@@ -323,6 +326,19 @@ namespace LunarLander
 
                     Lander.Position = newPosition;
 
+                    // must have landed within the bounds of a safe area
+                    InSafeArea = false;
+                    foreach (var (xStart, xStop) in SafeZones)
+                    {
+                        // if leftmost position and rightmost position are within safezone bounds
+                        if (Lander.Position.x - Lander.Size / 2 > xStart &&
+                            Lander.Position.x + Lander.Size / 2 < xStop)
+                        {
+                            InSafeArea = true;
+                            break;
+                        }
+                    }
+
                     // keep orientation between 0 and 2pi
                     if (newOrientation < 0)
                         newOrientation = MathHelper.TwoPi + newOrientation;
@@ -381,30 +397,17 @@ namespace LunarLander
                     {
                         // speed must be less than 2 units (meters) / second
                         // angle must be within 355 - 5 degrees
-
-                        // must have landed within the bounds of a safe area
-                        var inSafeArea = false;
-                        foreach (var (xStart, xStop) in SafeZones)
-                        {
-                            // if leftmost position and rightmost position are within safezone bounds
-                            if (Lander.Position.x - Lander.Size / 2 > xStart &&
-                                Lander.Position.x + Lander.Size / 2 < xStop)
-                            {
-                                inSafeArea = true;
-                                break;
-                            }
-                        }
-
+                        // must be in safe area
                         // check for all conditions
                         if ((Lander.OrientationDegrees < 5 || Lander.OrientationDegrees > 355)
                             && Lander.VelocityTotal < 2
-                            && inSafeArea)
+                            && InSafeArea)
                         {
                             GameState = PassedLevel;
                             Console.WriteLine("PASSED! Final stats:");
                             Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
                             Console.WriteLine("Velocity: " + Lander.VelocityTotal);
-                            Console.WriteLine("In safe area: " + inSafeArea);
+                            Console.WriteLine("In safe area: " + InSafeArea);
                             LoadingTime = TimeSpan.FromSeconds(3);
                         }
                         else
@@ -413,7 +416,7 @@ namespace LunarLander
                             Console.WriteLine("Crashed :( Final stats:");
                             Console.WriteLine("Orientation: " + Lander.OrientationDegrees);
                             Console.WriteLine("Velocity: " + Lander.VelocityTotal);
-                            Console.WriteLine("In safe area: " + inSafeArea);
+                            Console.WriteLine("In safe area: " + InSafeArea);
                             LoadingTime = TimeSpan.FromSeconds(3);
                         }
                     }
