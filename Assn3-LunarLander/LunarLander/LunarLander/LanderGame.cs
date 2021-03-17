@@ -198,6 +198,34 @@ namespace LunarLander
 
                 _spriteBatch.End();
             }
+            else if (_landerGameController.GameState == ShipCrashed)
+            {
+                _spriteBatch.Begin();
+
+                // draw the backdrop rectangle for the text
+                var (gameOverRectPosX, gameOverRectPosY) = GetAbsolutePixelCoordinates((
+                        0, LanderGameController.BoardSize * 0.65f));
+                var gameOverRectHeight = (int) (rectSizePixels * 0.3);
+                var gameOverRect = new Rectangle(gameOverRectPosX, gameOverRectPosY, rectSizePixels, gameOverRectHeight);
+
+                _spriteBatch.Draw(_texBackgroundDimmer, gameOverRect, Color.Aqua);
+
+                // draw the game over text itself
+                var crashedString = "Game Over. Your ship crashed.";
+                var restartingString = "Press ESC to start a new game.";
+
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
+                    LanderGameController.BoardSize * 0.55f));
+                _spriteBatch.DrawString(_menuFont, crashedString,
+                    new Vector2(textPosX, textPosY),
+                    Color.Red);
+                _spriteBatch.DrawString(_menuFont, restartingString,
+                    new Vector2(textPosX, textPosY + 30),
+                    Color.Red);
+
+                _spriteBatch.End();
+            }
+
             base.Draw(gameTime);
         }
 
