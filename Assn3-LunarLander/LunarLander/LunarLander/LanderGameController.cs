@@ -46,6 +46,9 @@ namespace LunarLander
         public readonly MainMenuController MainMenuController;
         public readonly PauseMenuController PauseMenuController;
 
+        // holds the score (total fuel remaining)
+        private float _runningScore;
+
         // flags whether lander is in safe area or not
         public bool InSafeArea = false;
 
@@ -78,6 +81,18 @@ namespace LunarLander
             InputHandler.ThrustUpButton.BoundKeys = LocalStorageManager.StoredControlScheme.ThrustKeys;
             InputHandler.TurnShipLeftButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateLeftKeys;
             InputHandler.TurnShipRightButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateRightKeys;
+
+            // next, wait for high scores to be loaded
+            LocalStorageManager.LoadHighScores();
+
+            // need to wait for high scores to be loaded
+            while (LocalStorageManager.StoredHighScores == null)
+            {
+                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
+            }
+
+            // set the high scores list to what we just read in
+            MainMenuController.HighScoresFloatList = LocalStorageManager.StoredHighScores.HighScores;
         }
 
         // use this function to actually start a level
@@ -432,6 +447,11 @@ namespace LunarLander
                             }
                             else
                             {
+                                // calculate score
+                                var thisScore = 150f;
+                                MainMenuController.HighScoresFloatList.Add(thisScore);
+                                MainMenuController.HighScoresFloatList.Sort();
+
                                 GameState = BeatGame;
                             }
                         }
@@ -461,6 +481,8 @@ namespace LunarLander
                 case MainMenu:
                     MainMenuController.ProcessMenu(InputHandler);
                     break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 

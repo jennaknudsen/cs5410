@@ -562,11 +562,17 @@ namespace LunarLander
                     var highScoresBodyString = "";
 
                     // this will only be null for one frame
-                    if (_landerGameController.MainMenuController.HighScoresStringList != null)
+                    if (_landerGameController.MainMenuController.HighScoresFloatList != null)
                     {
-                        foreach (var hs in _landerGameController.MainMenuController.HighScoresStringList)
+                        var position = 1;
+
+                        foreach (var hs in _landerGameController.MainMenuController.HighScoresFloatList)
                         {
-                            highScoresBodyString += hs + "\n";
+                            highScoresBodyString += position + ") " + hs + " s fuel remaining\n";
+                            position++;
+
+                            // only display the top 5 scores
+                            if (position > 5) break;
                         }
                     }
 
