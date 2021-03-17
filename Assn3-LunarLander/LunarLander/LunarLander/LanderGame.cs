@@ -282,23 +282,27 @@ namespace LunarLander
 
                     // draw the backdrop rectangle for the text
                     var (beatGameRectPosX, beatGameRectPosY) = GetAbsolutePixelCoordinates((
-                        0, BoardSize * 0.65f));
-                    var beatGameRectHeight = (int) (rectSizePixels * 0.3);
+                        0, BoardSize * 0.68f));
+                    var beatGameRectHeight = (int) (rectSizePixels * 0.36);
                     var beatGameRect = new Rectangle(beatGameRectPosX, beatGameRectPosY, rectSizePixels, beatGameRectHeight);
 
                     _spriteBatch.Draw(_texBackgroundDimmer, beatGameRect, Color.Aqua);
 
                     // draw the won the game text itself
                     var beatGameString = "You beat the game! Congrats!";
+                    var scoreString = "Your final score was: " + _landerGameController.RunningScore;
                     var restartingString = "Press ESC for the main menu.";
 
-                    (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
-                        BoardSize * 0.56f));
+                    (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.08f,
+                        BoardSize * 0.585f));
                     _spriteBatch.DrawString(_menuFont, beatGameString,
                         new Vector2(textPosX, textPosY),
                         Color.Yellow);
-                    _spriteBatch.DrawString(_menuFont, restartingString,
+                    _spriteBatch.DrawString(_menuFont, scoreString,
                         new Vector2(textPosX, textPosY + 30),
+                        Color.Yellow);
+                    _spriteBatch.DrawString(_menuFont, restartingString,
+                        new Vector2(textPosX, textPosY + 60),
                         Color.Yellow);
 
                     _spriteBatch.End();

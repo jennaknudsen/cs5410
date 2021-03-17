@@ -47,7 +47,7 @@ namespace LunarLander
         public readonly PauseMenuController PauseMenuController;
 
         // holds the score (total fuel remaining)
-        private float _runningScore;
+        public float RunningScore;
 
         // flags whether lander is in safe area or not
         public bool InSafeArea = false;
@@ -105,7 +105,7 @@ namespace LunarLander
 
             // if this is level 1, then reset the score
             if (difficultyLevel == 1)
-                _runningScore = 0f;
+                RunningScore = 0f;
 
             // set load time to zero when starting level
             LoadingTime = TimeSpan.Zero;
@@ -449,7 +449,7 @@ namespace LunarLander
                             && InSafeArea)
                         {
                             // add remaining fuel to score
-                            _runningScore += (float) Lander.FuelCapacity.TotalSeconds;
+                            RunningScore += (float) Lander.FuelCapacity.TotalSeconds;
 
                             if (CurrentLevel == 1)
                             {
@@ -459,7 +459,7 @@ namespace LunarLander
                             else
                             {
                                 // calculate score
-                                MainMenuController.HighScoresFloatList.Add(_runningScore);
+                                MainMenuController.HighScoresFloatList.Add(RunningScore);
 
                                 // sort score from high to low
                                 MainMenuController.HighScoresFloatList.Sort((a, b) => b.CompareTo(a));
