@@ -7,32 +7,29 @@ namespace LunarLander
 {
     public class MainMenuController : MenuController
     {
-        // holds a reference to a LanderGameController
-        private LanderGameController _gameController;
-
         // holds the current menu state information
         public MenuState MenuState;
 
         // lists of menus
-        public List<MenuItem> MainMenuList;
-        public List<MenuItem> HighScoresList;
-        public List<MenuItem> ControlsList;
-        public List<MenuItem> CreditsList;
+        public readonly List<MenuItem> MainMenuList;
+        public readonly List<MenuItem> HighScoresList;
+        public readonly List<MenuItem> ControlsList;
+        public readonly List<MenuItem> CreditsList;
 
         // all menu items
-        public MenuItem NewGameMenuItem;
-        public MenuItem HighScoresMenuItem;
-        public MenuItem BackToMainMenuItem;
-        public MenuItem CustomizeControlsMenuItem;
-        public MenuItem ThrustMenuItem;
-        public MenuItem RotateLeftMenuItem;
-        public MenuItem RotateRightMenuItem;
-        public MenuItem ViewCreditsMenuItem;
+        public readonly MenuItem NewGameMenuItem;
+        public readonly MenuItem HighScoresMenuItem;
+        public readonly MenuItem BackToMainMenuItem;
+        public readonly MenuItem CustomizeControlsMenuItem;
+        public readonly MenuItem ThrustMenuItem;
+        public readonly MenuItem RotateLeftMenuItem;
+        public readonly MenuItem RotateRightMenuItem;
+        public readonly MenuItem ViewCreditsMenuItem;
 
         public MainMenuController(LanderGameController controller)
         {
             // set the reference
-            _gameController = controller;
+            GameController = controller;
 
             // these are all of the menu items
             NewGameMenuItem = new MenuItem("New Game");
@@ -70,10 +67,10 @@ namespace LunarLander
         }
 
         // common code used to set up the menu
-        public void OpenMenu()
+        public override void OpenMenu()
         {
             // set calling controller's state to MainMenu
-            _gameController.GameState = MainMenu;
+            GameController.GameState = MainMenu;
 
             // set this menu's state to Main
             MenuState = Main;
@@ -104,7 +101,7 @@ namespace LunarLander
          * |----- View Credits
          *        └---- Back to Main
          */
-        public void ProcessMenu(InputHandler inputHandler)
+        public override void ProcessMenu(InputHandler inputHandler)
         {
             switch (MenuState)
             {
@@ -128,7 +125,7 @@ namespace LunarLander
                         // create a new game
                         if (selectedItem == NewGameMenuItem)
                         {
-                            _gameController.StartLevel(1);
+                            GameController.StartLevel(1);
                         }
                         // TODO handle other buttons
                     }

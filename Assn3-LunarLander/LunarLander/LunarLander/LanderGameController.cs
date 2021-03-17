@@ -42,7 +42,8 @@ namespace LunarLander
         public int CurrentLevel;
 
         // holds menu state information
-        public MainMenuController MainMenuController;
+        public readonly MainMenuController MainMenuController;
+        public readonly PauseMenuController PauseMenuController;
 
         // flags whether lander is in safe area or not
         public bool InSafeArea = false;
@@ -57,6 +58,7 @@ namespace LunarLander
         {
             _inputHandler = new InputHandler();
             MainMenuController = new MainMenuController(this);
+            PauseMenuController = new PauseMenuController(this);
         }
 
         // use this function to actually start a level
@@ -255,10 +257,9 @@ namespace LunarLander
 
             switch (GameState)
             {
-                // case Running when _inputHandler.PauseButton.Pressed:
-                //     GameState = Paused;
-                //     MainMenuController.OpenMenu();
-                //     break;
+                case Running when _inputHandler.PauseButton.Pressed:
+                    PauseMenuController.OpenMenu();
+                    break;
                 case Running:
                     // turning rate: 2pi/3 rads / sec
                     const float turningRate = 2 * MathHelper.Pi / 3;
@@ -441,11 +442,10 @@ namespace LunarLander
                 case BeatGame when _inputHandler.PauseButton.Pressed:
                     MainMenuController.OpenMenu();
                     break;
-                // check if pause button is pressed
                 case Paused:
+                    PauseMenuController.ProcessMenu(_inputHandler);
                     break;
                 case MainMenu:
-                    // menu navigation here
                     MainMenuController.ProcessMenu(_inputHandler);
                     break;
             }

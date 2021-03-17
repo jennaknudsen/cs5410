@@ -2,8 +2,11 @@ using System.Collections.Generic;
 
 namespace LunarLander
 {
-    public class MenuController
+    public abstract class MenuController
     {
+        // holds a reference to a LanderGameController
+        protected LanderGameController GameController;
+
         // gets the selected menu item
         protected static int GetSelectedIndex(IReadOnlyList<MenuItem> menuItems)
         {
@@ -48,5 +51,13 @@ namespace LunarLander
             menuItems[selectedIndex].Selected = false;
             menuItems[newIndex].Selected = true;
         }
+
+        // function to open the menu
+        // Must be overridden.
+        public abstract void OpenMenu();
+
+        // function to process the menu, based on InputHandler inputs
+        // Must be overridden.
+        public abstract void ProcessMenu(InputHandler inputHandler);
     }
 }

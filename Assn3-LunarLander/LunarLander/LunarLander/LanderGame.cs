@@ -302,6 +302,7 @@ namespace LunarLander
                     break;
                 }
                 case Paused:
+                    DrawPauseMenu();
                     break;
                 case Running:
                     break;
@@ -311,6 +312,51 @@ namespace LunarLander
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        // Drawing the menu is very long, so put it in its own function
+        private void DrawPauseMenu()
+        {
+            _spriteBatch.Begin();
+
+            // get pixel coordinates from board coordinates
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            // create the background rectangle
+            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
+
+            // get correct colors
+            var continueColor = _landerGameController.PauseMenuController.ContinueMenuItem.Selected
+                ? Color.Yellow
+                : Color.LightGray;
+            var quitColor = _landerGameController.PauseMenuController.QuitMenuItem.Selected
+                ? Color.Yellow
+                : Color.LightGray;
+
+            // get correct pixel coordinates for menu items
+            var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+            var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
+            var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.3f));
+            var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+
+            // set proper strings
+            var pausedString = "=== PAUSED ===";
+            var continueString = "Continue";
+            var quitString = "Quit";
+
+            // now, draw the strings
+            _spriteBatch.DrawString(_menuFont, pausedString,
+                new Vector2(xPos, yPos1),
+                Color.White);
+            _spriteBatch.DrawString(_menuFont, continueString,
+                new Vector2(xPos, yPos2),
+                continueColor);
+            _spriteBatch.DrawString(_menuFont, quitString,
+                new Vector2(xPos, yPos3),
+                quitColor);
+
+            _spriteBatch.End();
         }
 
         // Drawing the menu is very long, so put it in its own function
