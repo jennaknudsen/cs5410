@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using static LunarLander.GameState;
 using static LunarLander.MenuState;
@@ -53,12 +54,34 @@ namespace LunarLander
         public const float MaxAngle = 5f;
         public const float MinAngle = 355f;
 
+        // controller for data loading
+        public LocalStorageManager LocalStorageManager;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
             InputHandler = new InputHandler();
             MainMenuController = new MainMenuController(this);
             PauseMenuController = new PauseMenuController(this);
+            LocalStorageManager = new LocalStorageManager();
+
+
+            Console.WriteLine("Before load");
+            // in constructor, read in the control scheme and high scores initially
+            LocalStorageManager.LoadControlScheme();
+            Console.WriteLine("After load");
+
+            // Thread.Sleep(1000);
+            // need to wait for a control scheme to be loaded
+            while (LocalStorageManager.StoredControlScheme == null)
+            {
+                Thread.Sleep(100);   // Added Sleep so that this thread can "breathe" will Async happens
+            }
+
+            // set the correct control scheme after load
+            InputHandler.ThrustUpButton.BoundKeys = LocalStorageManager.StoredControlScheme.ThrustKeys;
+            InputHandler.TurnShipLeftButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateLeftKeys;
+            InputHandler.TurnShipRightButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateRightKeys;
         }
 
         // use this function to actually start a level

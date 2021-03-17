@@ -166,6 +166,16 @@ namespace LunarLander
                         if (_bindingKeysList.Count != 0 && depressedKeys.Length == 0)
                         {
                             RebindingButton.BoundKeys = _bindingKeysList.ToArray();
+
+                            // need to save this to persistent storage
+                            var handler = GameController.InputHandler;
+                            var thrustKeys = handler.ThrustUpButton.BoundKeys;
+                            var leftKeys = handler.TurnShipLeftButton.BoundKeys;
+                            var rightKeys = handler.TurnShipRightButton.BoundKeys;
+
+                            // save keys to storage
+                            GameController.LocalStorageManager.SaveControlScheme(thrustKeys, leftKeys, rightKeys);
+
                             InControlBinding = false;
                         }
                         else
