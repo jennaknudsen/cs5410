@@ -432,9 +432,6 @@ namespace LunarLander
 
                     break;
                 }
-                case HighScores:
-                    // code
-                    break;
                 case Controls:
                     // for controls menu, draw 5 elements on screen
 
@@ -559,6 +556,41 @@ namespace LunarLander
                         new Vector2(xPos, textPos3),
                         rrKeysColor);
 
+                    break;
+                case HighScores:
+                    var highScoresTitleString = "High Scores:";
+                    var highScoresBodyString = "";
+
+                    // this will only be null for one frame
+                    if (_landerGameController.MainMenuController.HighScoresStringList != null)
+                    {
+                        foreach (var hs in _landerGameController.MainMenuController.HighScoresStringList)
+                        {
+                            highScoresBodyString += hs + "\n";
+                        }
+                    }
+
+                    var mmString3 = "Main Menu";
+                    var mmColor2 = _landerGameController.MainMenuController.BackToMainMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    // get correct pixel coordinates for menu items
+                    (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.72f));
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
+
+                    // draw the menu items
+                    _spriteBatch.DrawString(_menuFont, highScoresTitleString,
+                        new Vector2(xPos, yPos1),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, highScoresBodyString,
+                        new Vector2(xPos, yPos2),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, mmString3,
+                        new Vector2(xPos, yPos3),
+                        mmColor2);
                     break;
                 case Credits:
                     // just show credits here. Nothing crazy

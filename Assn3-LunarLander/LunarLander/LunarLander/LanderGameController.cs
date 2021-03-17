@@ -393,12 +393,6 @@ namespace LunarLander
 
                     (float x, float y) littleCenter2 = (littleCenter2X, littleCenter2Y);
 
-                    // Uncomment to view logs with circle data
-                    // Console.WriteLine("Big circle: center (" + bigCenter.x + ", " + bigCenter.y + "), radius: " + bigRadius);
-                    // Console.WriteLine("Little circle 1: center (" + littleCenter1.x + ", " + littleCenter1.y + "), radius: " + littleRadius);
-                    // Console.WriteLine("Little circle 2: center (" + littleCenter2.x + ", " + littleCenter2.y + "), radius: " + littleRadius);
-                    // Console.WriteLine("Orientation: " + newOrientation);
-
                     // testing collision with all three collision circles
                     if (CheckCollision(((bigCenter), bigRadius)) ||
                         CheckCollision(((littleCenter1), littleRadius)) ||

@@ -36,6 +36,10 @@ namespace LunarLander
         public string BindingKeysString;
         public Button RebindingButton;
 
+        // used so we don't read high scores a bunch of times
+        private bool _haveProcessedHighScores = false;
+        public List<string> HighScoresStringList;
+
         public MainMenuController(LanderGameController controller)
         {
             // set the reference
@@ -253,6 +257,14 @@ namespace LunarLander
                 case HighScores:
                     if (inputHandler.MenuBackButton.Pressed || inputHandler.MenuConfirmButton.Pressed)
                         ChangeState(Main);
+                    // need to read in high scores
+                    else
+                    {
+                        if (!_haveProcessedHighScores)
+                        {
+                            ReadInHighScores();
+                        }
+                    }
                     break;
                 case Credits:
                     if (inputHandler.MenuBackButton.Pressed || inputHandler.MenuConfirmButton.Pressed)
@@ -289,6 +301,18 @@ namespace LunarLander
             }
 
             SelectFirstItem(items);
+        }
+
+        // this function reads in high scores, and stores it in the High Scores string list
+        private void ReadInHighScores()
+        {
+            // TODO write this function
+            HighScoresStringList = new List<string>();
+            HighScoresStringList.Add("1) 234.564");
+            HighScoresStringList.Add("2) 153.949");
+            HighScoresStringList.Add("3) 89.123");
+            HighScoresStringList.Add("4) 35.203");
+            _haveProcessedHighScores = true;
         }
     }
 }
