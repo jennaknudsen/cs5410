@@ -457,9 +457,17 @@ namespace LunarLander
 
                     // get correct pixel coordinates for menu items
                     (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+
+                    // Thrust
                     (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
-                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.72f));
-                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
+                    var (_, textPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.77f));
+                    // Rotate left
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.67f));
+                    var (_, textPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
+                    // Rotate right
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.52f));
+                    var (_, textPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.47f));
+                    // Defaults, Confirm
                     (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.32f));
                     (_, yPos5) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
 
@@ -469,6 +477,60 @@ namespace LunarLander
                     var rotateRightString = "Rotate Right: ";
                     var defaultsString = "Reset to Defaults";
                     var mmString = "Main Menu";
+
+                    // these chars will hold the actual keys being bound
+                    var thrustChars = "";
+                    var rotateLeftChars = "";
+                    var rotateRightChars = "";
+
+                    var thrustKeysColor = Color.White;
+                    var rlKeysColor = Color.White;
+                    var rrKeysColor = Color.White;
+
+                    // get char arrays converted to strings for each button
+                    // if this is the button we're rebinding, then show the results so far of keypresses
+                    // otherwise, show what the button has stored
+                    var inBinding = _landerGameController.MainMenuController.InControlBinding;
+                    var rebindingButton = _landerGameController.MainMenuController.RebindingButton;
+
+                    if (inBinding && rebindingButton == _landerGameController.InputHandler.ThrustUpButton)
+                    {
+                        thrustChars = _landerGameController.MainMenuController.BindingKeysString;
+                        thrustKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in _landerGameController.InputHandler.ThrustUpButton.BoundKeys)
+                            thrustChars += key.ToString() + ", ";
+                        if (thrustChars.Length > 0)
+                            thrustChars = thrustChars.Remove(thrustChars.Length - 2);
+                    }
+
+                    if (inBinding && rebindingButton == _landerGameController.InputHandler.TurnShipLeftButton)
+                    {
+                        rotateLeftChars = _landerGameController.MainMenuController.BindingKeysString;
+                        rlKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in _landerGameController.InputHandler.TurnShipLeftButton.BoundKeys)
+                            rotateLeftChars += key.ToString() + ", ";
+                        if (rotateLeftChars.Length > 0)
+                            rotateLeftChars = rotateLeftChars.Remove(rotateLeftChars.Length - 2);
+                    }
+
+                    if (inBinding && rebindingButton == _landerGameController.InputHandler.TurnShipRightButton)
+                    {
+                        rotateRightChars = _landerGameController.MainMenuController.BindingKeysString;
+                        rrKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in _landerGameController.InputHandler.TurnShipRightButton.BoundKeys)
+                            rotateRightChars += key.ToString() + ", ";
+                        if (rotateRightChars.Length > 0)
+                            rotateRightChars = rotateRightChars.Remove(rotateRightChars.Length - 2);
+                    }
 
                     // now, draw the strings
                     _spriteBatch.DrawString(_menuFont, thrustString,
@@ -486,10 +548,52 @@ namespace LunarLander
                     _spriteBatch.DrawString(_menuFont, mmString,
                         new Vector2(xPos, yPos5),
                         returnColor);
+                    // draw the rebinding keys in smaller game font
+                    _spriteBatch.DrawString(_gameFont, thrustChars,
+                        new Vector2(xPos, textPos1),
+                        thrustKeysColor);
+                    _spriteBatch.DrawString(_gameFont, rotateLeftChars,
+                        new Vector2(xPos, textPos2),
+                        rlKeysColor);
+                    _spriteBatch.DrawString(_gameFont, rotateRightChars,
+                        new Vector2(xPos, textPos3),
+                        rrKeysColor);
 
                     break;
                 case Credits:
-                    // code
+                    // just show credits here. Nothing crazy
+                    var creditsString = "CREDITS:";
+                    var creditsBodyString = @"All game logic, assets, and artwork created 
+by me (Jonas Knudsen), with the exception of the
+background space texture, which I found at:
+https://www.nasa.gov/sites/default/files/images/
+191853main_image_feature_929_full.jpg
+
+Used StackOverflow for a couple of small code 
+snippets. These snippets are cited in comments 
+found in the source code.";
+                    var mmString2 = "Main Menu";
+                    var mmColor = _landerGameController.MainMenuController.BackToMainMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    // get correct pixel coordinates for menu items
+                    (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.72f));
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
+
+                    // draw the menu items
+                    _spriteBatch.DrawString(_menuFont, creditsString,
+                        new Vector2(xPos, yPos1),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_gameFont, creditsBodyString,
+                        new Vector2(xPos, yPos2),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, mmString2,
+                        new Vector2(xPos, yPos3),
+                        mmColor);
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

@@ -13,7 +13,7 @@ namespace LunarLander
         public Lander Lander;
 
         // the input handler that handles keyboard input
-        private readonly InputHandler _inputHandler;
+        public readonly InputHandler InputHandler;
 
         // moon gravity: https://en.wikipedia.org/wiki/Moon
         private const float MoonGravity = 1.62f;    // m/(s^2)
@@ -56,7 +56,7 @@ namespace LunarLander
         // constructor just creates the input handler
         public LanderGameController()
         {
-            _inputHandler = new InputHandler();
+            InputHandler = new InputHandler();
             MainMenuController = new MainMenuController(this);
             PauseMenuController = new PauseMenuController(this);
         }
@@ -250,14 +250,14 @@ namespace LunarLander
         public void Update(GameTime gameTime)
         {
             // first, handle input
-            _inputHandler.HandleInput();
+            InputHandler.HandleInput();
 
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
 
             switch (GameState)
             {
-                case Running when _inputHandler.PauseButton.Pressed:
+                case Running when InputHandler.PauseButton.Pressed:
                     PauseMenuController.OpenMenu();
                     break;
                 case Running:
@@ -266,8 +266,8 @@ namespace LunarLander
                     var newOrientation = Lander.Orientation;
 
                     // turn left / right if the buttons are pressed
-                    var turnLeft = _inputHandler.TurnShipLeftButton.Pressed;
-                    var turnRight = _inputHandler.TurnShipRightButton.Pressed;
+                    var turnLeft = InputHandler.TurnShipLeftButton.Pressed;
+                    var turnRight = InputHandler.TurnShipRightButton.Pressed;
 
                     if (turnLeft && !turnRight)
                         newOrientation -= (turningRate * elapsedSeconds);
@@ -289,7 +289,7 @@ namespace LunarLander
                     var modForceX = 0f;
                     var modForceY = 0f;
 
-                    var thrusterOn = _inputHandler.ThrustUpButton.Pressed;
+                    var thrusterOn = InputHandler.ThrustUpButton.Pressed;
                     if (thrusterOn && Lander.FuelCapacity > TimeSpan.Zero)
                     {
                         var cartesianOrientation = GetCartesianOrientation(newOrientation);
@@ -428,7 +428,7 @@ namespace LunarLander
                         }
                     }
                     break;
-                case ShipCrashed when _inputHandler.PauseButton.Pressed:
+                case ShipCrashed when InputHandler.PauseButton.Pressed:
                     MainMenuController.OpenMenu();
                     break;
                 case ShipCrashed:
@@ -439,14 +439,14 @@ namespace LunarLander
                     if (LoadingTime.TotalSeconds < 0)
                         StartLevel(2);
                     break;
-                case BeatGame when _inputHandler.PauseButton.Pressed:
+                case BeatGame when InputHandler.PauseButton.Pressed:
                     MainMenuController.OpenMenu();
                     break;
                 case Paused:
-                    PauseMenuController.ProcessMenu(_inputHandler);
+                    PauseMenuController.ProcessMenu(InputHandler);
                     break;
                 case MainMenu:
-                    MainMenuController.ProcessMenu(_inputHandler);
+                    MainMenuController.ProcessMenu(InputHandler);
                     break;
             }
         }

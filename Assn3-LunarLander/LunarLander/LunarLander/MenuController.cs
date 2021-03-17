@@ -52,6 +52,17 @@ namespace LunarLander
             menuItems[newIndex].Selected = true;
         }
 
+        protected static void SelectFirstItem(IReadOnlyList<MenuItem> menuItems)
+        {
+            for (var i = 0; i < menuItems.Count; i++)
+            {
+                if (i == 0)
+                    menuItems[i].Selected = true;
+                else
+                    menuItems[i].Selected = false;
+            }
+        }
+
         // function to open the menu
         // Must be overridden.
         public abstract void OpenMenu();

@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.Xna.Framework.Graphics;
+using System.Linq;
 using Microsoft.Xna.Framework.Input;
 using static LunarLander.GameState;
 using static LunarLander.MenuState;
@@ -30,10 +30,11 @@ namespace LunarLander
         public readonly MenuItem ViewCreditsMenuItem;
 
         // used for control binding
-        private bool _inControlBinding = false;
+        public bool InControlBinding = false;
+        private bool _waitingToReleaseEnter = false;
         private List<Keys> _bindingKeysList;
         public string BindingKeysString;
-        private Button _rebindingButton;
+        public Button RebindingButton;
 
         public MainMenuController(LanderGameController controller)
         {
@@ -84,16 +85,7 @@ namespace LunarLander
             GameController.GameState = MainMenu;
 
             // set this menu's state to Main
-            MenuState = Main;
-
-            // deselect all items in the menu
-            foreach (var item in _mainMenuList)
-            {
-                item.Selected = false;
-            }
-
-            // finally, select "New Game"
-            NewGameMenuItem.Selected = true;
+            ChangeState(Main);
         }
 
         /*
@@ -141,27 +133,36 @@ namespace LunarLander
                         }
                         else if (selectedItem == HighScoresMenuItem)
                         {
-                            MenuState = HighScores;
+                            ChangeState(HighScores);
                         }
                         else if (selectedItem == CustomizeControlsMenuItem)
                         {
-                            MenuState = Controls;
+                            ChangeState(Controls);
                         }
                         else if (selectedItem == ViewCreditsMenuItem)
                         {
-                            MenuState = Credits;
+                            ChangeState(Credits);
                         }
                     }
                     break;
                 case Controls:
-                    if (_inControlBinding)
+                    // this state will just "spin" until the user releases enter, then it will
+                    // allow for keys to be re-bound
+                    if (_waitingToReleaseEnter)
+                    {
+                        if (!InputHandler.GetDepressedKeys().Contains(Keys.Enter))
+                        {
+                            _waitingToReleaseEnter = false;
+                        }
+                    }
+                    else if (InControlBinding)
                     {
                         var depressedKeys = InputHandler.GetDepressedKeys();
                         // if we've bound at least one key, but there are no depressed keys, then we're done
                         if (_bindingKeysList.Count != 0 && depressedKeys.Length == 0)
                         {
-                            _rebindingButton.BoundKeys = _bindingKeysList.ToArray();
-                            _inControlBinding = false;
+                            RebindingButton.BoundKeys = _bindingKeysList.ToArray();
+                            InControlBinding = false;
                         }
                         else
                         {
@@ -178,10 +179,18 @@ namespace LunarLander
                             // set the string to show in the Controls menu
                             BindingKeysString = "";
 
+                            // display of what keys are available for binding
                             foreach (var key in _bindingKeysList)
                             {
-                                BindingKeysString += key.ToString();
-                                Console.WriteLine(BindingKeysString);
+                                BindingKeysString += key.ToString() + ", ";
+                            }
+
+                            // Strip the last ", " from the string
+                            if (BindingKeysString.Length > 0)
+                                BindingKeysString = BindingKeysString.Remove(BindingKeysString.Length - 2);
+                            else
+                            {
+                                BindingKeysString = "Press and release any combination of key(s)...";
                             }
                         }
                     }
@@ -195,7 +204,7 @@ namespace LunarLander
                         // easy ones first
                         if (selectedItem == BackToMainMenuItem)
                         {
-                            MenuState = Main;
+                            ChangeState(Main);
                         }
                         else if (selectedItem == ResetDefaultsMenuItem)
                         {
@@ -203,26 +212,28 @@ namespace LunarLander
                             inputHandler.ThrustUpButton.BoundKeys = new[] {Keys.Up};
                             inputHandler.TurnShipLeftButton.BoundKeys = new[] {Keys.Left};
                             inputHandler.TurnShipRightButton.BoundKeys = new[] {Keys.Right};
-
-                            // reselect "Back to Main" after resetting defaults (for convenience)
-                            ResetDefaultsMenuItem.Selected = false;
-                            BackToMainMenuItem.Selected = true;
                         }
                         else
                         {
                             // set the button to change properly
                             if (selectedItem == ThrustMenuItem)
-                                _rebindingButton = inputHandler.ThrustUpButton;
+                                RebindingButton = inputHandler.ThrustUpButton;
                             else if (selectedItem == RotateLeftMenuItem)
-                                _rebindingButton = inputHandler.TurnShipLeftButton;
+                                RebindingButton = inputHandler.TurnShipLeftButton;
                             else if (selectedItem == RotateRightMenuItem)
-                                _rebindingButton = inputHandler.TurnShipRightButton;
+                                RebindingButton = inputHandler.TurnShipRightButton;
 
                             // flag that we are in control binding
-                            _inControlBinding = true;
+                            InControlBinding = true;
+
+                            // also, flag that we need to release the Enter key
+                            _waitingToReleaseEnter = true;
 
                             // reset our list of keys we're binding
                             _bindingKeysList = new List<Keys>();
+
+                            // set the binding keys string to placeholder message
+                            BindingKeysString = "Press and release any combination of key(s)...";
                         }
                     }
                     else if (inputHandler.MenuUpButton.Pressed)
@@ -235,16 +246,49 @@ namespace LunarLander
                     }
                     else if (inputHandler.MenuBackButton.Pressed)
                     {
-                        MenuState = Main;
+                        ChangeState(Main);
                     }
                     break;
+                // High Scores and Credits only have one type of input
                 case HighScores:
+                    if (inputHandler.MenuBackButton.Pressed || inputHandler.MenuConfirmButton.Pressed)
+                        ChangeState(Main);
                     break;
                 case Credits:
+                    if (inputHandler.MenuBackButton.Pressed || inputHandler.MenuConfirmButton.Pressed)
+                        ChangeState(Main);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void ChangeState(MenuState state)
+        {
+            // change the menu state here
+            MenuState = state;
+
+            // use this method to select the first item in the menu
+            List<MenuItem> items;
+            switch (state)
+            {
+                case Main:
+                    items = _mainMenuList;
+                    break;
+                case Controls:
+                    items = _controlsList;
+                    break;
+                case HighScores:
+                    items = _highScoresList;
+                    break;
+                case Credits:
+                    items = _highScoresList;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+
+            SelectFirstItem(items);
         }
     }
 }
