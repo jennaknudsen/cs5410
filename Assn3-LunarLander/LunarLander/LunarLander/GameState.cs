@@ -3,6 +3,7 @@ namespace LunarLander
     public enum GameState
     {
         Paused,
+        MainMenu,
         ShipCrashed,
         PassedLevel,
         BeatGame,

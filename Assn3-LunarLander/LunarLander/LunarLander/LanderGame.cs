@@ -199,6 +199,7 @@ namespace LunarLander
             base.Draw(gameTime);
         }
 
+        // Draws individual things based on which state we're in
         private void DrawBasedOnState()
         {
             // some declaration so things don't break on us
@@ -301,9 +302,11 @@ namespace LunarLander
                     break;
                 }
                 case Paused:
-                    DrawMenu();
                     break;
                 case Running:
+                    break;
+                case MainMenu:
+                    DrawMainMenu();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -311,7 +314,7 @@ namespace LunarLander
         }
 
         // Drawing the menu is very long, so put it in its own function
-        private void DrawMenu()
+        private void DrawMainMenu()
         {
             _spriteBatch.Begin();
 
@@ -322,53 +325,68 @@ namespace LunarLander
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
 
-            // code to determine which menu elements to draw on pause
-            if (_landerGameController.MenuController.MenuState == Main)
+            switch (_landerGameController.MainMenuController.MenuState)
             {
-                // for main menu, draw 4 elements on screen
+                // code to determine which menu elements to draw on pause
+                case Main:
+                {
+                    // for main menu, draw 4 elements on screen
 
-                // get correct colors
-                var ngColor = _landerGameController.MenuController.NewGameMenuItem.Selected
-                    ? Color.Yellow
-                    : Color.LightGray;
-                var hsColor = _landerGameController.MenuController.HighScoresMenuItem.Selected
-                    ? Color.Yellow
-                    : Color.LightGray;
-                var ccColor = _landerGameController.MenuController.CustomizeControlsMenuItem.Selected
-                    ? Color.Yellow
-                    : Color.LightGray;
-                var vcColor = _landerGameController.MenuController.ViewCreditsMenuItem.Selected
-                    ? Color.Yellow
-                    : Color.LightGray;
+                    // get correct colors
+                    var ngColor = _landerGameController.MainMenuController.NewGameMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var hsColor = _landerGameController.MainMenuController.HighScoresMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var ccColor = _landerGameController.MainMenuController.CustomizeControlsMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var vcColor = _landerGameController.MainMenuController.ViewCreditsMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
 
-                // get correct pixel coordinates for menu items
-                var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-                var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
-                var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
-                var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
-                var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+                    // get correct pixel coordinates for menu items
+                    var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
+                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
+                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
+                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
 
-                // set proper strings
-                var newGameString = "New Game";
-                var highScoresString = "High Scores";
-                var customizeControlsString = "Customize Controls";
-                var viewCreditsString = "View Credits";
+                    // set proper strings
+                    var newGameString = "New Game";
+                    var highScoresString = "High Scores";
+                    var customizeControlsString = "Customize Controls";
+                    var viewCreditsString = "View Credits";
 
-                // now, draw the strings
-                _spriteBatch.DrawString(_menuFont, newGameString,
-                    new Vector2(xPos, yPos1),
-                    ngColor);
-                _spriteBatch.DrawString(_menuFont, highScoresString,
-                    new Vector2(xPos, yPos2),
-                    hsColor);
-                _spriteBatch.DrawString(_menuFont, customizeControlsString,
-                    new Vector2(xPos, yPos3),
-                    ccColor);
-                _spriteBatch.DrawString(_menuFont, viewCreditsString,
-                    new Vector2(xPos, yPos4),
-                    vcColor);
+                    // now, draw the strings
+                    _spriteBatch.DrawString(_menuFont, newGameString,
+                        new Vector2(xPos, yPos1),
+                        ngColor);
+                    _spriteBatch.DrawString(_menuFont, highScoresString,
+                        new Vector2(xPos, yPos2),
+                        hsColor);
+                    _spriteBatch.DrawString(_menuFont, customizeControlsString,
+                        new Vector2(xPos, yPos3),
+                        ccColor);
+                    _spriteBatch.DrawString(_menuFont, viewCreditsString,
+                        new Vector2(xPos, yPos4),
+                        vcColor);
 
-                _spriteBatch.End();
+                    _spriteBatch.End();
+                    break;
+                }
+                case HighScores:
+                    // code
+                    break;
+                case Controls:
+                    // code
+                    break;
+                case Credits:
+                    // code
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
         // generate the necessary polygon vertices for the terrain
