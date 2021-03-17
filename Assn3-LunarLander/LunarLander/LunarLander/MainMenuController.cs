@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static LunarLander.GameState;
 using static LunarLander.MenuState;
@@ -155,7 +156,7 @@ namespace LunarLander
                 case Controls:
                     if (_inControlBinding)
                     {
-                        var depressedKeys = inputHandler.GetDepressedKeys();
+                        var depressedKeys = InputHandler.GetDepressedKeys();
                         // if we've bound at least one key, but there are no depressed keys, then we're done
                         if (_bindingKeysList.Count != 0 && depressedKeys.Length == 0)
                         {
@@ -172,6 +173,15 @@ namespace LunarLander
                                 {
                                     _bindingKeysList.Add(key);
                                 }
+                            }
+
+                            // set the string to show in the Controls menu
+                            BindingKeysString = "";
+
+                            foreach (var key in _bindingKeysList)
+                            {
+                                BindingKeysString += key.ToString();
+                                Console.WriteLine(BindingKeysString);
                             }
                         }
                     }
@@ -200,8 +210,32 @@ namespace LunarLander
                         }
                         else
                         {
+                            // set the button to change properly
+                            if (selectedItem == ThrustMenuItem)
+                                _rebindingButton = inputHandler.ThrustUpButton;
+                            else if (selectedItem == RotateLeftMenuItem)
+                                _rebindingButton = inputHandler.TurnShipLeftButton;
+                            else if (selectedItem == RotateRightMenuItem)
+                                _rebindingButton = inputHandler.TurnShipRightButton;
 
+                            // flag that we are in control binding
+                            _inControlBinding = true;
+
+                            // reset our list of keys we're binding
+                            _bindingKeysList = new List<Keys>();
                         }
+                    }
+                    else if (inputHandler.MenuUpButton.Pressed)
+                    {
+                        SelectPreviousItem(_controlsList);
+                    }
+                    else if (inputHandler.MenuDownButton.Pressed)
+                    {
+                        SelectNextItem(_controlsList);
+                    }
+                    else if (inputHandler.MenuBackButton.Pressed)
+                    {
+                        MenuState = Main;
                     }
                     break;
                 case HighScores:

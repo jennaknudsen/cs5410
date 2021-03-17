@@ -374,6 +374,14 @@ namespace LunarLander
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
 
+            // will reuse these
+            float xPos;
+            float yPos1;
+            float yPos2;
+            float yPos3;
+            float yPos4;
+            float yPos5;
+
             switch (_landerGameController.MainMenuController.MenuState)
             {
                 // code to determine which menu elements to draw on pause
@@ -396,11 +404,11 @@ namespace LunarLander
                         : Color.LightGray;
 
                     // get correct pixel coordinates for menu items
-                    var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
-                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
-                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.42f));
-                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
+                    (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.42f));
+                    (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
 
                     // set proper strings
                     var newGameString = "New Game";
@@ -422,14 +430,63 @@ namespace LunarLander
                         new Vector2(xPos, yPos4),
                         vcColor);
 
-                    _spriteBatch.End();
                     break;
                 }
                 case HighScores:
                     // code
                     break;
                 case Controls:
-                    // code
+                    // for controls menu, draw 5 elements on screen
+
+                    // get correct colors
+                    var thrustColor = _landerGameController.MainMenuController.ThrustMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var tlColor = _landerGameController.MainMenuController.RotateLeftMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var trColor = _landerGameController.MainMenuController.RotateRightMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var defColor = _landerGameController.MainMenuController.ResetDefaultsMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var returnColor = _landerGameController.MainMenuController.BackToMainMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    // get correct pixel coordinates for menu items
+                    (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.72f));
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.62f));
+                    (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.32f));
+                    (_, yPos5) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
+
+                    // set proper strings
+                    var thrustString = "Thrust: ";
+                    var rotateLeftString = "Rotate Left: ";
+                    var rotateRightString = "Rotate Right: ";
+                    var defaultsString = "Reset to Defaults";
+                    var mmString = "Main Menu";
+
+                    // now, draw the strings
+                    _spriteBatch.DrawString(_menuFont, thrustString,
+                        new Vector2(xPos, yPos1),
+                        thrustColor);
+                    _spriteBatch.DrawString(_menuFont, rotateLeftString,
+                        new Vector2(xPos, yPos2),
+                        tlColor);
+                    _spriteBatch.DrawString(_menuFont, rotateRightString,
+                        new Vector2(xPos, yPos3),
+                        trColor);
+                    _spriteBatch.DrawString(_menuFont, defaultsString,
+                        new Vector2(xPos, yPos4),
+                        defColor);
+                    _spriteBatch.DrawString(_menuFont, mmString,
+                        new Vector2(xPos, yPos5),
+                        returnColor);
+
                     break;
                 case Credits:
                     // code
@@ -437,6 +494,8 @@ namespace LunarLander
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            _spriteBatch.End();
         }
         // generate the necessary polygon vertices for the terrain
         private void GenerateTerrainVertices()

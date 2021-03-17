@@ -68,7 +68,7 @@ namespace LunarLander
         }
 
         // get all keys that are pressed
-        public Keys[] GetDepressedKeys()
+        public static Keys[] GetDepressedKeys()
         {
             return Keyboard.GetState().GetPressedKeys();
         }
