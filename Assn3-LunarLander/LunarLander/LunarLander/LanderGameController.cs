@@ -255,11 +255,11 @@ namespace LunarLander
 
             switch (GameState)
             {
-                // first, see if the pause button is pressed
-                case Running when _inputHandler.PauseButton.Pressed:
-                    GameState = Paused;
-                    MenuController.OpenMenu(Running);
-                    break;
+                // // first, see if the pause button is pressed
+                // case Running when _inputHandler.PauseButton.Pressed:
+                //     GameState = Paused;
+                //     MenuController.OpenMenu(Running);
+                //     break;
                 // running when pause is NOT pressed
                 case Running:
                     // turning rate: 2pi/3 rads / sec
@@ -449,6 +449,8 @@ namespace LunarLander
                 case Paused:
                     // menu navigation here
                     MenuController.ProcessMenu(_inputHandler);
+                    // if the MenuController sent the flag to exit the menu, then return to the
+                    // last specified game state
                     if (MenuController.ExitMenu)
                         GameState = MenuController.ReturnToGameState;
                     break;

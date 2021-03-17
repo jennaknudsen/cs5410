@@ -22,6 +22,12 @@ namespace LunarLander
         public string ItemName;
         public bool Selected;
 
+        public MenuItem(string itemName)
+        {
+            ItemName = itemName;
+            Selected = false;
+        }
+
         public MenuItem(string itemName, bool selected)
         {
             ItemName = itemName;

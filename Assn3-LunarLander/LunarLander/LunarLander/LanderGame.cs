@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static LunarLander.GameState;
+using static LunarLander.LanderGameController;
+using static LunarLander.MenuState;
 
 namespace LunarLander
 {
@@ -89,8 +91,8 @@ namespace LunarLander
             _spriteBatch.Begin();
 
             // get pixel coordinates from board coordinates
-            var (backX, backY) = GetAbsolutePixelCoordinates((0, LanderGameController.BoardSize));
-            var rectSizePixels = RescaleUnitsToPixels(LanderGameController.BoardSize);
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
             // create the background rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             _spriteBatch.Draw(_texSpaceBackground, backgroundRect, Color.Gray);
@@ -153,8 +155,8 @@ namespace LunarLander
 
             // set the correct colors
             var fuelColor = fuel > 0d ? Color.Green : Color.White;
-            var speedColor = speed < LanderGameController.MaxSpeed ? Color.Green : Color.White;
-            var angleColor = angle > LanderGameController.MinAngle || angle < LanderGameController.MaxAngle ?
+            var speedColor = speed < MaxSpeed ? Color.Green : Color.White;
+            var angleColor = angle > MinAngle || angle < MaxAngle ?
                 Color.Green : Color.White;
             var safeAreaColor = safeArea.Equals("Yes") ? Color.Green : Color.White;
 
@@ -171,8 +173,8 @@ namespace LunarLander
             // draw on-screen elements
             _spriteBatch.Begin();
 
-            var (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.65f,
-                LanderGameController.BoardSize * 0.95f));
+            var (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.65f,
+                BoardSize * 0.95f));
 
             _spriteBatch.DrawString(_gameFont, fuelString,
                 new Vector2(textPosX, textPosY),
@@ -189,23 +191,13 @@ namespace LunarLander
 
             _spriteBatch.End();
 
-            // dim entire screen on pause
-            if (_landerGameController.GameState == Paused)
-            {
-                _spriteBatch.Begin();
-                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
-
-                // code to determine which menu elements to draw on pause
-
-                _spriteBatch.End();
-            }
-            else if (_landerGameController.GameState == ShipCrashed)
+            if (_landerGameController.GameState == ShipCrashed)
             {
                 _spriteBatch.Begin();
 
                 // draw the backdrop rectangle for the text
                 var (gameOverRectPosX, gameOverRectPosY) = GetAbsolutePixelCoordinates((
-                        0, LanderGameController.BoardSize * 0.65f));
+                        0, BoardSize * 0.65f));
                 var gameOverRectHeight = (int) (rectSizePixels * 0.3);
                 var gameOverRect = new Rectangle(gameOverRectPosX, gameOverRectPosY, rectSizePixels, gameOverRectHeight);
 
@@ -215,8 +207,8 @@ namespace LunarLander
                 var crashedString = "Game Over. Your ship crashed.";
                 var restartingString = "Press ESC to start a new game.";
 
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
-                    LanderGameController.BoardSize * 0.55f));
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                    BoardSize * 0.55f));
                 _spriteBatch.DrawString(_menuFont, crashedString,
                     new Vector2(textPosX, textPosY),
                     Color.Red);
@@ -232,7 +224,7 @@ namespace LunarLander
 
                 // draw the backdrop rectangle for the text
                 var (passedRectPosX, passedRectPosY) = GetAbsolutePixelCoordinates((
-                    0, LanderGameController.BoardSize * 0.60f));
+                    0, BoardSize * 0.60f));
                 var passedRectHeight = (int) (rectSizePixels * 0.2);
                 var passedRect = new Rectangle(passedRectPosX, passedRectPosY, rectSizePixels, passedRectHeight);
 
@@ -250,8 +242,8 @@ namespace LunarLander
                     passedAdvancingIn += "1";
 
                 // now, get text coordinates and draw the string
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
-                    LanderGameController.BoardSize * 0.52f));
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                    BoardSize * 0.52f));
 
                 _spriteBatch.DrawString(_menuFont, passedAdvancingIn,
                     new Vector2(textPosX, textPosY),
@@ -265,7 +257,7 @@ namespace LunarLander
 
                 // draw the backdrop rectangle for the text
                 var (beatGameRectPosX, beatGameRectPosY) = GetAbsolutePixelCoordinates((
-                        0, LanderGameController.BoardSize * 0.65f));
+                        0, BoardSize * 0.65f));
                 var beatGameRectHeight = (int) (rectSizePixels * 0.3);
                 var beatGameRect = new Rectangle(beatGameRectPosX, beatGameRectPosY, rectSizePixels, beatGameRectHeight);
 
@@ -275,8 +267,8 @@ namespace LunarLander
                 var beatGameString = "You beat the game! Congrats!";
                 var restartingString = "Press ESC to start a new game.";
 
-                (textPosX, textPosY) = GetAbsolutePixelCoordinates((LanderGameController.BoardSize * 0.1f,
-                    LanderGameController.BoardSize * 0.55f));
+                (textPosX, textPosY) = GetAbsolutePixelCoordinates((BoardSize * 0.1f,
+                    BoardSize * 0.55f));
                 _spriteBatch.DrawString(_menuFont, beatGameString,
                     new Vector2(textPosX, textPosY),
                     Color.Yellow);
@@ -285,6 +277,61 @@ namespace LunarLander
                     Color.Yellow);
 
                 _spriteBatch.End();
+            }
+            // dim entire screen on pause
+            else if (_landerGameController.GameState == Paused)
+            {
+                _spriteBatch.Begin();
+                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.Gray);
+
+                // code to determine which menu elements to draw on pause
+                if (_landerGameController.MenuController.MenuState == Main)
+                {
+                    // for main menu, draw 4 elements on screen
+
+                    // get correct colors
+                    var ngColor = _landerGameController.MenuController.NewGameMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var hsColor = _landerGameController.MenuController.HighScoresMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var ccColor = _landerGameController.MenuController.CustomizeControlsMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var vcColor = _landerGameController.MenuController.ViewCreditsMenuItem.Selected
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    // get correct pixel coordinates for menu items
+                    var (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
+                    var (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.8f));
+                    var (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.6f));
+                    var (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.4f));
+                    var (_, yPos4) = GetAbsolutePixelCoordinates((0, BoardSize * 0.2f));
+
+                    // set proper strings
+                    var newGameString = "New Game";
+                    var highScoresString = "High Scores";
+                    var customizeControlsString = "Customize Controls";
+                    var viewCreditsString = "View Credits";
+
+                    // now, draw the strings
+                    _spriteBatch.DrawString(_menuFont, newGameString,
+                        new Vector2(xPos, yPos1),
+                        ngColor);
+                    _spriteBatch.DrawString(_menuFont, highScoresString,
+                        new Vector2(xPos, yPos2),
+                        hsColor);
+                    _spriteBatch.DrawString(_menuFont, customizeControlsString,
+                        new Vector2(xPos, yPos3),
+                        ccColor);
+                    _spriteBatch.DrawString(_menuFont, viewCreditsString,
+                        new Vector2(xPos, yPos4),
+                        vcColor);
+
+                    _spriteBatch.End();
+                }
             }
 
             base.Draw(gameTime);
@@ -328,8 +375,8 @@ namespace LunarLander
         private (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
         {
             // keep relative coordinates good
-            if (relativeCoordinates.x < 0 || relativeCoordinates.x > LanderGameController.BoardSize ||
-                relativeCoordinates.y < 0 || relativeCoordinates.y > LanderGameController.BoardSize)
+            if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
+                relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
             {
                 // uncomment this line if we want to force spaceship to stay in safe area
                 // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
@@ -348,7 +395,7 @@ namespace LunarLander
 
             // properly rescale the coordinates to get the correct pixels
             var rescaledX = RescaleUnitsToPixels(relativeCoordinates.x) + horizontalMarginPixels;
-            var rescaledY = RescaleUnitsToPixels(LanderGameController.BoardSize - relativeCoordinates.y);
+            var rescaledY = RescaleUnitsToPixels(BoardSize - relativeCoordinates.y);
 
             // return rescaled coordinates
             return (rescaledX, rescaledY);
@@ -361,7 +408,7 @@ namespace LunarLander
             var sizeOfGameAreaPixels = GraphicsDevice.Viewport.Bounds.Height;
 
             // rescale by ratio of game area in pixels to board size
-            var rescaledUnits = (int) (sizeOfGameAreaPixels / LanderGameController.BoardSize * units);
+            var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
             return rescaledUnits;
         }
     }
