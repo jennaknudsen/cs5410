@@ -574,6 +574,11 @@ namespace LunarLander
                             // only display the top 5 scores
                             if (position > 5) break;
                         }
+
+                        if (highScoresBodyString.Equals(""))
+                        {
+                            highScoresBodyString = "No high scores yet.";
+                        }
                     }
 
                     var mmString3 = "Main Menu";

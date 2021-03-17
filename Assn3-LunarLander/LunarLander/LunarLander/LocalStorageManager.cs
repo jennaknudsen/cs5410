@@ -175,11 +175,7 @@ namespace LunarLander
                         {
                             var hsList = new List<float>();
 
-                            hsList.Add(54.33f);
-                            hsList.Add(513.33f);
-                            hsList.Add(11.3f);
-                            hsList.Add(1f);
-
+                            // save high scores list (empty for now)
                             SaveHighScores(hsList);
 
                             // wait for save to finish before loading

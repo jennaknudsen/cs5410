@@ -53,9 +53,12 @@ namespace LunarLander
         public bool InSafeArea = false;
 
         // thresholds for safe landings
-        public const float MaxSpeed = 2.0f;
-        public const float MaxAngle = 5f;
-        public const float MinAngle = 355f;
+        // public const float MaxSpeed = 2.0f;
+        // public const float MaxAngle = 5f;
+        // public const float MinAngle = 355f;
+        public const float MaxSpeed = 20.0f;
+        public const float MaxAngle = 180f;
+        public const float MinAngle = 180f;
 
         // controller for data loading
         public LocalStorageManager LocalStorageManager;
@@ -99,6 +102,10 @@ namespace LunarLander
         public void StartLevel(int difficultyLevel)
         {
             Lander = new Lander(_startPosition);
+
+            // if this is level 1, then reset the score
+            if (difficultyLevel == 1)
+                _runningScore = 0f;
 
             // set load time to zero when starting level
             LoadingTime = TimeSpan.Zero;
@@ -289,6 +296,7 @@ namespace LunarLander
             // 10,000 ticks in one millisecond => 10,000,000 ticks in one second
             var elapsedSeconds = gameTime.ElapsedGameTime.Ticks / 10_000_000f;
 
+            // ReSharper disable once SwitchStatementHandlesSomeKnownEnumValuesWithDefault
             switch (GameState)
             {
                 case Running when InputHandler.PauseButton.Pressed:
@@ -440,6 +448,9 @@ namespace LunarLander
                             && Lander.VelocityTotal < MaxSpeed
                             && InSafeArea)
                         {
+                            // add remaining fuel to score
+                            _runningScore += (float) Lander.FuelCapacity.TotalSeconds;
+
                             if (CurrentLevel == 1)
                             {
                                 GameState = PassedLevel;
@@ -448,9 +459,13 @@ namespace LunarLander
                             else
                             {
                                 // calculate score
-                                var thisScore = 150f;
-                                MainMenuController.HighScoresFloatList.Add(thisScore);
-                                MainMenuController.HighScoresFloatList.Sort();
+                                MainMenuController.HighScoresFloatList.Add(_runningScore);
+
+                                // sort score from high to low
+                                MainMenuController.HighScoresFloatList.Sort((a, b) => b.CompareTo(a));
+
+                                // actually save the high scores on game completion
+                                LocalStorageManager.SaveHighScores(MainMenuController.HighScoresFloatList);
 
                                 GameState = BeatGame;
                             }
@@ -481,8 +496,6 @@ namespace LunarLander
                 case MainMenu:
                     MainMenuController.ProcessMenu(InputHandler);
                     break;
-                default:
-                    throw new ArgumentOutOfRangeException();
             }
         }
 
