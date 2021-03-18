@@ -632,10 +632,16 @@ background space texture, which I found at:
 https://www.nasa.gov/sites/default/files/images/
 191853main_image_feature_929_full.jpg
 
-Sounds from:
-Rocket: https://mixkit.co/free-sound-effects/rocket/ - 'Space rocket full power turbine'
-Success jingle: https://mixkit.co/free-sound-effects/win/ - 'Achievement bell'
-Crash: https://mixkit.co/free-sound-effects/explosion/ - 'Sea mine explosion'
+Sounds:
+
+Rocket: 'Space rocket full power turbine'
+https://mixkit.co/free-sound-effects/rocket/ 
+
+Success jingle: 'Achievement bell'
+https://mixkit.co/free-sound-effects/win/
+
+Crash: 'Sea mine explosion'
+https://mixkit.co/free-sound-effects/explosion/ 
 
 Used StackOverflow for a couple of small code 
 snippets. These snippets are cited in comments 
@@ -647,9 +653,9 @@ found in the source code.";
 
                     // get correct pixel coordinates for menu items
                     (xPos, _) = GetAbsolutePixelCoordinates((BoardSize * 0.1f, 0));
-                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
-                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.72f));
-                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.22f));
+                    (_, yPos1) = GetAbsolutePixelCoordinates((0, BoardSize * 0.92f));
+                    (_, yPos2) = GetAbsolutePixelCoordinates((0, BoardSize * 0.82f));
+                    (_, yPos3) = GetAbsolutePixelCoordinates((0, BoardSize * 0.12f));
 
                     // draw the menu items
                     _spriteBatch.DrawString(_menuFont, creditsString,
