@@ -25,6 +25,12 @@
 /processorParam:TextureFormat=Color
 /build:background-dimmer.png
 
+#begin explosion.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Medium
+/build:explosion.mp3
+
 #begin GameFont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -69,3 +75,8 @@
 /processorParam:TextureFormat=Color
 /build:space-background.jpg
 
+#begin success.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Medium
+/build:success.mp3

@@ -66,6 +66,10 @@ namespace LunarLander
         // flag for whether thrust is on
         public bool ThrustOn = false;
 
+        // flags for sounds
+        public bool PlayCrashSound = false;
+        public bool PlaySuccessSound = false;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
@@ -454,6 +458,9 @@ namespace LunarLander
                             // add remaining fuel to score
                             RunningScore += (float) Lander.FuelCapacity.TotalSeconds;
 
+                            // flag success sound
+                            PlaySuccessSound = true;
+
                             if (CurrentLevel == 1)
                             {
                                 GameState = PassedLevel;
@@ -476,22 +483,31 @@ namespace LunarLander
                         else
                         {
                             GameState = ShipCrashed;
+                            PlayCrashSound = true;
                         }
                     }
                     break;
                 case ShipCrashed when InputHandler.PauseButton.Pressed:
+                    // only flag the crash sound for one frame
+                    PlayCrashSound = false;
                     MainMenuController.OpenMenu();
                     break;
                 case ShipCrashed:
-                    // do nothing when dead
+                    // only flag the crash sound for one frame
+                    PlayCrashSound = false;
                     break;
                 case PassedLevel:
+                    PlaySuccessSound = false;
                     LoadingTime -= gameTime.ElapsedGameTime;
                     if (LoadingTime.TotalSeconds < 0)
                         StartLevel(2);
                     break;
                 case BeatGame when InputHandler.PauseButton.Pressed:
+                    PlaySuccessSound = false;
                     MainMenuController.OpenMenu();
+                    break;
+                case BeatGame:
+                    PlaySuccessSound = false;
                     break;
                 case Paused:
                     PauseMenuController.ProcessMenu(InputHandler);

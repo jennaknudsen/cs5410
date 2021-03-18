@@ -23,6 +23,10 @@ namespace LunarLander
         private SpriteFont _menuFont;
         private SoundEffect _rocketSound;
         private SoundEffectInstance _rocketSoundInstance;
+        private SoundEffect _explosionSound;
+        private SoundEffectInstance _explosionSoundInstance;
+        private SoundEffect _successSound;
+        private SoundEffectInstance _successSoundInstance;
 
         // stuff for terrain rendering
         private VertexPositionColor[] _terrainVertexPositionColors;
@@ -79,6 +83,10 @@ namespace LunarLander
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
             _rocketSound = this.Content.Load<SoundEffect>("rocket-sound");
             _rocketSoundInstance = _rocketSound.CreateInstance();
+            _explosionSound= this.Content.Load<SoundEffect>("explosion");
+            _explosionSoundInstance = _explosionSound.CreateInstance();
+            _successSound= this.Content.Load<SoundEffect>("success");
+            _successSoundInstance = _successSound.CreateInstance();
         }
 
         protected override void Update(GameTime gameTime)
@@ -618,11 +626,16 @@ namespace LunarLander
                 case Credits:
                     // just show credits here. Nothing crazy
                     var creditsString = "CREDITS:";
-                    var creditsBodyString = @"All game logic, assets, and artwork created 
+                    var creditsBodyString = @"All game logic and artwork created 
 by me (Jonas Knudsen), with the exception of the
 background space texture, which I found at:
 https://www.nasa.gov/sites/default/files/images/
 191853main_image_feature_929_full.jpg
+
+Sounds from:
+Rocket: https://mixkit.co/free-sound-effects/rocket/ - 'Space rocket full power turbine'
+Success jingle: https://mixkit.co/free-sound-effects/win/ - 'Achievement bell'
+Crash: https://mixkit.co/free-sound-effects/explosion/ - 'Sea mine explosion'
 
 Used StackOverflow for a couple of small code 
 snippets. These snippets are cited in comments 
@@ -744,6 +757,12 @@ found in the source code.";
             {
                 FadeOutSoundEffect(_rocketSoundInstance);
             }
+
+            // play the other sounds if needed
+            if (_landerGameController.PlaySuccessSound)
+                _successSoundInstance.Play();
+            if (_landerGameController.PlayCrashSound)
+                _explosionSoundInstance.Play();
         }
 
         // fade in a sound effect instead of cutting in
