@@ -63,6 +63,9 @@ namespace LunarLander
         // controller for data loading
         public LocalStorageManager LocalStorageManager;
 
+        // flag for whether thrust is on
+        public bool ThrustOn = false;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
@@ -331,8 +334,8 @@ namespace LunarLander
                     var modForceX = 0f;
                     var modForceY = 0f;
 
-                    var thrusterOn = InputHandler.ThrustUpButton.Pressed;
-                    if (thrusterOn && Lander.FuelCapacity > TimeSpan.Zero)
+                    ThrustOn = InputHandler.ThrustUpButton.Pressed && Lander.FuelCapacity > TimeSpan.Zero;
+                    if (ThrustOn)
                     {
                         var cartesianOrientation = GetCartesianOrientation(newOrientation);
 

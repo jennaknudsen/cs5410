@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using static LunarLander.GameState;
 using static LunarLander.LanderGameController;
@@ -20,11 +21,13 @@ namespace LunarLander
         private Rectangle _positionRectangle;
         private SpriteFont _gameFont;
         private SpriteFont _menuFont;
-        private BasicEffect _basicEffect;
+        private SoundEffect _rocketSound;
+        private SoundEffectInstance _rocketSoundInstance;
 
         // stuff for terrain rendering
         private VertexPositionColor[] _terrainVertexPositionColors;
         private int[] _terrainIndexArray;
+        private BasicEffect _basicEffect;
 
         // MonoGame stuff
         private readonly GraphicsDeviceManager _graphics;
@@ -74,6 +77,8 @@ namespace LunarLander
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
+            _rocketSound = this.Content.Load<SoundEffect>("rocket-sound");
+            _rocketSoundInstance = _rocketSound.CreateInstance();
         }
 
         protected override void Update(GameTime gameTime)
@@ -194,6 +199,9 @@ namespace LunarLander
                 _spriteBatch.End();
 
                 // TODO particles here
+
+                // Sound effects in separate function
+                PlaySoundEffects();
             }
 
             // now, depending on game state, draw other things
@@ -648,6 +656,7 @@ found in the source code.";
 
             _spriteBatch.End();
         }
+
         // generate the necessary polygon vertices for the terrain
         private void GenerateTerrainVertices()
         {
@@ -721,6 +730,61 @@ found in the source code.";
             // rescale by ratio of game area in pixels to board size
             var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
             return rescaledUnits;
+        }
+
+        // function that handles all game sound effects
+        private void PlaySoundEffects()
+        {
+            // only play rocket sound if game is running and thrust is on
+            if (_landerGameController.GameState == Running && _landerGameController.ThrustOn)
+            {
+                FadeInSoundEffect(_rocketSoundInstance);
+            }
+            else
+            {
+                FadeOutSoundEffect(_rocketSoundInstance);
+            }
+        }
+
+        // fade in a sound effect instead of cutting in
+        private static void FadeInSoundEffect(SoundEffectInstance sei)
+        {
+            // resume won't cause sound to constantly replay
+            sei.Resume();
+            if (sei.Volume < 1)
+            {
+                try
+                {
+                    sei.Volume += 0.2f;
+                }
+                catch
+                {
+                    sei.Volume = 1f;
+                }
+            }
+        }
+
+        // fade out a sound instead of cutting it off
+        private static void FadeOutSoundEffect(SoundEffectInstance sei)
+        {
+            // discrete steps
+            if (sei.Volume > 0)
+            {
+                // try to lower the volume by 20%, otherwise set to 0
+                try
+                {
+                    sei.Volume -= 0.2f;
+                }
+                catch
+                {
+                    sei.Volume = 0f;
+                }
+            }
+            else
+            {
+                // if the sound is completely silent, then stop it
+                sei.Stop();
+            }
         }
     }
 }

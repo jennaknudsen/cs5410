@@ -53,7 +53,7 @@
 
 #begin rocket-sound.mp3
 /importer:Mp3Importer
-/processor:SongProcessor
+/processor:SoundEffectProcessor
 /processorParam:Quality=Medium
 /build:rocket-sound.mp3
 
