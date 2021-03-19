@@ -12,9 +12,14 @@ namespace Particles.Particles
         // particle range: centered at angle, size is width
         public float Angle;
         public float Width;
-        public bool EmitParticles;
-        private bool _normalized;
 
+        // whether we want to be currently emitting particles or not
+        public bool EmitParticles;
+
+        // whether we want the distribution to be uniform or normalized
+        private readonly bool _normalized;
+
+        // sets the attributes of the AngleEmitter
         public AngleEmitter(ContentManager content, TimeSpan rate, int sourceX, int sourceY,
             int size, int speed, TimeSpan lifetime, TimeSpan switchover, bool normalized) :
             base(content, rate, sourceX, sourceY, size, speed, lifetime, switchover)
@@ -23,32 +28,34 @@ namespace Particles.Particles
             _normalized = normalized;
         }
 
+        // adds the particles
         protected override void AddParticles(GameTime gameTime)
         {
-            // Generate particles at the specified rate
+            // don't generate particles unless we specify the emitter to
             if (!EmitParticles) return;
 
-            m_accumulated += gameTime.ElapsedGameTime;
-            while (m_accumulated > m_rate)
+            // Generate particles at the specified rate
+            Accumulated += gameTime.ElapsedGameTime;
+            while (Accumulated > Rate)
             {
-                m_accumulated -= m_rate;
+                Accumulated -= Rate;
 
-                Vector2 direction;
-                if (_normalized)
-                    direction = m_random.nextAngleVectorNormalized(Angle, Width);
-                else
-                    direction = m_random.nextAngleVector(Angle, Width);
+                // get direction based on whether we are normalizing or not
+                var direction = _normalized
+                    ? ParticleRandom.nextAngleVectorNormalized(Angle, Width)
+                    : ParticleRandom.nextAngleVector(Angle, Width);
 
-                Particle p = new Particle(
-                    m_random.Next(),
-                    new Vector2(m_sourceX, m_sourceY),
+                // create and add the particle
+                var p = new Particle(
+                    ParticleRandom.Next(),
+                    new Vector2(SourceX, SourceY),
                     direction,
-                    (float) Math.Abs(m_random.nextGaussian(m_speed, 1)),
-                    m_lifetime);
+                    (float) Math.Abs(ParticleRandom.nextGaussian(Speed, 1)),
+                    Lifetime);
 
-                if (!m_particles.ContainsKey(p.name))
+                if (!Particles.ContainsKey(p.name))
                 {
-                    m_particles.Add(p.name, p);
+                    Particles.Add(p.name, p);
                 }
             }
 

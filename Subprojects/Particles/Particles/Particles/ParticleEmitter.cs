@@ -8,43 +8,52 @@ namespace Particles.Particles
 {
     public class ParticleEmitter
     {
-        protected Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
-        protected Texture2D m_texSmoke;
-        protected Texture2D m_texFire;
-        protected ParticleRandom m_random = new ParticleRandom();
+        // Dictionary to hold particles
+        protected readonly Dictionary<int, Particle> Particles = new Dictionary<int, Particle>();
 
-        protected TimeSpan m_rate;
-        protected int m_sourceX;
-        protected int m_sourceY;
-        protected int m_sarticleSize;
-        protected int m_speed;
-        protected TimeSpan m_lifetime;
-        protected TimeSpan m_switchover;
+        // random number generator, specific to Particles
+        protected readonly ParticleRandom ParticleRandom = new ParticleRandom();
 
+        // assets
+        private readonly Texture2D _texSmoke;
+        private readonly Texture2D _texFire;
+
+        // attributes of this particle emitter
+        protected TimeSpan Rate;
+        protected int SourceX;
+        protected int SourceY;
+        protected int ParticleSize;
+        protected int Speed;
+        protected TimeSpan Lifetime;
+        protected TimeSpan Switchover;
+
+        // can set gravity of particles
         public Vector2 Gravity { get; set; }
 
+        // stores the accumulated time
+        protected TimeSpan Accumulated = TimeSpan.Zero;
+
+        // Constructor sets the attributes
         public ParticleEmitter(ContentManager content, TimeSpan rate, int sourceX, int sourceY, int size, int speed, TimeSpan lifetime, TimeSpan switchover)
         {
-            m_rate = rate;
-            m_sourceX = sourceX;
-            m_sourceY = sourceY;
-            m_sarticleSize = size;
-            m_speed = speed;
-            m_lifetime = lifetime;
-            m_switchover = switchover;
+            Rate = rate;
+            SourceX = sourceX;
+            SourceY = sourceY;
+            ParticleSize = size;
+            Speed = speed;
+            Lifetime = lifetime;
+            Switchover = switchover;
 
-            m_texSmoke = content.Load<Texture2D>("Images/smoke");
-            m_texFire = content.Load<Texture2D>("Images/fire");
+            _texSmoke = content.Load<Texture2D>("Images/smoke");
+            _texFire = content.Load<Texture2D>("Images/fire");
 
             this.Gravity = new Vector2(0, 0);
         }
 
-        protected TimeSpan m_accumulated = TimeSpan.Zero;
-
         /// <summary>
         /// Generates new particles, updates the state of existing ones and retires expired particles.
         /// </summary>
-        public void update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             // adds all particles that need to be generated
             AddParticles(gameTime);
@@ -56,21 +65,21 @@ namespace Particles.Particles
         protected virtual void AddParticles(GameTime gameTime)
         {
             // Generate particles at the specified rate
-            m_accumulated += gameTime.ElapsedGameTime;
-            while (m_accumulated > m_rate)
+            Accumulated += gameTime.ElapsedGameTime;
+            while (Accumulated > Rate)
             {
-                m_accumulated -= m_rate;
+                Accumulated -= Rate;
 
-                Particle p = new Particle(
-                    m_random.Next(),
-                    new Vector2(m_sourceX, m_sourceY),
-                    m_random.nextCircleVector(),
-                    (float)m_random.nextGaussian(m_speed, 1),
-                    m_lifetime);
+                var p = new Particle(
+                    ParticleRandom.Next(),
+                    new Vector2(SourceX, SourceY),
+                    ParticleRandom.nextCircleVector(),
+                    (float)ParticleRandom.nextGaussian(Speed, 1),
+                    Lifetime);
 
-                if (!m_particles.ContainsKey(p.name))
+                if (!Particles.ContainsKey(p.name))
                 {
-                    m_particles.Add(p.name, p);
+                    Particles.Add(p.name, p);
                 }
             }
         }
@@ -79,55 +88,47 @@ namespace Particles.Particles
         {
             // For any existing particles, update them, if we find ones that have expired, add them
             // to the remove list.
-            List<int> removeMe = new List<int>();
-            foreach (Particle p in m_particles.Values)
+            var removeMe = new List<int>();
+            foreach (var p in Particles.Values)
             {
                 p.lifetime -= gameTime.ElapsedGameTime;
                 if (p.lifetime < TimeSpan.Zero)
                 {
-                    //
                     // Add to the remove list
                     removeMe.Add(p.name);
                 }
-                //
+
                 // Update its position
                 p.position += (p.direction * p.speed);
-                //
+
                 // Have it rotate proportional to its speed
                 p.rotation += p.speed / 50.0f;
-                //
+
                 // Apply some gravity
                 p.direction += this.Gravity;
             }
 
             //
             // Remove any expired particles
-            foreach (int Key in removeMe)
+            foreach (var key in removeMe)
             {
-                m_particles.Remove(Key);
+                Particles.Remove(key);
             }
         }
 
         /// <summary>
         /// Renders the active particles
         /// </summary>
-        public void draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch)
         {
-            Rectangle r = new Rectangle(0, 0, m_sarticleSize, m_sarticleSize);
-            foreach (Particle p in m_particles.Values)
+            var r = new Rectangle(0, 0, ParticleSize, ParticleSize);
+            foreach (var p in Particles.Values)
             {
-                Texture2D texDraw;
-                if (p.lifetime < m_switchover)
-                {
-                    texDraw = m_texSmoke;
-                }
-                else
-                {
-                    texDraw = m_texFire;
-                }
+                var texDraw = p.lifetime < Switchover ? _texSmoke : _texFire;
 
                 r.X = (int)p.position.X;
                 r.Y = (int)p.position.Y;
+
                 spriteBatch.Draw(
                     texDraw,
                     r,

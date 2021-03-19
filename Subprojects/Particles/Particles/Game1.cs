@@ -42,7 +42,8 @@ namespace Particles
                 10,
                 1,
                 new TimeSpan(0, 0, 0, 2),
-                new TimeSpan(0, 0, 0, 0)
+                new TimeSpan(0, 0, 0, 0),
+                new TimeSpan(0, 0, 0, 0, 300)
             );
 
             _angleEmitter = new AngleEmitter(
@@ -59,7 +60,7 @@ namespace Particles
 
             _angleEmitterNormalized = new AngleEmitter(
                 Content,
-                new TimeSpan(0, 0, 0, 0, 25),
+                new TimeSpan(0, 0, 0, 0, 5),
                 600,
                 200,
                 20,
@@ -77,7 +78,7 @@ namespace Particles
 
             // TODO: Add your update logic here
 
-            _allEmitter.update(gameTime);
+            _allEmitter.Update(gameTime);
             if (gameTime.TotalGameTime > TimeSpan.FromSeconds(3))
             {
                 _allEmitter.FireExplosion();
@@ -99,10 +100,10 @@ namespace Particles
             // set angle stats here
             _angleEmitter.Angle = MathHelper.PiOver2;
             _angleEmitter.Width = MathHelper.PiOver2;
-            _angleEmitterNormalized.Angle = MathHelper.PiOver2;
+            _angleEmitterNormalized.Angle = 5 * MathHelper.PiOver4;
             _angleEmitterNormalized.Width = MathHelper.PiOver2;
-            _angleEmitter.update(gameTime);
-            _angleEmitterNormalized.update(gameTime);
+            _angleEmitter.Update(gameTime);
+            _angleEmitterNormalized.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -115,9 +116,9 @@ namespace Particles
 
             _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.Additive);
 
-            _allEmitter.draw(_spriteBatch);
-            _angleEmitter.draw(_spriteBatch);
-            _angleEmitterNormalized.draw(_spriteBatch);
+            _allEmitter.Draw(_spriteBatch);
+            _angleEmitter.Draw(_spriteBatch);
+            _angleEmitterNormalized.Draw(_spriteBatch);
 
             _spriteBatch.End();
 

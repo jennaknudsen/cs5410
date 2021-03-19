@@ -7,56 +7,65 @@ namespace Particles.Particles
 {
     public class ExplosionEmitter : ParticleEmitter
     {
+        // flag as to whether we want to fire now
         private bool _fireNow;
-        public TimeSpan ExplosionTime;
 
+        // TimeSpan holds how long an explosion will last
+        private readonly TimeSpan _explosionTime;
+
+        // TimeSpan holds the remaining explosion time
+        private TimeSpan _remainingExplosionTime;
+
+        // constructor sets the attributes and readies an explosion
         public ExplosionEmitter(ContentManager content, TimeSpan rate, int sourceX, int sourceY,
-            int size, int speed, TimeSpan lifetime, TimeSpan switchover) :
+            int size, int speed, TimeSpan lifetime, TimeSpan switchover, TimeSpan explosionTime) :
             base(content, rate, sourceX, sourceY, size, speed, lifetime, switchover)
         {
-            ReadyExplosion();
+            _explosionTime = explosionTime;
+            ReadyExplosion(explosionTime);
         }
 
         // used to ready an explosion
-        public void ReadyExplosion()
+        public void ReadyExplosion(TimeSpan explosionTime)
         {
             _fireNow = false;
-            ExplosionTime = TimeSpan.FromMilliseconds(300);
+            _remainingExplosionTime = explosionTime;
         }
 
+        // simple function sets the "Fire Now" flag to true
         public void FireExplosion()
         {
             _fireNow = true;
         }
 
+        // adds the particles
         protected override void AddParticles(GameTime gameTime)
         {
-            // Generate particles at the specified rate
-
+            // if we are firing, we need to subtract from the remaining time
             if (_fireNow)
             {
-                ExplosionTime -= gameTime.ElapsedGameTime;
+                _remainingExplosionTime -= gameTime.ElapsedGameTime;
             }
 
-            m_accumulated += gameTime.ElapsedGameTime;
-            while (m_accumulated > m_rate)
+            // Generate particles at the specified rate
+            Accumulated += gameTime.ElapsedGameTime;
+            while (Accumulated > Rate)
             {
-                m_accumulated -= m_rate;
+                Accumulated -= Rate;
 
                 // only fire if we have ExplosionTime left
-                if (_fireNow && ExplosionTime > TimeSpan.Zero)
-                {
-                    Particle p = new Particle(
-                        m_random.Next(),
-                        new Vector2(m_sourceX, m_sourceY),
-                        m_random.nextCircleVector(),
-                        (float) Math.Abs(m_random.nextGaussian(m_speed, 1)),
-                        m_lifetime);
+                if (!_fireNow || _remainingExplosionTime <= TimeSpan.Zero) continue;
 
-                    if (!m_particles.ContainsKey(p.name))
-                    {
-                        m_particles.Add(p.name, p);
-                    }
+                var p = new Particle(
+                    ParticleRandom.Next(),
+                    new Vector2(SourceX, SourceY),
+                    ParticleRandom.nextCircleVector(),
+                    (float) Math.Abs(ParticleRandom.nextGaussian(Speed, 1)),
+                    Lifetime);
+
+                if (!Particles.ContainsKey(p.name))
+                {
+                    Particles.Add(p.name, p);
                 }
             }
         }
