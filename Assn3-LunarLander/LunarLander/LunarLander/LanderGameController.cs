@@ -502,6 +502,9 @@ namespace LunarLander
                     // only flag the crash sound for one frame
                     PlayCrashSound = false;
 
+                    // update particles for explosion
+                    ParticleDrawController.ShipCrash(gameTime, Lander);
+
                     // update particles for ship
                     ParticleDrawController.ShipThrust(gameTime, Lander, false);
 

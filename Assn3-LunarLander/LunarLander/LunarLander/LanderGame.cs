@@ -149,32 +149,37 @@ namespace LunarLander
                     }
                 }
 
-                // draw particles for lander
-                _landerGameController.ParticleDrawController.DrawThrust();
+                // draw all particles
+                _landerGameController.ParticleDrawController.Draw();
 
                 // Now, draw the lander
-                _spriteBatch.Begin();
+                // Draw lander after particles, so lander is drawn on top of the particles
+                // Don't draw the lander if we have crashed
+                if (_landerGameController.GameState != ShipCrashed)
+                {
+                    _spriteBatch.Begin();
 
-                // set lander position rectangle
-                // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
-                var lander = _landerGameController.Lander;
-                var (landerX, landerY) = GetAbsolutePixelCoordinates((lander.Position.x,
-                    lander.Position.y));
-                var landerSizePixels = RescaleUnitsToPixels(Lander.Size);
-                _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
+                    // set lander position rectangle
+                    // sets the top left of lander (we are re-adjusting the texture origin in the Draw() function)
+                    var lander = _landerGameController.Lander;
+                    var (landerX, landerY) = GetAbsolutePixelCoordinates((lander.Position.x,
+                        lander.Position.y));
+                    var landerSizePixels = RescaleUnitsToPixels(Lander.Size);
+                    _positionRectangle = new Rectangle(landerX, landerY, landerSizePixels, landerSizePixels);
 
-                // run draw function
-                _spriteBatch.Draw(_texLander,
-                    _positionRectangle,
-                    null,
-                    Color.Aqua,
-                    lander.Orientation,
-                    // center origin in the texture
-                    new Vector2(_texLander.Width / 2, _texLander.Width / 2),
-                    SpriteEffects.None,
-                    0);
+                    // run draw function
+                    _spriteBatch.Draw(_texLander,
+                        _positionRectangle,
+                        null,
+                        Color.Aqua,
+                        lander.Orientation,
+                        // center origin in the texture
+                        new Vector2(_texLander.Width / 2, _texLander.Width / 2),
+                        SpriteEffects.None,
+                        0);
 
-                _spriteBatch.End();
+                    _spriteBatch.End();
+                }
 
                 // get current fuel, speed, angle values
                 var fuel = _landerGameController.Lander.FuelCapacity.TotalSeconds;
