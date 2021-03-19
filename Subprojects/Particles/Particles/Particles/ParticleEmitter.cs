@@ -8,7 +8,6 @@ namespace Particles.Particles
 {
     public class ParticleEmitter
     {
-
         protected Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
         protected Texture2D m_texSmoke;
         protected Texture2D m_texFire;
@@ -45,9 +44,17 @@ namespace Particles.Particles
         /// <summary>
         /// Generates new particles, updates the state of existing ones and retires expired particles.
         /// </summary>
-        public virtual void update(GameTime gameTime)
+        public void update(GameTime gameTime)
         {
-            //
+            // adds all particles that need to be generated
+            AddParticles(gameTime);
+
+            // removes all particles that we need to remove
+            RemoveParticles(gameTime);
+        }
+
+        protected virtual void AddParticles(GameTime gameTime)
+        {
             // Generate particles at the specified rate
             m_accumulated += gameTime.ElapsedGameTime;
             while (m_accumulated > m_rate)
@@ -66,9 +73,10 @@ namespace Particles.Particles
                     m_particles.Add(p.name, p);
                 }
             }
+        }
 
-
-            //
+        protected virtual void RemoveParticles(GameTime gameTime)
+        {
             // For any existing particles, update them, if we find ones that have expired, add them
             // to the remove list.
             List<int> removeMe = new List<int>();

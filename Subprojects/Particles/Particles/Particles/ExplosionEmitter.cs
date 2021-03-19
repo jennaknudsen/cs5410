@@ -29,9 +29,8 @@ namespace Particles.Particles
             _fireNow = true;
         }
 
-        public override void update(GameTime gameTime)
+        protected override void AddParticles(GameTime gameTime)
         {
-            //
             // Generate particles at the specified rate
 
             if (_fireNow)
@@ -44,6 +43,7 @@ namespace Particles.Particles
             {
                 m_accumulated -= m_rate;
 
+                // only fire if we have ExplosionTime left
                 if (_fireNow && ExplosionTime > TimeSpan.Zero)
                 {
                     Particle p = new Particle(
@@ -58,38 +58,6 @@ namespace Particles.Particles
                         m_particles.Add(p.name, p);
                     }
                 }
-            }
-
-
-            //
-            // For any existing particles, update them, if we find ones that have expired, add them
-            // to the remove list.
-            List<int> removeMe = new List<int>();
-            foreach (Particle p in m_particles.Values)
-            {
-                p.lifetime -= gameTime.ElapsedGameTime;
-                if (p.lifetime < TimeSpan.Zero)
-                {
-                    //
-                    // Add to the remove list
-                    removeMe.Add(p.name);
-                }
-                //
-                // Update its position
-                p.position += (p.direction * p.speed);
-                //
-                // Have it rotate proportional to its speed
-                p.rotation += p.speed / 50.0f;
-                //
-                // Apply some gravity
-                p.direction += this.Gravity;
-            }
-
-            //
-            // Remove any expired particles
-            foreach (int Key in removeMe)
-            {
-                m_particles.Remove(Key);
             }
         }
     }

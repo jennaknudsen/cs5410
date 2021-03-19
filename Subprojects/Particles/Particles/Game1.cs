@@ -69,6 +69,15 @@ namespace Particles
                 _allEmitter.FireExplosion();
             }
 
+            if (gameTime.TotalGameTime > TimeSpan.FromSeconds(1) && gameTime.TotalGameTime < TimeSpan.FromSeconds(6))
+            {
+                _angleEmitter.EmitParticles = true;
+            }
+            else
+            {
+                _angleEmitter.EmitParticles = false;
+            }
+
             // set angle stats here
             _angleEmitter.Angle = 5 * MathHelper.PiOver4;
             _angleEmitter.Width = MathHelper.Pi / 3f;
