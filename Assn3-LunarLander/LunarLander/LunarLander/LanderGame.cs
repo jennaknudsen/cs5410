@@ -14,7 +14,6 @@ namespace LunarLander
         // game controller handles all underlying logic
         private LanderGameController _landerGameController;
 
-
         // assets for this game
         private Texture2D _texLander;
         private Texture2D _texSpaceBackground;
@@ -37,6 +36,10 @@ namespace LunarLander
         // MonoGame stuff
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+
+        // width and height of window
+        private static int _windowWidthPixels;
+        private static int _windowHeightPixels;
 
         public LanderGame()
         {
@@ -69,6 +72,10 @@ namespace LunarLander
                 Projection = Matrix.CreatePerspectiveOffCenter(0.0f, _graphics.GraphicsDevice.Viewport.Width,
                     _graphics.GraphicsDevice.Viewport.Height, 0, 1.0f, 1000.0f)
             };
+
+            var canvasBounds = GraphicsDevice.Viewport.Bounds;
+            _windowWidthPixels = canvasBounds.Width;
+            _windowHeightPixels = canvasBounds.Height;
 
             base.Initialize();
         }
@@ -725,16 +732,11 @@ found in the source code.";
                 // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
             }
 
-            // get absolute pixel dimensions
-            var canvasBounds = GraphicsDevice.Viewport.Bounds;
-            var canvasWidthPixels = canvasBounds.Width;
-            var canvasHeightPixels = canvasBounds.Height;
-
             // get size of playable area (will be constrained by height)
-            var sizeOfGameAreaPixels = canvasHeightPixels;
+            var sizeOfGameAreaPixels = _windowHeightPixels;
 
             // width will be square centered in screen, same dimensions as height
-            var horizontalMarginPixels = (canvasWidthPixels - sizeOfGameAreaPixels) / 2;
+            var horizontalMarginPixels = (_windowWidthPixels - sizeOfGameAreaPixels) / 2;
 
             // properly rescale the coordinates to get the correct pixels
             var rescaledX = RescaleUnitsToPixels(relativeCoordinates.x) + horizontalMarginPixels;
@@ -745,13 +747,10 @@ found in the source code.";
         }
 
         // given a unit count, rescale it to pixels
-        private int RescaleUnitsToPixels(float units)
+        public static int RescaleUnitsToPixels(float units)
         {
-            // get absolute pixel dimensions
-            var sizeOfGameAreaPixels = GraphicsDevice.Viewport.Bounds.Height;
-
             // rescale by ratio of game area in pixels to board size
-            var rescaledUnits = (int) (sizeOfGameAreaPixels / BoardSize * units);
+            var rescaledUnits = (int) (_windowHeightPixels / BoardSize * units);
             return rescaledUnits;
         }
 
