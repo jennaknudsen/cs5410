@@ -11,7 +11,7 @@ namespace Particles
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private ParticleEmitter _allEmitter;
+        private ExplosionEmitter _allEmitter;
         private AngleEmitter _angleEmitter;
 
         public Game1()
@@ -33,15 +33,15 @@ namespace Particles
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            _allEmitter = new ParticleEmitter(
+            _allEmitter = new ExplosionEmitter(
                 Content,
-                new TimeSpan(0, 0, 0, 0, 25),
+                new TimeSpan(0, 0, 0, 0, 3),
                 200,
                 200,
-                20,
+                10,
                 1,
-                new TimeSpan(0, 0, 0, 6),
-                new TimeSpan(0, 0, 0, 3)
+                new TimeSpan(0, 0, 0, 2),
+                new TimeSpan(0, 0, 0, 0)
             );
 
             _angleEmitter = new AngleEmitter(
@@ -64,6 +64,10 @@ namespace Particles
             // TODO: Add your update logic here
 
             _allEmitter.update(gameTime);
+            if (gameTime.TotalGameTime > TimeSpan.FromSeconds(3))
+            {
+                _allEmitter.FireExplosion();
+            }
 
             // set angle stats here
             _angleEmitter.Angle = 5 * MathHelper.PiOver4;
@@ -81,7 +85,7 @@ namespace Particles
 
             _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.Additive);
 
-            // _allEmitter.draw(_spriteBatch);
+            _allEmitter.draw(_spriteBatch);
             _angleEmitter.draw(_spriteBatch);
 
             _spriteBatch.End();
