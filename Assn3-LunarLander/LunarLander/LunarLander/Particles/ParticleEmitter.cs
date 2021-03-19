@@ -138,6 +138,8 @@ namespace LunarLander.Particles
                     new Vector2(texDraw.Width / 2, texDraw.Height / 2),
                     SpriteEffects.None,
                     0);
+
+                Console.WriteLine("Drew a particle with x: " + r.X + " and y: " + r.Y);
             }
         }
     }

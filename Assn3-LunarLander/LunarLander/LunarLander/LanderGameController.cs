@@ -545,7 +545,7 @@ namespace LunarLander
         // MonoGame radians: pi/2, 0, 3pi/2, pi  (x, y, -x, -y directions)
         // convert MG radians to standard:
         // standard_radians = -(MonoGame radians) + pi/2
-        private static float GetCartesianOrientation(float monoGameOrientation)
+        public static float GetCartesianOrientation(float monoGameOrientation)
         {
             return -1 * monoGameOrientation + MathHelper.PiOver2;
         }

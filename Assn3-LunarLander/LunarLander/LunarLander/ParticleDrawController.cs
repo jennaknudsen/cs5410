@@ -28,12 +28,15 @@ namespace LunarLander
                 TimeSpan.FromMilliseconds(2),
                 0,
                 0,
-                (int) (boardSize * 0.01f),
-                (int) (boardSize * 0.01f),
-                TimeSpan.FromSeconds(0.5),
-                TimeSpan.FromSeconds(0.1),
+                LanderGame.RescaleUnitsToPixels(Lander.Size / 10),
+                1,
+                TimeSpan.FromSeconds(0.2),
+                TimeSpan.FromSeconds(0.05),
                 true
             );
+
+            // Console.WriteLine(LanderGame.RescaleUnitsToPixels(Lander.Size / 10));
+            // Console.WriteLine(LanderGame.RescaleUnitsToPixels(Lander.Size / 300));
 
             _thrustEmitter.Width = MathHelper.Pi / 3f;
         }
@@ -43,11 +46,15 @@ namespace LunarLander
         {
             _thrustEmitter.EmitParticles = thrustOn;
 
-            _thrustEmitter.Angle = lander.Orientation;
-            // _thrustEmitter.SourceX = lander.Position.x;
-            // _thrustEmitter.SourceY = lander.Position.y;
-            _thrustEmitter.SourceX = 400;
-            _thrustEmitter.SourceY = 200;
+            // invert the angle
+            _thrustEmitter.Angle = MathHelper.Pi + LanderGameController.GetCartesianOrientation(lander.Orientation);
+
+            var (px, py) = LanderGame.GetAbsolutePixelCoordinates((lander.Position.x, lander.Position.y));
+            _thrustEmitter.SourceX = px;
+            _thrustEmitter.SourceY = py;
+
+            // if (thrustOn)
+            //     Console.WriteLine("sourceX=" + px + ", sourceY=" + py + ", orientation=" + lander.Orientation);
 
             _thrustEmitter.Update(gameTime);
         }

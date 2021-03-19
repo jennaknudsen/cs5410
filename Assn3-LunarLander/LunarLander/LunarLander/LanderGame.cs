@@ -722,7 +722,7 @@ found in the source code.";
 
         // game board will have relative dimensions in a square
         // this function gets the absolute dimensions
-        private (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
+        public static (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
         {
             // keep relative coordinates good
             if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
