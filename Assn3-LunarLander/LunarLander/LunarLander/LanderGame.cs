@@ -56,7 +56,7 @@ namespace LunarLander
             // _graphics.ApplyChanges();
 
             _landerGameController = new LanderGameController();
-            _landerGameController.StartLevel(1);
+            _landerGameController.MainMenuController.OpenMenu();
 
             _graphics.GraphicsDevice.RasterizerState = new RasterizerState
             {
@@ -84,7 +84,7 @@ namespace LunarLander
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _texLander = this.Content.Load<Texture2D>("Lander-2");
+            _texLander = this.Content.Load<Texture2D>("Lander-3");
             _texSpaceBackground = this.Content.Load<Texture2D>("space-background");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
@@ -643,7 +643,8 @@ namespace LunarLander
                     // just show credits here. Nothing crazy
                     var creditsString = "CREDITS:";
                     var creditsBodyString = @"All game logic and artwork created 
-by me (Jonas Knudsen), with the exception of the
+by me (Jonas Knudsen), with the exception of some
+starter code provided by the instructor, and the
 background space texture, which I found at:
 https://www.nasa.gov/sites/default/files/images/
 191853main_image_feature_929_full.jpg
