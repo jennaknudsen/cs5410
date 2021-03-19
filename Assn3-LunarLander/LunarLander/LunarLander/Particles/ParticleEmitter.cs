@@ -20,8 +20,8 @@ namespace LunarLander.Particles
 
         // attributes of this particle emitter
         protected TimeSpan Rate;
-        protected int SourceX;
-        protected int SourceY;
+        public float SourceX;
+        public float SourceY;
         protected int ParticleSize;
         protected int Speed;
         protected TimeSpan Lifetime;
@@ -44,8 +44,8 @@ namespace LunarLander.Particles
             Lifetime = lifetime;
             Switchover = switchover;
 
-            _texSmoke = content.Load<Texture2D>("Images/smoke");
-            _texFire = content.Load<Texture2D>("Images/fire");
+            _texSmoke = content.Load<Texture2D>("smoke");
+            _texFire = content.Load<Texture2D>("fire");
 
             this.Gravity = new Vector2(0, 0);
         }

@@ -14,6 +14,7 @@ namespace LunarLander
         // game controller handles all underlying logic
         private LanderGameController _landerGameController;
 
+
         // assets for this game
         private Texture2D _texLander;
         private Texture2D _texSpaceBackground;
@@ -87,6 +88,8 @@ namespace LunarLander
             _explosionSoundInstance = _explosionSound.CreateInstance();
             _successSound= this.Content.Load<SoundEffect>("success");
             _successSoundInstance = _successSound.CreateInstance();
+
+            _landerGameController.ParticleDrawController = new ParticleDrawController(_spriteBatch, Content, BoardSize);
         }
 
         protected override void Update(GameTime gameTime)
@@ -138,6 +141,9 @@ namespace LunarLander
                         );
                     }
                 }
+
+                // draw particles for lander
+                _landerGameController.ParticleDrawController.DrawThrust();
 
                 // Now, draw the lander
                 _spriteBatch.Begin();
@@ -205,8 +211,6 @@ namespace LunarLander
                     safeAreaColor);
 
                 _spriteBatch.End();
-
-                // TODO particles here
 
                 // Sound effects in separate function
                 PlaySoundEffects();

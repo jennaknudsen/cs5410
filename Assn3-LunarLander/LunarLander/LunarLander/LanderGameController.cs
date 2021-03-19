@@ -70,6 +70,9 @@ namespace LunarLander
         public bool PlayCrashSound = false;
         public bool PlaySuccessSound = false;
 
+        // controller for drawing particles
+        public ParticleDrawController ParticleDrawController;
+
         // constructor just creates the input handler
         public LanderGameController()
         {
@@ -383,6 +386,9 @@ namespace LunarLander
                                                    Math.Pow(Lander.Velocity.y, 2));
 
                     Lander.Position = newPosition;
+
+                    // update particles for ship
+                    ParticleDrawController.ShipThrust(gameTime, Lander, ThrustOn);
 
                     // must have landed within the bounds of a safe area
                     InSafeArea = false;
