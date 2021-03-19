@@ -10,7 +10,7 @@ namespace Particles.Particles
     /// *NextGaussian : Generate a normally distributed random number
     ///
     /// </summary>
-    internal class ParticleRandom : Random
+    public class ParticleRandom : Random
     {
 
         /// <summary>
@@ -29,6 +29,21 @@ namespace Particles.Particles
             float angle = (float)(this.NextDouble() * 2.0 * Math.PI);
             float x = (float)Math.Cos(angle);
             float y = (float)Math.Sin(angle);
+
+            return new Vector2(x, y);
+        }
+
+        public Vector2 nextAngleVector(float angle, float width)
+        {
+            var validRatio = width / MathHelper.TwoPi;
+            float thisAngle = (float) (this.NextDouble() * validRatio * MathHelper.TwoPi + angle - width / 2f);
+            Console.WriteLine("angle: " + thisAngle);
+            Console.WriteLine("angle in degrees: " + thisAngle * (180 / MathHelper.Pi));
+
+            // get xy coordinates
+            float x = (float) Math.Cos(thisAngle);
+            // reverse MonoGame coordinates
+            float y = -1 * (float) Math.Sin(thisAngle);
 
             return new Vector2(x, y);
         }

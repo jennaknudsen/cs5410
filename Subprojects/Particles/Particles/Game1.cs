@@ -12,7 +12,7 @@ namespace Particles
         private SpriteBatch _spriteBatch;
 
         private ParticleEmitter _allEmitter;
-        private ParticleEmitter _angleEmitter;
+        private AngleEmitter _angleEmitter;
 
         public Game1()
         {
@@ -43,6 +43,17 @@ namespace Particles
                 new TimeSpan(0, 0, 0, 6),
                 new TimeSpan(0, 0, 0, 3)
             );
+
+            _angleEmitter = new AngleEmitter(
+                Content,
+                new TimeSpan(0, 0, 0, 0, 25),
+                400,
+                200,
+                20,
+                1,
+                new TimeSpan(0, 0, 0, 6),
+                new TimeSpan(0, 0, 0, 3)
+            );
         }
 
         protected override void Update(GameTime gameTime)
@@ -53,6 +64,11 @@ namespace Particles
             // TODO: Add your update logic here
 
             _allEmitter.update(gameTime);
+
+            // set angle stats here
+            _angleEmitter.Angle = 5 * MathHelper.PiOver4;
+            _angleEmitter.Width = MathHelper.Pi / 3f;
+            _angleEmitter.update(gameTime);
 
             base.Update(gameTime);
         }
@@ -65,7 +81,8 @@ namespace Particles
 
             _spriteBatch.Begin(SpriteSortMode.BackToFront, BlendState.Additive);
 
-            _allEmitter.draw(_spriteBatch);
+            // _allEmitter.draw(_spriteBatch);
+            _angleEmitter.draw(_spriteBatch);
 
             _spriteBatch.End();
 

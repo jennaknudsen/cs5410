@@ -9,22 +9,22 @@ namespace Particles.Particles
     public class ParticleEmitter
     {
 
-        private Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
-        private Texture2D m_texSmoke;
-        private Texture2D m_texFire;
-        private ParticleRandom m_random = new ParticleRandom();
+        protected Dictionary<int, Particle> m_particles = new Dictionary<int, Particle>();
+        protected Texture2D m_texSmoke;
+        protected Texture2D m_texFire;
+        protected ParticleRandom m_random = new ParticleRandom();
 
-        private TimeSpan m_rate;
-        private int m_sourceX;
-        private int m_sourceY;
-        private int m_sarticleSize;
-        private int m_speed;
-        private TimeSpan m_lifetime;
-        private TimeSpan m_switchover;
+        protected TimeSpan m_rate;
+        protected int m_sourceX;
+        protected int m_sourceY;
+        protected int m_sarticleSize;
+        protected int m_speed;
+        protected TimeSpan m_lifetime;
+        protected TimeSpan m_switchover;
 
         public Vector2 Gravity { get; set; }
 
-        public ParticleEmitter(ContentManager content, TimeSpan rate, int sourceX, int sourceY, int size, int speed, TimeSpan lifetime, TimeSpan wwitchover)
+        public ParticleEmitter(ContentManager content, TimeSpan rate, int sourceX, int sourceY, int size, int speed, TimeSpan lifetime, TimeSpan switchover)
         {
             m_rate = rate;
             m_sourceX = sourceX;
@@ -32,7 +32,7 @@ namespace Particles.Particles
             m_sarticleSize = size;
             m_speed = speed;
             m_lifetime = lifetime;
-            m_switchover = wwitchover;
+            m_switchover = switchover;
 
             m_texSmoke = content.Load<Texture2D>("Images/smoke");
             m_texFire = content.Load<Texture2D>("Images/fire");
@@ -40,12 +40,12 @@ namespace Particles.Particles
             this.Gravity = new Vector2(0, 0);
         }
 
-        private TimeSpan m_accumulated = TimeSpan.Zero;
+        protected TimeSpan m_accumulated = TimeSpan.Zero;
 
         /// <summary>
         /// Generates new particles, updates the state of existing ones and retires expired particles.
         /// </summary>
-        public void update(GameTime gameTime)
+        public virtual void update(GameTime gameTime)
         {
             //
             // Generate particles at the specified rate
