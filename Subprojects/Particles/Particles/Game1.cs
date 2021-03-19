@@ -13,6 +13,7 @@ namespace Particles
 
         private ExplosionEmitter _allEmitter;
         private AngleEmitter _angleEmitter;
+        private AngleEmitter _angleEmitterNormalized;
 
         public Game1()
         {
@@ -52,7 +53,20 @@ namespace Particles
                 20,
                 1,
                 new TimeSpan(0, 0, 0, 6),
-                new TimeSpan(0, 0, 0, 3)
+                new TimeSpan(0, 0, 0, 3),
+                false
+            );
+
+            _angleEmitterNormalized = new AngleEmitter(
+                Content,
+                new TimeSpan(0, 0, 0, 0, 25),
+                600,
+                200,
+                20,
+                1,
+                new TimeSpan(0, 0, 0, 6),
+                new TimeSpan(0, 0, 0, 3),
+                true
             );
         }
 
@@ -72,16 +86,23 @@ namespace Particles
             if (gameTime.TotalGameTime > TimeSpan.FromSeconds(1) && gameTime.TotalGameTime < TimeSpan.FromSeconds(6))
             {
                 _angleEmitter.EmitParticles = true;
+                _angleEmitterNormalized.EmitParticles = true;
             }
             else
             {
-                _angleEmitter.EmitParticles = false;
+                // _angleEmitter.EmitParticles = false;
+                _angleEmitter.EmitParticles = true;
+                // _angleEmitterNormalized.EmitParticles = false;
+                _angleEmitterNormalized.EmitParticles = true;
             }
 
             // set angle stats here
-            _angleEmitter.Angle = 5 * MathHelper.PiOver4;
-            _angleEmitter.Width = MathHelper.Pi / 3f;
+            _angleEmitter.Angle = MathHelper.PiOver2;
+            _angleEmitter.Width = MathHelper.PiOver2;
+            _angleEmitterNormalized.Angle = MathHelper.PiOver2;
+            _angleEmitterNormalized.Width = MathHelper.PiOver2;
             _angleEmitter.update(gameTime);
+            _angleEmitterNormalized.update(gameTime);
 
             base.Update(gameTime);
         }
@@ -96,6 +117,7 @@ namespace Particles
 
             _allEmitter.draw(_spriteBatch);
             _angleEmitter.draw(_spriteBatch);
+            _angleEmitterNormalized.draw(_spriteBatch);
 
             _spriteBatch.End();
 

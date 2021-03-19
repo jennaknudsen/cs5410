@@ -48,6 +48,22 @@ namespace Particles.Particles
             return new Vector2(x, y);
         }
 
+        public Vector2 nextAngleVectorNormalized(float angle, float width)
+        {
+            var validRatio = width / MathHelper.TwoPi;
+            float thisAngle = (float) (this.nextGaussian(0.5,0.15)
+                * validRatio * MathHelper.TwoPi + angle - width / 2f);
+            Console.WriteLine("angle: " + thisAngle);
+            Console.WriteLine("angle in degrees: " + thisAngle * (180 / MathHelper.Pi));
+
+            // get xy coordinates
+            float x = (float) Math.Cos(thisAngle);
+            // reverse MonoGame coordinates
+            float y = -1 * (float) Math.Sin(thisAngle);
+
+            return new Vector2(x, y);
+        }
+
         /// <summary>
         /// Generate a normally distributed random number.  Derived from a Wiki reference on
         /// how to do this.
