@@ -12,19 +12,17 @@ namespace Particles.Particles
     /// </summary>
     public class ParticleRandom : Random
     {
-
         /// <summary>
-        /// Generates a random number in the range or [Min,Max]
+        /// Keep this around to optimize gaussian calculation performance.
         /// </summary>
-        public float nextRange(float min, float max)
-        {
-            return MathHelper.Lerp(min, max, (float)this.NextDouble());
-        }
+        private double _y2;
+        // same with this
+        private bool _usePrevious;
 
         /// <summary>
         /// Generate a random vector about a unit circle
         /// </summary>
-        public Vector2 nextCircleVector()
+        public Vector2 NextCircleVector()
         {
             float angle = (float)(this.NextDouble() * 2.0 * Math.PI);
             float x = (float)Math.Cos(angle);
@@ -33,34 +31,42 @@ namespace Particles.Particles
             return new Vector2(x, y);
         }
 
-        public Vector2 nextAngleVector(float angle, float width)
+        /// <summary>
+        /// Generates a random vector about a unit circle, given an angle and a width.
+        /// </summary>
+        public Vector2 NextAngleVector(float angle, float width)
         {
+            // get the valid ratio between the width and the full unit circle
             var validRatio = width / MathHelper.TwoPi;
-            float thisAngle = (float) (this.NextDouble() * validRatio * MathHelper.TwoPi + angle - width / 2f);
-            Console.WriteLine("angle: " + thisAngle);
-            Console.WriteLine("angle in degrees: " + thisAngle * (180 / MathHelper.Pi));
+            // get a random angle that falls within range of angle
+            var thisAngle = (float) (this.NextDouble() * validRatio * MathHelper.TwoPi + angle - width / 2f);
 
             // get xy coordinates
-            float x = (float) Math.Cos(thisAngle);
+            var x = (float) Math.Cos(thisAngle);
             // reverse MonoGame coordinates
-            float y = -1 * (float) Math.Sin(thisAngle);
+            var y = -1 * (float) Math.Sin(thisAngle);
 
+            // return a Vector2 with these coordinates
             return new Vector2(x, y);
         }
 
-        public Vector2 nextAngleVectorNormalized(float angle, float width)
+        /// <summary>
+        /// Generates a normalized random vector about a unit circle, given an angle and a width.
+        /// </summary>
+        public Vector2 NextAngleVectorNormalized(float angle, float width)
         {
+            // get the valid ratio between the width and the full unit circle
             var validRatio = width / MathHelper.TwoPi;
-            float thisAngle = (float) (this.nextGaussian(0.5,0.15)
+            // get a random angle that falls within range of angle
+            var thisAngle = (float) (this.NextGaussian(0.5,0.15)
                 * validRatio * MathHelper.TwoPi + angle - width / 2f);
-            Console.WriteLine("angle: " + thisAngle);
-            Console.WriteLine("angle in degrees: " + thisAngle * (180 / MathHelper.Pi));
 
             // get xy coordinates
-            float x = (float) Math.Cos(thisAngle);
+            var x = (float) Math.Cos(thisAngle);
             // reverse MonoGame coordinates
-            float y = -1 * (float) Math.Sin(thisAngle);
+            var y = -1 * (float) Math.Sin(thisAngle);
 
+            // return a Vector2 with these coordinates
             return new Vector2(x, y);
         }
 
@@ -68,19 +74,18 @@ namespace Particles.Particles
         /// Generate a normally distributed random number.  Derived from a Wiki reference on
         /// how to do this.
         /// </summary>
-        public double nextGaussian(double mean, double stdDev)
+        public double NextGaussian(double mean, double stdDev)
         {
-            if (this.usePrevious)
+            if (this._usePrevious)
             {
-                this.usePrevious = false;
-                return mean + y2 * stdDev;
+                this._usePrevious = false;
+                return mean + _y2 * stdDev;
             }
-            this.usePrevious = true;
+            this._usePrevious = true;
 
-            double x1 = 0.0;
-            double x2 = 0.0;
-            double y1 = 0.0;
-            double z = 0.0;
+            double x1;
+            double x2;
+            double z;
 
             do
             {
@@ -91,16 +96,11 @@ namespace Particles.Particles
             while (z >= 1.0);
 
             z = Math.Sqrt((-2.0 * Math.Log(z)) / z);
-            y1 = x1 * z;
-            y2 = x2 * z;
+
+            var y1 = x1 * z;
+            _y2 = x2 * z;
 
             return mean + y1 * stdDev;
         }
-
-        /// <summary>
-        /// Keep this around to optimize gaussian calculation performance.
-        /// </summary>
-        private double y2;
-        private bool usePrevious { get; set; }
     }
 }

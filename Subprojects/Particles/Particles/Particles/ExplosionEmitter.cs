@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 
@@ -22,14 +21,14 @@ namespace Particles.Particles
             base(content, rate, sourceX, sourceY, size, speed, lifetime, switchover)
         {
             _explosionTime = explosionTime;
-            ReadyExplosion(explosionTime);
+            ReadyExplosion();
         }
 
         // used to ready an explosion
-        public void ReadyExplosion(TimeSpan explosionTime)
+        public void ReadyExplosion()
         {
             _fireNow = false;
-            _remainingExplosionTime = explosionTime;
+            _remainingExplosionTime = _explosionTime;
         }
 
         // simple function sets the "Fire Now" flag to true
@@ -59,13 +58,13 @@ namespace Particles.Particles
                 var p = new Particle(
                     ParticleRandom.Next(),
                     new Vector2(SourceX, SourceY),
-                    ParticleRandom.nextCircleVector(),
-                    (float) Math.Abs(ParticleRandom.nextGaussian(Speed, 1)),
+                    ParticleRandom.NextCircleVector(),
+                    (float) Math.Abs(ParticleRandom.NextGaussian(Speed, 1)),
                     Lifetime);
 
-                if (!Particles.ContainsKey(p.name))
+                if (!Particles.ContainsKey(p.Name))
                 {
-                    Particles.Add(p.name, p);
+                    Particles.Add(p.Name, p);
                 }
             }
         }

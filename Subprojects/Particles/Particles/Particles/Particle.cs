@@ -1,27 +1,27 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Particles.Particles
 {
     public class Particle
     {
+        // the various properties of a Particle
+        public readonly int Name;
+        public Vector2 Position;
+        public float Rotation;
+        public Vector2 Direction;
+        public readonly float Speed;
+        public TimeSpan Lifetime;
+
+        // sets the attributes of this object
         public Particle(int name, Vector2 position, Vector2 direction, float speed, TimeSpan lifetime)
         {
-            this.name = name;
-            this.position = position;
-            this.direction = direction;
-            this.speed = speed;
-            this.lifetime = lifetime;
-
-            this.rotation = 0;
+            Name = name;
+            Position = position;
+            Direction = direction;
+            Speed = speed;
+            Lifetime = lifetime;
+            Rotation = 0;
         }
-
-        public int name;
-        public Vector2 position;
-        public float rotation;
-        public Vector2 direction;
-        public float speed;
-        public TimeSpan lifetime;
     }
 }

@@ -73,13 +73,13 @@ namespace Particles.Particles
                 var p = new Particle(
                     ParticleRandom.Next(),
                     new Vector2(SourceX, SourceY),
-                    ParticleRandom.nextCircleVector(),
-                    (float)ParticleRandom.nextGaussian(Speed, 1),
+                    ParticleRandom.NextCircleVector(),
+                    (float)ParticleRandom.NextGaussian(Speed, 1),
                     Lifetime);
 
-                if (!Particles.ContainsKey(p.name))
+                if (!Particles.ContainsKey(p.Name))
                 {
-                    Particles.Add(p.name, p);
+                    Particles.Add(p.Name, p);
                 }
             }
         }
@@ -91,21 +91,21 @@ namespace Particles.Particles
             var removeMe = new List<int>();
             foreach (var p in Particles.Values)
             {
-                p.lifetime -= gameTime.ElapsedGameTime;
-                if (p.lifetime < TimeSpan.Zero)
+                p.Lifetime -= gameTime.ElapsedGameTime;
+                if (p.Lifetime < TimeSpan.Zero)
                 {
                     // Add to the remove list
-                    removeMe.Add(p.name);
+                    removeMe.Add(p.Name);
                 }
 
                 // Update its position
-                p.position += (p.direction * p.speed);
+                p.Position += (p.Direction * p.Speed);
 
                 // Have it rotate proportional to its speed
-                p.rotation += p.speed / 50.0f;
+                p.Rotation += p.Speed / 50.0f;
 
                 // Apply some gravity
-                p.direction += this.Gravity;
+                p.Direction += this.Gravity;
             }
 
             //
@@ -124,17 +124,17 @@ namespace Particles.Particles
             var r = new Rectangle(0, 0, ParticleSize, ParticleSize);
             foreach (var p in Particles.Values)
             {
-                var texDraw = p.lifetime < Switchover ? _texSmoke : _texFire;
+                var texDraw = p.Lifetime < Switchover ? _texSmoke : _texFire;
 
-                r.X = (int)p.position.X;
-                r.Y = (int)p.position.Y;
+                r.X = (int)p.Position.X;
+                r.Y = (int)p.Position.Y;
 
                 spriteBatch.Draw(
                     texDraw,
                     r,
                     null,
                     Color.White,
-                    p.rotation,
+                    p.Rotation,
                     new Vector2(texDraw.Width / 2, texDraw.Height / 2),
                     SpriteEffects.None,
                     0);

@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Particles.Particles
 {
@@ -42,20 +40,20 @@ namespace Particles.Particles
 
                 // get direction based on whether we are normalizing or not
                 var direction = _normalized
-                    ? ParticleRandom.nextAngleVectorNormalized(Angle, Width)
-                    : ParticleRandom.nextAngleVector(Angle, Width);
+                    ? ParticleRandom.NextAngleVectorNormalized(Angle, Width)
+                    : ParticleRandom.NextAngleVector(Angle, Width);
 
                 // create and add the particle
                 var p = new Particle(
                     ParticleRandom.Next(),
                     new Vector2(SourceX, SourceY),
                     direction,
-                    (float) Math.Abs(ParticleRandom.nextGaussian(Speed, 1)),
+                    (float) Math.Abs(ParticleRandom.NextGaussian(Speed, 1)),
                     Lifetime);
 
-                if (!Particles.ContainsKey(p.name))
+                if (!Particles.ContainsKey(p.Name))
                 {
-                    Particles.Add(p.name, p);
+                    Particles.Add(p.Name, p);
                 }
             }
 
