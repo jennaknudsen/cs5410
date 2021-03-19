@@ -25,13 +25,13 @@ namespace LunarLander
 
             _thrustEmitter = new AngleEmitter(
                 content,
-                TimeSpan.FromMilliseconds(2),
+                TimeSpan.FromMilliseconds(3),
                 0,
                 0,
-                LanderGame.RescaleUnitsToPixels(Lander.Size / 10),
-                1,
-                TimeSpan.FromSeconds(0.2),
-                TimeSpan.FromSeconds(0.05),
+                LanderGame.RescaleUnitsToPixels(Lander.Size / 6),
+                5,
+                TimeSpan.FromMilliseconds(150),
+                TimeSpan.FromMilliseconds(70),
                 true
             );
 
@@ -69,6 +69,11 @@ namespace LunarLander
             _spriteBatch.Begin();
             _thrustEmitter.Draw(_spriteBatch);
             _spriteBatch.End();
+        }
+
+        public void ClearAllParticles()
+        {
+            _thrustEmitter.ClearAllParticles();
         }
     }
 }

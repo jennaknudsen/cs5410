@@ -501,12 +501,23 @@ namespace LunarLander
                 case ShipCrashed:
                     // only flag the crash sound for one frame
                     PlayCrashSound = false;
+
+                    // update particles for ship
+                    ParticleDrawController.ShipThrust(gameTime, Lander, false);
+
                     break;
                 case PassedLevel:
                     PlaySuccessSound = false;
                     LoadingTime -= gameTime.ElapsedGameTime;
+
+                    // update particles for ship
+                    ParticleDrawController.ShipThrust(gameTime, Lander, false);
+
                     if (LoadingTime.TotalSeconds < 0)
+                    {
                         StartLevel(2);
+                        ParticleDrawController.ClearAllParticles();
+                    }
                     break;
                 case BeatGame when InputHandler.PauseButton.Pressed:
                     PlaySuccessSound = false;
@@ -514,11 +525,17 @@ namespace LunarLander
                     break;
                 case BeatGame:
                     PlaySuccessSound = false;
+
+                    // update particles for ship
+                    ParticleDrawController.ShipThrust(gameTime, Lander, false);
+
                     break;
                 case Paused:
                     PauseMenuController.ProcessMenu(InputHandler);
                     break;
                 case MainMenu:
+                    // clears all particles
+                    ParticleDrawController.ClearAllParticles();
                     MainMenuController.ProcessMenu(InputHandler);
                     break;
             }
