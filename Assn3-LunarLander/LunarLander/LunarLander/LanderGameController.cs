@@ -19,11 +19,11 @@ namespace LunarLander
         // moon gravity: https://en.wikipedia.org/wiki/Moon
         private const float MoonGravity = 1.62f;    // m/(s^2)
 
-        // lander start position
-        private readonly (float x, float y) _startPosition = (10, 90);
-
         // the board size in units (and meters)
-        public const float BoardSize = 100f;
+        public const float BoardSize = 120f;
+
+        // lander start position
+        private readonly (float x, float y) _startPosition = (BoardSize * 0.1f, BoardSize * 0.9f);
 
         // whether terrain has been generated or not
         public bool TerrainGenerated = false;
@@ -53,12 +53,9 @@ namespace LunarLander
         public bool InSafeArea = false;
 
         // thresholds for safe landings
-        // public const float MaxSpeed = 2.0f;
-        // public const float MaxAngle = 5f;
-        // public const float MinAngle = 355f;
-        public const float MaxSpeed = 20.0f;
-        public const float MaxAngle = 180f;
-        public const float MinAngle = 180f;
+        public const float MaxSpeed = 4.0f;
+        public const float MaxAngle = 5f;
+        public const float MinAngle = 355f;
 
         // controller for data loading
         public LocalStorageManager LocalStorageManager;
@@ -155,8 +152,8 @@ namespace LunarLander
             // safe zones depend on difficulty level
             var safeZoneLength = difficultyLevel switch
             {
-                1 => Lander.Size * 2.5f,
-                2 => Lander.Size * 1.5f,
+                1 => Lander.Size * 3.5f,
+                2 => Lander.Size * 2.5f,
                 _ => throw new ArgumentOutOfRangeException(nameof(difficultyLevel), difficultyLevel, null)
             };
 
@@ -332,9 +329,9 @@ namespace LunarLander
                     const float baseForceX = 0f;
                     const float baseForceY = Lander.Mass * (-1 * MoonGravity); // gravity force is negative
 
-                    // thrust: 5 m/s^2
+                    // thrust: 7 m/s^2
                     // F = ma ==> F = 4280 * 5 = 21400 N
-                    const float thrustAcceleration = 5f;
+                    const float thrustAcceleration = 7f;
                     const float thrustForce = Lander.Mass * thrustAcceleration;
 
                     // additional x / y forces from the thruster

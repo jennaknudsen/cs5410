@@ -31,15 +31,15 @@ namespace LunarLander
                 LanderGame.RescaleUnitsToPixels(Lander.Size / 6),
                 5,
                 TimeSpan.FromMilliseconds(150),
-                TimeSpan.FromMilliseconds(70),
+                TimeSpan.FromMilliseconds(90),
                 true
             );
 
-            _thrustEmitter.Width = MathHelper.Pi / 3f;
+            _thrustEmitter.Width = MathHelper.PiOver2;
 
             _explosionEmitter = new ExplosionEmitter(
                 content,
-                TimeSpan.FromMilliseconds(2),
+                TimeSpan.FromMilliseconds(1),
                 0,
                 0,
                 LanderGame.RescaleUnitsToPixels(Lander.Size / 4),
@@ -47,7 +47,7 @@ namespace LunarLander
                 0,
                 TimeSpan.FromMilliseconds(700),
                 TimeSpan.FromMilliseconds(220),
-                TimeSpan.FromMilliseconds(400)
+                TimeSpan.FromMilliseconds(150)
             );
         }
 
