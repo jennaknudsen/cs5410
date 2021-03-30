@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FinalProjecct_Tetris
+namespace FinalProject_Tetris
 {
     public static class Program
     {

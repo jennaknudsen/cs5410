@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace FinalProjecct_Tetris
+namespace FinalProject_Tetris
 {
     public class TetrisGame : Game
     {
