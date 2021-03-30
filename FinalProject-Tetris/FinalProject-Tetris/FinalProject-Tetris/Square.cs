@@ -36,5 +36,8 @@ namespace FinalProject_Tetris
                 _ => ""
             };
         }
+
+        // used in Free Fall mode to determine which group a square is in
+        public int SquareGroup = 0;
     }
 }
