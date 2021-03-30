@@ -34,6 +34,9 @@ namespace FinalProject_Tetris
         public Piece CurrentPiece;
         public Piece NextPiece;
 
+        // time since last gravity tick
+        private TimeSpan _timeSinceLastTick;
+
         // references to various objects that this class uses
         public InputHandler InputHandler = new InputHandler();
         public ParticleController ParticleController = new ParticleController();
@@ -97,10 +100,10 @@ namespace FinalProject_Tetris
             }
 
             // convert this to fraction of seconds
-            var correctMillis = 60d / frames;
+            var correctSeconds = frames / 60d;
 
             // return this fraction of seconds as a TimeSpan
-            return TimeSpan.FromMilliseconds(correctMillis);
+            return TimeSpan.FromSeconds(correctSeconds);
         }
 
         // this starts the game
@@ -113,19 +116,26 @@ namespace FinalProject_Tetris
             TetrisSquares = new Square[10, 20];
             CurrentPiece = null;
             NextPiece = null;
+            _timeSinceLastTick = TimeSpan.Zero;
 
             // set the game state to be Running
             GameState = Running;
-
         }
 
         // this ticks every game loop
         public void Update(GameTime gameTime)
         {
+            // reset time since last tick since if we exceed gravity time span
+            _timeSinceLastTick += gameTime.ElapsedGameTime;
+            if (_timeSinceLastTick >= GetGravityTimeSpan(15))
+            {
+                _timeSinceLastTick = TimeSpan.Zero;
+            }
+
             // temporary code to make sure that rendering works
-            // TODO fix this
             TetrisSquares = new Square[10, 20];
-            if (gameTime.TotalGameTime.Seconds % 2 == 0)
+
+            if (true)
             {
                 TetrisSquares[0, 0] = new Square((0, 0), Blue);
                 TetrisSquares[0, 1] = new Square((0, 1), Green);
