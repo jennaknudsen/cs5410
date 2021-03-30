@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static FinalProject_Tetris.Square;
+using static FinalProject_Tetris.Square.PieceColor;
 using static FinalProject_Tetris.TetrisGameController;
 
 namespace FinalProject_Tetris
@@ -39,9 +42,11 @@ namespace FinalProject_Tetris
         protected override void Initialize()
         {
             // Modify to change game render resolution
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.PreferredBackBufferWidth = 2560;
+            _graphics.PreferredBackBufferHeight = 1440;
             _graphics.ApplyChanges();
+
+            _tetrisGameController = new TetrisGameController();
 
             var canvasBounds = GraphicsDevice.Viewport.Bounds;
             _windowWidthPixels = canvasBounds.Width;
@@ -53,17 +58,6 @@ namespace FinalProject_Tetris
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            // _texLander = this.Content.Load<Texture2D>("Lander-3");
-            // _texSpaceBackground = this.Content.Load<Texture2D>("space-background");
-            // _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
-            // _gameFont = this.Content.Load<SpriteFont>("GameFont");
-            // _menuFont = this.Content.Load<SpriteFont>("MenuFont");
-            // _rocketSound = this.Content.Load<SoundEffect>("rocket-sound");
-            // _rocketSoundInstance = _rocketSound.CreateInstance();
-            // _explosionSound= this.Content.Load<SoundEffect>("explosion");
-            // _explosionSoundInstance = _explosionSound.CreateInstance();
-            // _successSound= this.Content.Load<SoundEffect>("success");
-            // _successSoundInstance = _successSound.CreateInstance();
             _texRed = this.Content.Load<Texture2D>("red");
             _texOrange = this.Content.Load<Texture2D>("orange");
             _texYellow = this.Content.Load<Texture2D>("yellow");
@@ -78,10 +72,8 @@ namespace FinalProject_Tetris
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
+            // all updating is handled in the GameController
+            _tetrisGameController.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -99,22 +91,19 @@ namespace FinalProject_Tetris
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             _spriteBatch.Draw(_texBoard, backgroundRect, Color.White);
 
-            var (sqx, sqy) = GetAbsolutePixelCoordinates((10, 3));
-            var (sqx2, sqy2) = GetAbsolutePixelCoordinates(
-                GetBoardLocationFromPieceLocation((0, 1)));
-            var (sqx3, sqy3) = GetPixelLocationFromPieceLocation((1, 0));
-            var (sqx4, sqy4) = GetPixelLocationFromPieceLocation((1, 1));
-            var squareWidth = RescaleUnitsToPixels(PieceSize);
-            var rect = new Rectangle(sqx, sqy, squareWidth, squareWidth);
-            var rect2 = new Rectangle(sqx2, sqy2, squareWidth, squareWidth);
-            var rect3 = new Rectangle(sqx3, sqy3, squareWidth, squareWidth);
-            var rect4 = new Rectangle(sqx4, sqy4, squareWidth, squareWidth);
-
-            // run draw function
-            foreach (var rectangle in new[] {rect, rect2, rect3, rect4})
+            // draw each square
+            foreach (var square in _tetrisGameController.TetrisSquares)
             {
-                _spriteBatch.Draw(_texRed,
-                    rectangle,
+                // don't render this if it's null
+                if (square == null) continue;
+
+                var (squareX, squareY) = GetPixelLocationFromPieceLocation(square.PieceLocation);
+                var squareWidth = RescaleUnitsToPixels(PieceSize);
+                var renderRect = new Rectangle(squareX, squareY, squareWidth, squareWidth);
+
+                _spriteBatch.Draw(
+                    GetColor(square.Color),
+                    renderRect,
                     null,
                     Color.White,
                     0,
@@ -137,7 +126,7 @@ namespace FinalProject_Tetris
             if (relativeCoordinates.x < 0 || relativeCoordinates.x > BoardSize ||
                 relativeCoordinates.y < 0 || relativeCoordinates.y > BoardSize)
             {
-                // uncomment this line if we want to force spaceship to stay in safe area
+                // uncomment this line if we want to force to stay in safe area
                 // throw new Exception("Relative coordinates must be between 0 and " + BoardSize + ".");
             }
 
@@ -175,6 +164,23 @@ namespace FinalProject_Tetris
             return GetAbsolutePixelCoordinates(
                 GetBoardLocationFromPieceLocation((pieceLocation.x, pieceLocation.y))
                 );
+        }
+
+        // converter from PieceColor to correct texture
+        private Texture2D GetColor(PieceColor pieceColor)
+        {
+            return pieceColor switch
+            {
+                Red => _texRed,
+                Orange => _texOrange,
+                Yellow => _texYellow,
+                Green => _texGreen,
+                Blue => _texBlue,
+                Indigo => _texIndigo,
+                Violet => _texViolet,
+                Gray => _texGray,
+                _ => throw new ArgumentOutOfRangeException(nameof(pieceColor), pieceColor, null)
+            };
         }
     }
 }

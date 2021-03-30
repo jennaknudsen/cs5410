@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using static FinalProject_Tetris.GameState;
+using static FinalProject_Tetris.Square.PieceColor;
 
 namespace FinalProject_Tetris
 {
@@ -121,7 +122,31 @@ namespace FinalProject_Tetris
         // this ticks every game loop
         public void Update(GameTime gameTime)
         {
-
+            // temporary code to make sure that rendering works
+            // TODO fix this
+            TetrisSquares = new Square[10, 20];
+            if (gameTime.TotalGameTime.Seconds % 2 == 0)
+            {
+                TetrisSquares[0, 0] = new Square((0, 0), Blue);
+                TetrisSquares[0, 1] = new Square((0, 1), Green);
+                TetrisSquares[0, 2] = new Square((0, 2), Red);
+                TetrisSquares[9, 13] = new Square((9, 13), Gray);
+                TetrisSquares[4, 15] = new Square((4, 15), Violet);
+                TetrisSquares[1, 0] = new Square((1, 0), Orange);
+                TetrisSquares[1, 1] = new Square((1, 1), Yellow);
+                TetrisSquares[3, 7] = new Square((3, 7), Indigo);
+            }
+            else
+            {
+                TetrisSquares[0, 3] = new Square((0, 3), Blue);
+                TetrisSquares[0, 4] = new Square((0, 4), Green);
+                TetrisSquares[1, 3] = new Square((1, 3), Red);
+                TetrisSquares[7, 10] = new Square((7, 10), Gray);
+                TetrisSquares[2, 5] = new Square((2, 5), Violet);
+                TetrisSquares[1, 4] = new Square((1, 4), Orange);
+                TetrisSquares[1, 0] = new Square((1, 0), Yellow);
+                TetrisSquares[3, 3] = new Square((3, 3), Indigo);
+            }
         }
     }
 }

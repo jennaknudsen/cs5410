@@ -21,23 +21,14 @@ namespace FinalProject_Tetris
             Gray
         }
 
-        // converter from PieceColor to string
-        public static string GetColor(PieceColor pieceColor)
-        {
-            return pieceColor switch
-            {
-                PieceColor.Red => "red",
-                PieceColor.Orange => "orange",
-                PieceColor.Yellow => "yellow",
-                PieceColor.Green => "green",
-                PieceColor.Blue => "blue",
-                PieceColor.Indigo => "indigo",
-                PieceColor.Violet => "violet",
-                _ => ""
-            };
-        }
-
         // used in Free Fall mode to determine which group a square is in
         public int SquareGroup = 0;
+
+        // constructor
+        public Square((int x, int y) pieceLocation, PieceColor color)
+        {
+            PieceLocation = pieceLocation;
+            Color = color;
+        }
     }
 }
