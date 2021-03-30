@@ -9,7 +9,13 @@ namespace FinalProject_Tetris
     {
         // assets for this game
         private Texture2D _texRed;
+        private Texture2D _texOrange;
+        private Texture2D _texYellow;
+        private Texture2D _texGreen;
         private Texture2D _texBlue;
+        private Texture2D _texIndigo;
+        private Texture2D _texViolet;
+        private Texture2D _texGray;
         private Texture2D _texBoard;
         private Texture2D _texBackgroundDimmer;
 
@@ -19,6 +25,9 @@ namespace FinalProject_Tetris
         // width and height of window
         private static int _windowWidthPixels;
         private static int _windowHeightPixels;
+
+        // references to needed components
+        private TetrisGameController _tetrisGameController;
 
         public TetrisGame()
         {
@@ -56,7 +65,13 @@ namespace FinalProject_Tetris
             // _successSound= this.Content.Load<SoundEffect>("success");
             // _successSoundInstance = _successSound.CreateInstance();
             _texRed = this.Content.Load<Texture2D>("red");
+            _texOrange = this.Content.Load<Texture2D>("orange");
+            _texYellow = this.Content.Load<Texture2D>("yellow");
+            _texGreen = this.Content.Load<Texture2D>("green");
             _texBlue = this.Content.Load<Texture2D>("blue");
+            _texIndigo = this.Content.Load<Texture2D>("indigo");
+            _texViolet = this.Content.Load<Texture2D>("violet");
+            _texGray = this.Content.Load<Texture2D>("gray");
             _texBoard = this.Content.Load<Texture2D>("board");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
         }

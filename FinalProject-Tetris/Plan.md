@@ -48,6 +48,7 @@ Need to use mouse input for the menu.
   * Reference to an `InputHandler`
   * Reference to a `ParticleController`
   * Reference to a `SoundController`
+  * Reference to a `MenuController`
   * Reference to an `AIController`
   * Game window size: 30 x 30
   * Reference table to level / timespan for gravity

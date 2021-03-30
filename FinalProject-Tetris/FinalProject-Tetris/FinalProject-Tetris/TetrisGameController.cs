@@ -1,4 +1,6 @@
 using System;
+using Microsoft.Xna.Framework;
+using static FinalProject_Tetris.GameState;
 
 namespace FinalProject_Tetris
 {
@@ -32,11 +34,11 @@ namespace FinalProject_Tetris
         public Piece NextPiece;
 
         // references to various objects that this class uses
-        public InputHandler InputHandler;
-        public ParticleController ParticleController;
-        public SoundController SoundController;
-        public AiController AiController;
-
+        public InputHandler InputHandler = new InputHandler();
+        public ParticleController ParticleController = new ParticleController();
+        public SoundController SoundController = new SoundController();
+        public AiController AiController = new AiController();
+        public MainMenuController MainMenuController = new MainMenuController();
 
         // this gets the TimeSpan between gravity ticks
         private static TimeSpan GetGravityTimeSpan(int level)
@@ -98,6 +100,28 @@ namespace FinalProject_Tetris
 
             // return this fraction of seconds as a TimeSpan
             return TimeSpan.FromMilliseconds(correctMillis);
+        }
+
+        // this starts the game
+        public void StartGame()
+        {
+            // reset score, board
+            LinesCleared = 0;
+            Score = 0;
+            Level = 0;
+            TetrisSquares = new Square[10, 20];
+            CurrentPiece = null;
+            NextPiece = null;
+
+            // set the game state to be Running
+            GameState = Running;
+
+        }
+
+        // this ticks every game loop
+        public void Update(GameTime gameTime)
+        {
+
         }
     }
 }
