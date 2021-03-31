@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using FinalProject_Tetris.InputHandling;
 using static FinalProject_Tetris.GameState;
@@ -129,16 +131,18 @@ namespace FinalProject_Tetris
             // first, always get user input
             InputHandler.HandleInput();
 
-            if (InputHandler.MenuUpButton.Pressed)
-            {
-                Console.WriteLine("Mouse button pressed!");
-            }
-
             switch (GameState)
             {
                 case Running:
                 case AttractMode:
-
+                    if (GameState == Running)
+                    {
+                        // get user input for piece
+                        if (InputHandler.MovePieceLeftButton.Pressed)
+                        {
+                            MovePieceLeft();
+                        }
+                    }
                     break;
             }
             // reset time since last tick since if we exceed gravity time span
@@ -147,6 +151,70 @@ namespace FinalProject_Tetris
             {
                 _timeSinceLastTick = TimeSpan.Zero;
             }
+        }
+
+        private void MovePieceLeft()
+        {
+            // protect against nulls
+            if (CurrentPiece == null) return;
+
+            // make a new list with all of the positions translated to the left by 1
+            var newPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                newPosition.Add((square.PieceLocation.x - 1, square.PieceLocation.y));
+            }
+
+            // only move if it's a valid position
+            if (CheckValidPiecePosition(newPosition))
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    CurrentPiece.Squares[i].PieceLocation = newPosition[i];
+                }
+            }
+        }
+
+        private void MovePieceRight()
+        {
+
+        }
+
+        private void SoftDropPiece()
+        {
+
+        }
+
+        private void HardDropPiece()
+        {
+
+        }
+
+        private void RotatePieceCounterClockwise()
+        {
+
+        }
+
+        private void RotatePieceClockwise()
+        {
+
+        }
+
+        // given a List of piece coordinates for start and another for end position, check validity of the move
+        // assume old position is valid
+        private bool CheckValidPiecePosition(IEnumerable<(int x, int y)> newPosition)
+        {
+            // LINQ expression to select piece locations
+            var oldPosition = CurrentPiece.Squares.Select(square => square.PieceLocation).ToList();
+
+            foreach (var (x, y) in newPosition)
+            {
+                if (x < 0 || x > 9 || y < 0 || y > 19) return false;
+                if (TetrisSquares[x, y] == null) continue;
+                if (oldPosition.Contains((x, y))) continue;
+                return false;
+            }
+            return true;
         }
     }
 }
