@@ -148,3 +148,26 @@ Need to use mouse input for the menu.
 ### **Draw() Function**
 * Substantially similar to last time
 * Just check for mousing over a button to highlight
+
+## **Progress**
+
+- [x] Basic rendering (pieces, in one state only)
+    - 2 hours
+- [ ] Piece Movement / Rotation
+    - 4 hours
+- [ ] Row Clearing / Gravity falling / Game Updating
+    - 3 hours
+- [ ] Scoring, level increasing
+    - 1 hour
+- [ ] Menuing
+    - 4 hours
+- [ ] Persistent Storage (High Scores, controls)
+    - 2 hours
+- [ ] Attract Mode
+    - 4 hours
+- [ ] Particles
+    - 3 hours
+- [ ] Sound
+    - 3 hours
+- [ ] Final Rendering (text)
+    - 3 hours

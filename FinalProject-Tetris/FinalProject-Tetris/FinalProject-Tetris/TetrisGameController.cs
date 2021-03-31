@@ -125,6 +125,15 @@ namespace FinalProject_Tetris
         // this ticks every game loop
         public void Update(GameTime gameTime)
         {
+            // first, always get user input
+            // InputHandler
+            switch (GameState)
+            {
+                case Running:
+                case AttractMode:
+
+                    break;
+            }
             // reset time since last tick since if we exceed gravity time span
             _timeSinceLastTick += gameTime.ElapsedGameTime;
             if (_timeSinceLastTick >= GetGravityTimeSpan(15))
@@ -132,31 +141,6 @@ namespace FinalProject_Tetris
                 _timeSinceLastTick = TimeSpan.Zero;
             }
 
-            // temporary code to make sure that rendering works
-            TetrisSquares = new Square[10, 20];
-
-            if (true)
-            {
-                TetrisSquares[0, 0] = new Square((0, 0), Blue);
-                TetrisSquares[0, 1] = new Square((0, 1), Green);
-                TetrisSquares[0, 2] = new Square((0, 2), Red);
-                TetrisSquares[9, 13] = new Square((9, 13), Gray);
-                TetrisSquares[4, 15] = new Square((4, 15), Violet);
-                TetrisSquares[1, 0] = new Square((1, 0), Orange);
-                TetrisSquares[1, 1] = new Square((1, 1), Yellow);
-                TetrisSquares[3, 7] = new Square((3, 7), Indigo);
-            }
-            else
-            {
-                TetrisSquares[0, 3] = new Square((0, 3), Blue);
-                TetrisSquares[0, 4] = new Square((0, 4), Green);
-                TetrisSquares[1, 3] = new Square((1, 3), Red);
-                TetrisSquares[7, 10] = new Square((7, 10), Gray);
-                TetrisSquares[2, 5] = new Square((2, 5), Violet);
-                TetrisSquares[1, 4] = new Square((1, 4), Orange);
-                TetrisSquares[1, 0] = new Square((1, 0), Yellow);
-                TetrisSquares[3, 3] = new Square((3, 3), Indigo);
-            }
         }
     }
 }
