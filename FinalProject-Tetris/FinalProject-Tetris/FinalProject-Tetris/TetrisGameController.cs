@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using FinalProject_Tetris.InputHandling;
 using static FinalProject_Tetris.GameState;
+using static FinalProject_Tetris.Piece.PieceType;
 using static FinalProject_Tetris.Square.PieceColor;
 
 namespace FinalProject_Tetris
@@ -31,21 +32,23 @@ namespace FinalProject_Tetris
         // 10 col, 20 row TetrisSquares array
         // where TetrisSquares[0, 0] is bottom left
         //       TetrisSquares[9, 19] is top right
-        public Square[,] TetrisSquares = new Square[10, 20];
+        public Square[,] TetrisSquares;
 
-        // references to current and next piece
+        // references to current piece
         public Piece CurrentPiece;
-        public Piece NextPiece;
+
+        // a "bag" of pieces: ensures that we don't get repeats that are too frequent
+        public List<Piece> BagOfPieces;
 
         // time since last gravity tick
         private TimeSpan _timeSinceLastTick;
 
         // references to various objects that this class uses
-        public InputHandler InputHandler = new InputHandler();
-        public ParticleController ParticleController = new ParticleController();
-        public SoundController SoundController = new SoundController();
-        public AiController AiController = new AiController();
-        public MainMenuController MainMenuController = new MainMenuController();
+        public InputHandler InputHandler;
+        public ParticleController ParticleController;
+        public SoundController SoundController;
+        public AiController AiController;
+        public MainMenuController MainMenuController;
 
         // this gets the TimeSpan between gravity ticks
         private static TimeSpan GetGravityTimeSpan(int level)
@@ -109,6 +112,16 @@ namespace FinalProject_Tetris
             return TimeSpan.FromSeconds(correctSeconds);
         }
 
+        public TetrisGameController()
+        {
+            // set up all of the needed controllers and handlers
+            InputHandler = new InputHandler();
+            ParticleController = new ParticleController();
+            SoundController = new SoundController();
+            AiController = new AiController();
+            MainMenuController = new MainMenuController();
+        }
+
         // this starts the game
         public void StartGame()
         {
@@ -117,8 +130,13 @@ namespace FinalProject_Tetris
             Score = 0;
             Level = 0;
             TetrisSquares = new Square[10, 20];
-            CurrentPiece = null;
-            NextPiece = null;
+
+            // make new bag of pieces and pop first piece
+            BagOfPieces = new List<Piece>();
+            GenerateBag();
+            PopBag();
+
+            // reset gravity tick
             _timeSinceLastTick = TimeSpan.Zero;
 
             // set the game state to be Running
@@ -158,6 +176,9 @@ namespace FinalProject_Tetris
             // protect against nulls
             if (CurrentPiece == null) return;
 
+            // make a list with initial positions
+            var oldPosition = CurrentPiece.Squares;
+
             // make a new list with all of the positions translated to the left by 1
             var newPosition = new List<(int x, int y)>();
             foreach (var square in CurrentPiece.Squares)
@@ -172,6 +193,19 @@ namespace FinalProject_Tetris
                 {
                     CurrentPiece.Squares[i].PieceLocation = newPosition[i];
                 }
+            }
+
+            // remove old squares from board
+            foreach (var square in oldPosition)
+            {
+                TetrisSquares[square.PieceLocation.x, square.PieceLocation.y] = null;
+            }
+
+            // add new squares to board
+            for (var i = 0; i < 4; i++)
+            {
+                var (x, y) = CurrentPiece.Squares[i].PieceLocation;
+                TetrisSquares[x, y] = CurrentPiece.Squares[i];
             }
         }
 
@@ -214,6 +248,59 @@ namespace FinalProject_Tetris
                 if (oldPosition.Contains((x, y))) continue;
                 return false;
             }
+            return true;
+        }
+
+        // generates a new bag of pieces
+        private void GenerateBag()
+        {
+            // create one of each piece
+            var pieceList = new List<Piece.PieceType>
+            {
+                I,
+                J,
+                L,
+                O,
+                S,
+                T,
+                Z
+            };
+
+            // shuffle this list
+            // https://stackoverflow.com/a/4262134
+            var random = new Random();
+            var secondList = pieceList.OrderBy(a => random.Next());
+
+            // for each piece type, generate a new piece and add it
+            foreach (var pieceType in secondList)
+            {
+                var newPiece = Piece.GeneratePiece(pieceType);
+                BagOfPieces.Add(newPiece);
+            }
+        }
+
+        // removes the first item in the bag and makes that the current piece
+        // returns false if we can't (i.e., game over)
+        private bool PopBag()
+        {
+            CurrentPiece = BagOfPieces[0];
+
+            foreach (var square in CurrentPiece.Squares)
+            {
+                var (x, y) = square.PieceLocation;
+
+                // if this square is already occupied then we end
+                if (TetrisSquares[x, y] != null) return false;
+
+                TetrisSquares[x, y] = square;
+            }
+
+            BagOfPieces.RemoveAt(0);
+
+            // if bag is empty, then let's make a new bag
+            if (BagOfPieces.Count == 0)
+                GenerateBag();
+
             return true;
         }
     }

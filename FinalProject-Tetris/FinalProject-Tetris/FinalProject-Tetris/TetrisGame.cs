@@ -46,6 +46,7 @@ namespace FinalProject_Tetris
             _graphics.ApplyChanges();
 
             _tetrisGameController = new TetrisGameController();
+            _tetrisGameController.StartGame();
 
             var canvasBounds = GraphicsDevice.Viewport.Bounds;
             _windowWidthPixels = canvasBounds.Width;
