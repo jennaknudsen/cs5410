@@ -172,6 +172,10 @@ namespace FinalProject_Tetris
                         {
                             HardDropPiece();
                         }
+                        else if (InputHandler.RotateCounterClockwiseButton.Pressed)
+                        {
+                            RotatePieceCounterClockwise();
+                        }
                     }
                     else if (GameState == AttractMode)
                     {
@@ -298,9 +302,41 @@ namespace FinalProject_Tetris
             return returnVal;
         }
 
-        private void RotatePieceCounterClockwise()
+        private bool RotatePieceCounterClockwise()
         {
+            // protect against nulls
+            if (CurrentPiece == null) return false;
 
+            // make a list with initial positions
+            var oldPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                oldPosition.Add(square.PieceLocation);
+            }
+
+            var rotationMatrix = CurrentPiece.GetRotationMatrix(true);
+
+            // make a new list with all of the positions translated down by 1
+            var newPosition = new List<(int x, int y)>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                newPosition.Add((CurrentPiece.Squares[i].PieceLocation.x + rotationMatrix[i].x,
+                    CurrentPiece.Squares[i].PieceLocation.y + rotationMatrix[i].y));
+            }
+
+            // only move if it's a valid position
+            if (CheckValidPiecePosition(newPosition))
+            {
+                FinalizePieceMove(oldPosition, newPosition);
+                CurrentPiece.Orientation = CurrentPiece.GetCorrectOrientation(true);
+                Console.WriteLine("Orientation set to: " + CurrentPiece.Orientation);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private void RotatePieceClockwise()
@@ -366,7 +402,8 @@ namespace FinalProject_Tetris
             // shuffle this list
             // https://stackoverflow.com/a/4262134
             var random = new Random();
-            var secondList = pieceList.OrderBy(a => random.Next());
+            // var secondList = pieceList.OrderBy(a => random.Next());
+            var secondList = pieceList;
 
             // for each piece type, generate a new piece and add it
             foreach (var pieceType in secondList)
