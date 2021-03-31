@@ -160,6 +160,10 @@ namespace FinalProject_Tetris
                         {
                             MovePieceLeft();
                         }
+                        else if (InputHandler.MovePieceRightButton.Pressed)
+                        {
+                            MovePieceRight();
+                        }
                     }
                     break;
             }
@@ -177,7 +181,11 @@ namespace FinalProject_Tetris
             if (CurrentPiece == null) return;
 
             // make a list with initial positions
-            var oldPosition = CurrentPiece.Squares;
+            var oldPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                oldPosition.Add(square.PieceLocation);
+            }
 
             // make a new list with all of the positions translated to the left by 1
             var newPosition = new List<(int x, int y)>();
@@ -189,29 +197,38 @@ namespace FinalProject_Tetris
             // only move if it's a valid position
             if (CheckValidPiecePosition(newPosition))
             {
-                for (var i = 0; i < 4; i++)
-                {
-                    CurrentPiece.Squares[i].PieceLocation = newPosition[i];
-                }
-            }
-
-            // remove old squares from board
-            foreach (var square in oldPosition)
-            {
-                TetrisSquares[square.PieceLocation.x, square.PieceLocation.y] = null;
-            }
-
-            // add new squares to board
-            for (var i = 0; i < 4; i++)
-            {
-                var (x, y) = CurrentPiece.Squares[i].PieceLocation;
-                TetrisSquares[x, y] = CurrentPiece.Squares[i];
+                FinalizePieceMove(oldPosition, newPosition);
             }
         }
 
         private void MovePieceRight()
         {
+            // protect against nulls
+            if (CurrentPiece == null) return;
 
+            // make a list with initial positions
+            var oldPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                oldPosition.Add(square.PieceLocation);
+            }
+
+            // make a new list with all of the positions translated to the left by 1
+            var newPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                newPosition.Add((square.PieceLocation.x + 1, square.PieceLocation.y));
+            }
+
+            // only move if it's a valid position
+            if (CheckValidPiecePosition(newPosition))
+            {
+                FinalizePieceMove(oldPosition, newPosition);
+            }
+            else
+            {
+                Console.WriteLine("Can't move to position");
+            }
         }
 
         private void SoftDropPiece()
@@ -232,6 +249,29 @@ namespace FinalProject_Tetris
         private void RotatePieceClockwise()
         {
 
+        }
+
+        // given an array of old square and a list of new position tuples, move the squares
+        // we only call this function if the move is valid (i.e., check OUTSIDE this function)
+        private void FinalizePieceMove(List<(int x, int y)> oldPosition, List<(int x, int y)> newPosition)
+        {
+            for (var i = 0; i < 4; i++)
+            {
+                CurrentPiece.Squares[i].PieceLocation = newPosition[i];
+            }
+
+            // remove old squares from board
+            foreach (var (x, y) in oldPosition)
+            {
+                TetrisSquares[x, y] = null;
+            }
+
+            // add new squares to board
+            for (var i = 0; i < 4; i++)
+            {
+                var (x, y) = CurrentPiece.Squares[i].PieceLocation;
+                TetrisSquares[x, y] = CurrentPiece.Squares[i];
+            }
         }
 
         // given a List of piece coordinates for start and another for end position, check validity of the move
