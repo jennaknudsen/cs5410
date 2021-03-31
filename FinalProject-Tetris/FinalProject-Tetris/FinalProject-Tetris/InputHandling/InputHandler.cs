@@ -29,7 +29,7 @@ namespace FinalProject_Tetris.InputHandling
             // buttons for game controls
             MovePieceLeftButton = new KeyboardButton(new[] {Keys.Left}, true);
             MovePieceRightButton = new KeyboardButton(new[] {Keys.Right}, true);
-            SoftDropButton = new KeyboardButton(new[] {Keys.Down}, true);
+            SoftDropButton = new KeyboardButton(new[] {Keys.Down, Keys.D}, true);
             HardDropButton = new KeyboardButton(new[] {Keys.Up}, true);
             // TODO: fix these bindings in final submission
             RotateCounterClockwiseButton = new KeyboardButton(new[] {Keys.Home, Keys.Q}, true);
@@ -47,9 +47,15 @@ namespace FinalProject_Tetris.InputHandling
             // add all buttons to the listOfButtons
             _listOfButtons = new List<Button>
             {
-                HardDropButton,
+                // game buttons
                 MovePieceLeftButton,
                 MovePieceRightButton,
+                SoftDropButton,
+                HardDropButton,
+                RotateCounterClockwiseButton,
+                RotateClockwiseButton,
+
+                // menu buttons
                 MenuUpButton,
                 MenuDownButton,
                 MenuConfirmButton,

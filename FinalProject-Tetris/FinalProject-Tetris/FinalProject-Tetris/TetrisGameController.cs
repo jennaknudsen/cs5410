@@ -164,6 +164,18 @@ namespace FinalProject_Tetris
                         {
                             MovePieceRight();
                         }
+                        else if (InputHandler.SoftDropButton.Pressed)
+                        {
+                            SoftDropPiece();
+                        }
+                        else if (InputHandler.HardDropButton.Pressed)
+                        {
+                            HardDropPiece();
+                        }
+                    }
+                    else if (GameState == AttractMode)
+                    {
+                        // code for getting the AI's moves here
                     }
                     break;
             }
@@ -175,10 +187,11 @@ namespace FinalProject_Tetris
             }
         }
 
-        private void MovePieceLeft()
+        // move piece left one square
+        private bool MovePieceLeft()
         {
             // protect against nulls
-            if (CurrentPiece == null) return;
+            if (CurrentPiece == null) return false;
 
             // make a list with initial positions
             var oldPosition = new List<(int x, int y)>();
@@ -198,13 +211,19 @@ namespace FinalProject_Tetris
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
-        private void MovePieceRight()
+        // move piece right one square
+        private bool MovePieceRight()
         {
             // protect against nulls
-            if (CurrentPiece == null) return;
+            if (CurrentPiece == null) return false;
 
             // make a list with initial positions
             var oldPosition = new List<(int x, int y)>();
@@ -224,21 +243,59 @@ namespace FinalProject_Tetris
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
+                return true;
             }
             else
             {
-                Console.WriteLine("Can't move to position");
+                return false;
             }
         }
 
-        private void SoftDropPiece()
+        // soft drop: down *one* level
+        private bool SoftDropPiece()
         {
+            // protect against nulls
+            if (CurrentPiece == null) return false;
 
+            // make a list with initial positions
+            var oldPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                oldPosition.Add(square.PieceLocation);
+            }
+
+            // make a new list with all of the positions translated down by 1
+            var newPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                newPosition.Add((square.PieceLocation.x, square.PieceLocation.y - 1));
+            }
+
+            // only move if it's a valid position
+            if (CheckValidPiecePosition(newPosition))
+            {
+                FinalizePieceMove(oldPosition, newPosition);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
-        private void HardDropPiece()
+        // hard drop: keep soft dropping until we can't
+        private bool HardDropPiece()
         {
+            // return value will be based on if we could soft drop *once*
+            var returnVal = SoftDropPiece();
 
+            // keep dropping down until we can't anymore
+            while (SoftDropPiece())
+            {
+                // do nothing
+            }
+
+            return returnVal;
         }
 
         private void RotatePieceCounterClockwise()
