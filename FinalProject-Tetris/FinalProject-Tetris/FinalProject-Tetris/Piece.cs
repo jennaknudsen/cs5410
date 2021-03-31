@@ -38,6 +38,7 @@ namespace FinalProject_Tetris
             Z
         }
 
+        // generates a piece and its starting position, given a piece type
         public static Piece GeneratePiece(PieceType pieceType)
         {
             var thisPiece = new Piece
@@ -105,6 +106,7 @@ namespace FinalProject_Tetris
             return thisPiece;
         }
 
+        // gets correct orientation after rotation, given clockwise or c-clockwise
         public PieceOrientation GetCorrectOrientation(bool isCounterClockwise)
         {
             PieceOrientation rotatedOrientation;
@@ -158,9 +160,9 @@ namespace FinalProject_Tetris
             // get rotated orientation
             var rotatedOrientation = GetCorrectOrientation(isCounterClockwise);
 
+            // for each rotation property, add it to the correct list if applicable
             foreach (var property in PieceRotationProperties)
             {
-                // add the correct properties
                 if (property.PieceType == Type && property.PieceOrientation == Orientation)
                 {
                     oldList.Add(property);
@@ -171,6 +173,8 @@ namespace FinalProject_Tetris
                 }
             }
 
+            // return list will hold the difference between the original list coordinates and
+            // the return list coordinates
             var returnList = new List<(int x, int y)>();
             for (var i = 0; i < 4; i++)
             {

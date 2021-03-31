@@ -174,7 +174,11 @@ namespace FinalProject_Tetris
                         }
                         else if (InputHandler.RotateCounterClockwiseButton.Pressed)
                         {
-                            RotatePieceCounterClockwise();
+                            RotatePiece(true);
+                        }
+                        else if (InputHandler.RotateClockwiseButton.Pressed)
+                        {
+                            RotatePiece(false);
                         }
                     }
                     else if (GameState == AttractMode)
@@ -302,7 +306,8 @@ namespace FinalProject_Tetris
             return returnVal;
         }
 
-        private bool RotatePieceCounterClockwise()
+        // rotation can be either clockwise or counterclockwise
+        private bool RotatePiece(bool isCounterClockwise)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -314,34 +319,60 @@ namespace FinalProject_Tetris
                 oldPosition.Add(square.PieceLocation);
             }
 
-            var rotationMatrix = CurrentPiece.GetRotationMatrix(true);
+            // get the rotation matrix for this rotation
+            // we'll use the rotation matrix to determine how to translate these points
+            var rotationMatrix = CurrentPiece.GetRotationMatrix(isCounterClockwise);
 
             // make a new list with all of the positions translated down by 1
             var newPosition = new List<(int x, int y)>();
 
+            // translate based on rotation matrix
             for (int i = 0; i < 4; i++)
             {
                 newPosition.Add((CurrentPiece.Squares[i].PieceLocation.x + rotationMatrix[i].x,
                     CurrentPiece.Squares[i].PieceLocation.y + rotationMatrix[i].y));
             }
 
+            // wall kick
+            // get min and max X value on this piece
+            var minX = 9;
+            var maxX = 0;
+            for (var i = 0; i < 4; i++)
+            {
+                var curX = newPosition[i].x;
+                if (curX < minX)
+                    minX = curX;
+                if (curX > maxX)
+                    maxX = curX;
+            }
+            // if min X is less than 0 then translate all pieces by 0 - minX
+            // if max X is greater than 9 then translate all pieces by 9 - maxX
+            if (minX < 0)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    newPosition[i] = (newPosition[i].x - minX, newPosition[i].y);
+                }
+            }
+            else if (maxX > 9)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    newPosition[i] = (newPosition[i].x + 9 - maxX, newPosition[i].y);
+                }
+            }
+
             // only move if it's a valid position
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
-                CurrentPiece.Orientation = CurrentPiece.GetCorrectOrientation(true);
-                Console.WriteLine("Orientation set to: " + CurrentPiece.Orientation);
+                CurrentPiece.Orientation = CurrentPiece.GetCorrectOrientation(isCounterClockwise);
                 return true;
             }
             else
             {
                 return false;
             }
-        }
-
-        private void RotatePieceClockwise()
-        {
-
         }
 
         // given an array of old square and a list of new position tuples, move the squares
