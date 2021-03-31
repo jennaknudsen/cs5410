@@ -7,6 +7,4 @@ namespace FinalProject_Tetris
         AttractMode,
         MainMenu
     }
-
-
 }

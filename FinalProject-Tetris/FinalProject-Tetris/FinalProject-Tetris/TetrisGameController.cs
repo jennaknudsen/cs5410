@@ -421,9 +421,16 @@ namespace FinalProject_Tetris
             // create one of each piece
             var pieceList = new List<Piece.PieceType>
             {
-                I,
-                J,
+                // I,
+                // J,
+                // L,
+                // O,
+                // S,
+                // T,
+                // Z
                 L,
+                J,
+                I,
                 O,
                 S,
                 T,
@@ -433,6 +440,7 @@ namespace FinalProject_Tetris
             // shuffle this list
             // https://stackoverflow.com/a/4262134
             var random = new Random();
+            // TODO change this back
             // var secondList = pieceList.OrderBy(a => random.Next());
             var secondList = pieceList;
 
