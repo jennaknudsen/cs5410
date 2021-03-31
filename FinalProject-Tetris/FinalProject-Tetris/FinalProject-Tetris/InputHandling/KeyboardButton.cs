@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework.Input;
 
-namespace FinalProject_Tetris
+namespace FinalProject_Tetris.InputHandling
 {
     public class KeyboardButton : Button
     {

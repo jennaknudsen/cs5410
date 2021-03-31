@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Xna.Framework;
+using FinalProject_Tetris.InputHandling;
 using static FinalProject_Tetris.GameState;
 using static FinalProject_Tetris.Square.PieceColor;
 
@@ -126,7 +127,13 @@ namespace FinalProject_Tetris
         public void Update(GameTime gameTime)
         {
             // first, always get user input
-            // InputHandler
+            InputHandler.HandleInput();
+
+            if (InputHandler.MenuUpButton.Pressed)
+            {
+                Console.WriteLine("Mouse button pressed!");
+            }
+
             switch (GameState)
             {
                 case Running:
@@ -140,7 +147,6 @@ namespace FinalProject_Tetris
             {
                 _timeSinceLastTick = TimeSpan.Zero;
             }
-
         }
     }
 }

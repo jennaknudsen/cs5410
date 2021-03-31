@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using FinalProject_Tetris.InputHandling;
 using Microsoft.Xna.Framework.Input;
 
-namespace FinalProject_Tetris
+namespace FinalProject_Tetris.InputHandling
 {
     public class InputHandler
     {
@@ -36,7 +37,7 @@ namespace FinalProject_Tetris
 
             // buttons for menu controls
             // MenuUpButton = new KeyboardButton(new[] {Keys.Up}, true);
-            MenuUpButton = new MouseButton((0, 0), (100, 100), true);
+            MenuUpButton = new MouseButton((10, 3), (11, 4), true);
             MenuDownButton = new KeyboardButton(new[] {Keys.Down}, true);
             MenuConfirmButton = new KeyboardButton(new[] {Keys.Enter}, true);
             MenuBackButton = new KeyboardButton(new[] {Keys.Escape}, true);

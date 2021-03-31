@@ -144,7 +144,6 @@ namespace FinalProject_Tetris
         }
 
         // this function gets the absolute dimensions
-        // TODO test this
         public static (float x, float y) GetRelativeBoardCoordinates((int x, int y) absoluteCoordinates)
         {
             // keep relative coordinates good
@@ -178,7 +177,6 @@ namespace FinalProject_Tetris
         }
 
         // given a pixel count, rescale to units
-        // TODO test this
         public static float RescalePixelsToUnits(int pixels)
         {
             var rescaledUnits = (float) BoardSize / _windowHeightPixels * pixels;

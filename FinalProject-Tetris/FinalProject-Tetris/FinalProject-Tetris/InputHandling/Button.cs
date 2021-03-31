@@ -1,4 +1,4 @@
-namespace FinalProject_Tetris
+namespace FinalProject_Tetris.InputHandling
 {
     public abstract class Button
     {
