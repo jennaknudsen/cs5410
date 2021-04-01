@@ -46,7 +46,9 @@ namespace FinalProject_Tetris
         public List<Piece> BagOfPieces;
 
         // time since last gravity tick
-        private TimeSpan _timeSinceLastTick;
+        private TimeSpan _timeSinceLastGravityTick;
+        private TimeSpan _timeSinceLastPieceTick;
+        private readonly TimeSpan _pieceTickTimeSpan = TimeSpan.FromMilliseconds(400);
 
         // references to various objects that this class uses
         public InputHandler InputHandler;
@@ -143,7 +145,8 @@ namespace FinalProject_Tetris
             PopBag();
 
             // reset gravity tick
-            _timeSinceLastTick = TimeSpan.Zero;
+            _timeSinceLastGravityTick = TimeSpan.Zero;
+            _timeSinceLastPieceTick = TimeSpan.Zero;
 
             // set the game state to be Running
             GameState = Running;
@@ -154,34 +157,34 @@ namespace FinalProject_Tetris
             // COMMENT OUT this section if we don't want to create squares for testing
             // TetrisSquares[0, 0] = new Square((0, 0), Blue);
             // TetrisSquares[1, 0] = new Square((1, 0), Blue);
-            TetrisSquares[2, 0] = new Square((2, 0), Blue);
-            TetrisSquares[3, 0] = new Square((3, 0), Blue);
-            TetrisSquares[4, 0] = new Square((4, 0), Blue);
-            TetrisSquares[5, 0] = new Square((5, 0), Blue);
-            TetrisSquares[6, 0] = new Square((6, 0), Blue);
-            TetrisSquares[7, 0] = new Square((7, 0), Blue);
-            TetrisSquares[8, 0] = new Square((8, 0), Blue);
-            TetrisSquares[9, 0] = new Square((9, 0), Blue);
-            TetrisSquares[0, 1] = new Square((0, 1), Blue);
-            TetrisSquares[1, 1] = new Square((1, 1), Blue);
-            TetrisSquares[2, 1] = new Square((2, 1), Blue);
-            TetrisSquares[3, 1] = new Square((3, 1), Blue);
-            TetrisSquares[4, 1] = new Square((4, 1), Blue);
-            TetrisSquares[5, 1] = new Square((5, 1), Blue);
-            TetrisSquares[6, 1] = new Square((6, 1), Blue);
-            TetrisSquares[7, 1] = new Square((7, 1), Blue);
-            TetrisSquares[8, 1] = new Square((8, 1), Blue);
-            TetrisSquares[9, 1] = new Square((9, 1), Blue);
-            TetrisSquares[0, 2] = new Square((0, 2), Blue);
+            // TetrisSquares[2, 0] = new Square((2, 0), Blue);
+            // TetrisSquares[3, 0] = new Square((3, 0), Blue);
+            // TetrisSquares[4, 0] = new Square((4, 0), Blue);
+            // TetrisSquares[5, 0] = new Square((5, 0), Blue);
+            // TetrisSquares[6, 0] = new Square((6, 0), Blue);
+            // TetrisSquares[7, 0] = new Square((7, 0), Blue);
+            // TetrisSquares[8, 0] = new Square((8, 0), Blue);
+            // TetrisSquares[9, 0] = new Square((9, 0), Blue);
+            // TetrisSquares[0, 1] = new Square((0, 1), Blue);
+            // TetrisSquares[1, 1] = new Square((1, 1), Blue);
+            // TetrisSquares[2, 1] = new Square((2, 1), Blue);
+            // TetrisSquares[3, 1] = new Square((3, 1), Blue);
+            // TetrisSquares[4, 1] = new Square((4, 1), Blue);
+            // TetrisSquares[5, 1] = new Square((5, 1), Blue);
+            // TetrisSquares[6, 1] = new Square((6, 1), Blue);
+            // TetrisSquares[7, 1] = new Square((7, 1), Blue);
+            // TetrisSquares[8, 1] = new Square((8, 1), Blue);
+            // TetrisSquares[9, 1] = new Square((9, 1), Blue);
+            // TetrisSquares[0, 2] = new Square((0, 2), Blue);
             // TetrisSquares[1, 2] = new Square((1, 2), Blue);
             // TetrisSquares[2, 2] = new Square((2, 2), Blue);
-            TetrisSquares[3, 2] = new Square((3, 2), Blue);
+            // TetrisSquares[3, 2] = new Square((3, 2), Blue);
             // TetrisSquares[4, 2] = new Square((4, 2), Blue);
-            TetrisSquares[5, 2] = new Square((5, 2), Blue);
+            // TetrisSquares[5, 2] = new Square((5, 2), Blue);
             // TetrisSquares[6, 2] = new Square((6, 2), Blue);
-            TetrisSquares[7, 2] = new Square((7, 2), Blue);
+            // TetrisSquares[7, 2] = new Square((7, 2), Blue);
             // TetrisSquares[8, 2] = new Square((8, 2), Blue);
-            TetrisSquares[9, 2] = new Square((9, 2), Blue);
+            // TetrisSquares[9, 2] = new Square((9, 2), Blue);
             // TetrisSquares[5, 6] = new Square((5, 6), Blue);
         }
 
@@ -231,39 +234,16 @@ namespace FinalProject_Tetris
                         }
 
                         // check for a gravity update
-                        _timeSinceLastTick += gameTime.ElapsedGameTime;
+                        _timeSinceLastGravityTick += gameTime.ElapsedGameTime;
+                        _timeSinceLastPieceTick += gameTime.ElapsedGameTime;
 
-                        if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
+                        if (_timeSinceLastGravityTick >= GetGravityTimeSpan(Level))
                         {
                             // on gravity update, reset time to 0
-                            _timeSinceLastTick = TimeSpan.Zero;
-
-                            // get a new piece if we need
-                            if (CurrentPiece == null)
-                            {
-                                if (!PopBag())
-                                {
-                                    // end the game here
-                                    Console.WriteLine("Game over!");
-
-                                    // change all pieces to gray
-                                    foreach (var square in TetrisSquares)
-                                    {
-                                        if (square != null)
-                                            square.Color = Gray;
-                                    }
-
-                                    // TODO: game over sound
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Current piece: " + CurrentPiece.Type);
-                                    Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
-                                }
-                            }
+                            _timeSinceLastGravityTick = TimeSpan.Zero;
 
                             // try to drop the piece, if we can't then we have a collision
-                            if (!SoftDropPiece(false))
+                            if (CurrentPiece != null && !SoftDropPiece(false))
                             {
                                 // increment score by drop score
                                 Score += _dropScore;
@@ -285,22 +265,36 @@ namespace FinalProject_Tetris
 
                                 // clear the current piece
                                 CurrentPiece = null;
+
+                                // on a collision, reset time since last piece tick
+                                _timeSinceLastPieceTick = TimeSpan.Zero;
+                            }
+                        }
+
+                        // check for new piece
+                        if (_timeSinceLastPieceTick >= _pieceTickTimeSpan)
+                        {
+                            _timeSinceLastPieceTick = TimeSpan.Zero;
+
+                            // get a new piece if we need
+                            if (CurrentPiece == null)
+                            {
+                                GetNewPiece();
                             }
                         }
                     }
                     // free fall mode: we need to calculate where pieces will drop
                     else
                     {
-                        // check for a gravity update
-                        _timeSinceLastTick += gameTime.ElapsedGameTime;
+                        // check for a piece tick update
+                        _timeSinceLastPieceTick += gameTime.ElapsedGameTime;
 
-                        if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
+                        if (_timeSinceLastPieceTick >= _pieceTickTimeSpan)
                         {
-                            // on gravity update, reset time to 0
-                            _timeSinceLastTick = TimeSpan.Zero;
+                            _timeSinceLastPieceTick = TimeSpan.Zero;
 
+                            // use these to exit free fall
                             var canExitFreeFall = false;
-
                             var clearedLines = ClearLines();
                             var droppedAny = false;
 
@@ -309,6 +303,8 @@ namespace FinalProject_Tetris
                             while (!allPiecesDropped)
                             {
                                 // we need to move all pieces down to lowest level, using sticky gravity
+
+                                // reset each square group
                                 var numGroups = 0;
 
                                 foreach (var square in TetrisSquares)
@@ -365,6 +361,7 @@ namespace FinalProject_Tetris
                                     }
                                 }
 
+                                // if there are no groups, then all pieces have been dropped
                                 if (numGroups == 0)
                                 {
                                     allPiecesDropped = true;
@@ -433,14 +430,17 @@ namespace FinalProject_Tetris
                                 }
                             }
 
+                            // we can only exit free fall if we didn't drop any and we didn't clear any lines
                             canExitFreeFall = !(droppedAny || clearedLines);
 
                             if (canExitFreeFall)
+                            {
                                 _inFreeFallMode = false;
+                                // get new piece at end of free fall (this will smoothen up gameplay)
+                                GetNewPiece();
+                            }
                         }
-
                     }
-
                     break;
             }
         }
@@ -538,7 +538,7 @@ namespace FinalProject_Tetris
             {
                 FinalizePieceMove(oldPosition, newPosition);
                 // on soft drop, reset gravity timer to 0
-                _timeSinceLastTick = TimeSpan.Zero;
+                _timeSinceLastGravityTick = TimeSpan.Zero;
                 if (incrementDropScore)
                     _dropScore++;
                 return true;
@@ -565,7 +565,7 @@ namespace FinalProject_Tetris
             // we'll set the gravity tick to something real high
             if (CurrentPiece != null)
             {
-                _timeSinceLastTick = TimeSpan.FromSeconds(5);
+                _timeSinceLastGravityTick = TimeSpan.FromSeconds(5);
             }
 
             return returnVal;
@@ -776,6 +776,7 @@ namespace FinalProject_Tetris
                     }
                 }
 
+                _timeSinceLastPieceTick = TimeSpan.Zero;
                 _inFreeFallMode = true;
                 return true;
             }
@@ -808,6 +809,31 @@ namespace FinalProject_Tetris
             }
 
             return returnList;
+        }
+
+        private void GetNewPiece()
+        {
+            if (!PopBag())
+            {
+                // end the game here
+                Console.WriteLine("Game over!");
+
+                // change all pieces to gray
+                foreach (var square in TetrisSquares)
+                {
+                    if (square != null)
+                        square.Color = Gray;
+                }
+
+                GameState = GameOver;
+
+                // TODO: game over sound
+            }
+            else
+            {
+                Console.WriteLine("Current piece: " + CurrentPiece.Type);
+                Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
+            }
         }
     }
 }
