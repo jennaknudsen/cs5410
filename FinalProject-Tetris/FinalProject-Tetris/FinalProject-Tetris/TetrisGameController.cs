@@ -29,6 +29,9 @@ namespace FinalProject_Tetris
         // reference to the current game state
         public GameState GameState;
 
+        // whether we are in Free Fall mode or not
+        private bool _inFreeFallMode;
+
         // 10 col, 20 row TetrisSquares array
         // where TetrisSquares[0, 0] is bottom left
         //       TetrisSquares[9, 19] is top right
@@ -141,6 +144,9 @@ namespace FinalProject_Tetris
 
             // set the game state to be Running
             GameState = Running;
+
+            // we aren't in free fall mode
+            _inFreeFallMode = false;
         }
 
         // this ticks every game loop
@@ -153,69 +159,116 @@ namespace FinalProject_Tetris
             {
                 case Running:
                 case AttractMode:
-                    if (GameState == Running)
+                    if (!_inFreeFallMode)
                     {
-                        // get user input for piece
-                        if (InputHandler.MovePieceLeftButton.Pressed)
+                        if (GameState == Running)
                         {
-                            MovePieceLeft();
-                        }
-                        else if (InputHandler.MovePieceRightButton.Pressed)
-                        {
-                            MovePieceRight();
-                        }
-                        else if (InputHandler.SoftDropButton.Pressed)
-                        {
-                            SoftDropPiece();
-                        }
-                        else if (InputHandler.HardDropButton.Pressed)
-                        {
-                            HardDropPiece();
-                        }
-                        else if (InputHandler.RotateCounterClockwiseButton.Pressed)
-                        {
-                            RotatePiece(true);
-                        }
-                        else if (InputHandler.RotateClockwiseButton.Pressed)
-                        {
-                            RotatePiece(false);
-                        }
-                    }
-                    else if (GameState == AttractMode)
-                    {
-                        // code for getting the AI's moves here
-                    }
-
-                    // check for a gravity update
-                    _timeSinceLastTick += gameTime.ElapsedGameTime;
-
-                    if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
-                    {
-                        // on gravity update, reset time to 0
-                        _timeSinceLastTick = TimeSpan.Zero;
-
-                        // get a new piece if we need
-                        if (CurrentPiece == null)
-                        {
-                            if (!PopBag())
+                            // get user input for piece
+                            if (InputHandler.MovePieceLeftButton.Pressed)
                             {
-                                // end the game here
-                                Console.WriteLine("Game over!");
+                                MovePieceLeft();
                             }
-                            else
+                            else if (InputHandler.MovePieceRightButton.Pressed)
                             {
-                                Console.WriteLine("Current piece: " + CurrentPiece.Type);
-                                Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
+                                MovePieceRight();
+                            }
+                            else if (InputHandler.SoftDropButton.Pressed)
+                            {
+                                SoftDropPiece();
+                            }
+                            else if (InputHandler.HardDropButton.Pressed)
+                            {
+                                HardDropPiece();
+                            }
+                            else if (InputHandler.RotateCounterClockwiseButton.Pressed)
+                            {
+                                RotatePiece(true);
+                            }
+                            else if (InputHandler.RotateClockwiseButton.Pressed)
+                            {
+                                RotatePiece(false);
                             }
                         }
-
-                        // try to drop the piece, if we can't then we have a collision
-                        if (!SoftDropPiece())
+                        else if (GameState == AttractMode)
                         {
-                            // clear the current piece
-                            CurrentPiece = null;
+                            // code for getting the AI's moves here
+                        }
+
+                        // check for a gravity update
+                        _timeSinceLastTick += gameTime.ElapsedGameTime;
+
+                        if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
+                        {
+                            // on gravity update, reset time to 0
+                            _timeSinceLastTick = TimeSpan.Zero;
+
+                            // get a new piece if we need
+                            if (CurrentPiece == null)
+                            {
+                                if (!PopBag())
+                                {
+                                    // end the game here
+                                    Console.WriteLine("Game over!");
+
+                                    // change all pieces to gray
+                                    foreach (var square in TetrisSquares)
+                                    {
+                                        if (square != null)
+                                            square.Color = Gray;
+                                    }
+
+                                    // TODO: game over sound
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Current piece: " + CurrentPiece.Type);
+                                    Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
+                                }
+                            }
+
+                            // try to drop the piece, if we can't then we have a collision
+                            if (!SoftDropPiece())
+                            {
+                                // check for line clears
+                                var listOfFullLines = GetFullLines();
+
+                                if (listOfFullLines.Count != 0)
+                                {
+                                    // TODO: line clear sound
+                                    // TODO: line clear particles
+
+                                    // clear all rows
+                                    foreach (var row in listOfFullLines)
+                                    {
+                                        Console.WriteLine("Line clear at row " + row);
+                                        for (var i = 0; i < 10; i++)
+                                        {
+                                            TetrisSquares[i, row] = null;
+                                        }
+                                    }
+
+                                }
+                                else
+                                {
+                                    // TODO: piece drop sound
+                                    // TODO: piece drop particles
+                                    Console.WriteLine("Piece dropped at coordinates: ");
+                                    foreach (var square in CurrentPiece.Squares)
+                                    {
+                                        Console.WriteLine(square.PieceLocation);
+                                    }
+                                }
+
+                                // clear the current piece
+                                CurrentPiece = null;
+                            }
                         }
                     }
+                    else
+                    {
+
+                    }
+
                     break;
             }
         }
@@ -497,6 +550,31 @@ namespace FinalProject_Tetris
                 GenerateBag();
 
             return true;
+        }
+
+        // gets a list of all line numbers that are full
+        private List<int> GetFullLines()
+        {
+            var returnList = new List<int>();
+
+            // iterate for each row, if it has an empty square then don't add it
+            for (var row = 0; row < 20; row++)
+            {
+                var rowFull = true;
+                for (var col = 0; col < 10; col++)
+                {
+                    if (TetrisSquares[col, row] == null)
+                    {
+                        rowFull = false;
+                        break;
+                    }
+                }
+
+                if (rowFull)
+                    returnList.Add(row);
+            }
+
+            return returnList;
         }
     }
 }
