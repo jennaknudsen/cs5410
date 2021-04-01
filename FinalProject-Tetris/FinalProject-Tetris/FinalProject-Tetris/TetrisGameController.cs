@@ -175,14 +175,14 @@ namespace FinalProject_Tetris
             TetrisSquares[0, 2] = new Square((0, 2), Blue);
             // TetrisSquares[1, 2] = new Square((1, 2), Blue);
             // TetrisSquares[2, 2] = new Square((2, 2), Blue);
-            // TetrisSquares[3, 2] = new Square((3, 2), Blue);
+            TetrisSquares[3, 2] = new Square((3, 2), Blue);
             // TetrisSquares[4, 2] = new Square((4, 2), Blue);
-            // TetrisSquares[5, 2] = new Square((5, 2), Blue);
+            TetrisSquares[5, 2] = new Square((5, 2), Blue);
             // TetrisSquares[6, 2] = new Square((6, 2), Blue);
             TetrisSquares[7, 2] = new Square((7, 2), Blue);
             // TetrisSquares[8, 2] = new Square((8, 2), Blue);
-            // TetrisSquares[9, 2] = new Square((9, 2), Blue);
-            TetrisSquares[5, 6] = new Square((5, 6), Blue);
+            TetrisSquares[9, 2] = new Square((9, 2), Blue);
+            // TetrisSquares[5, 6] = new Square((5, 6), Blue);
         }
 
         // this ticks every game loop
@@ -269,48 +269,8 @@ namespace FinalProject_Tetris
                                 Score += _dropScore;
                                 _dropScore = 0;
 
-                                // check for line clears
-                                var listOfFullLines = GetFullLines();
-
-                                if (listOfFullLines.Count != 0)
-                                {
-                                    // TODO: line clear sound
-                                    // TODO: line clear particles
-
-                                    // increment score
-                                    // Scoring:
-                                    // 1 line clear: 40 * (level + 1)
-                                    // 2 line clear: 100 * (level + 1)
-                                    // 3 line clear: 300 * (level + 1)
-                                    // 4+ line clear: 1200 * (level + 1)
-                                    var incrementScore = listOfFullLines.Count switch
-                                    {
-                                        0 => 40 * (Level + 1),
-                                        1 => 100 * (Level + 1),
-                                        2 => 300 * (Level + 1),
-                                        _ => 1200 * (Level + 1)
-                                    };
-
-                                    // increment the score by the correct amount
-                                    Score += incrementScore;
-                                    LinesCleared += listOfFullLines.Count;
-
-                                    // every 10 lines cleared, increase level
-                                    Level = LinesCleared / 10;
-
-                                    // clear all rows
-                                    foreach (var row in listOfFullLines)
-                                    {
-                                        Console.WriteLine("Line clear at row " + row);
-                                        for (var i = 0; i < 10; i++)
-                                        {
-                                            TetrisSquares[i, row] = null;
-                                        }
-                                    }
-
-                                    _inFreeFallMode = true;
-                                }
-                                else
+                                // check for line clears, if not then we just have a piece drop
+                                if (!ClearLines())
                                 {
                                     // TODO: piece drop sound
                                     // TODO: piece drop particles
@@ -338,6 +298,11 @@ namespace FinalProject_Tetris
                         {
                             // on gravity update, reset time to 0
                             _timeSinceLastTick = TimeSpan.Zero;
+
+                            var canExitFreeFall = false;
+
+                            var clearedLines = ClearLines();
+                            var droppedAny = false;
 
                             // do this as many times as necessary
                             var allPiecesDropped = false;
@@ -412,10 +377,10 @@ namespace FinalProject_Tetris
                                         // for each group, find the max squares we can drop down
                                         // only need to check the bottom row square for each col
                                         var maxSquaresToFall = 100;
-                                        for (int col = 0; col < 9; col++)
+                                        for (int col = 0; col < 10; col++)
                                         {
                                             var emptySpaces = 0;
-                                            for (var row = 0; row < 19; row++)
+                                            for (var row = 0; row < 20; row++)
                                             {
                                                 // only checking the bottom element in this col
                                                 if (TetrisSquares[col, row] == null)
@@ -442,9 +407,9 @@ namespace FinalProject_Tetris
                                         // drop all squares in this group by this max (if it's not 0)
                                         if (maxSquaresToFall > 0)
                                         {
-                                            for (int col = 0; col < 9; col++)
+                                            for (int col = 0; col < 10; col++)
                                             {
-                                                for (var row = 0; row < 19 - maxSquaresToFall; row++)
+                                                for (var row = 0; row < 20 - maxSquaresToFall; row++)
                                                 {
                                                     if (TetrisSquares[col, row + maxSquaresToFall] != null &&
                                                         TetrisSquares[col, row + maxSquaresToFall].SquareGroup == group)
@@ -454,6 +419,7 @@ namespace FinalProject_Tetris
                                                             TetrisSquares[col, row + maxSquaresToFall];
                                                         TetrisSquares[col, row].PieceLocation = (col, row);
                                                         TetrisSquares[col, row + maxSquaresToFall] = null;
+                                                        droppedAny = true;
                                                     }
                                                 }
                                             }
@@ -466,10 +432,13 @@ namespace FinalProject_Tetris
                                     allPiecesDropped = !droppedAGroup;
                                 }
                             }
+
+                            canExitFreeFall = !(droppedAny || clearedLines);
+
+                            if (canExitFreeFall)
+                                _inFreeFallMode = false;
                         }
 
-                        // TODO delete this
-                        Console.WriteLine("Out of loop");
                     }
 
                     break;
@@ -764,6 +733,56 @@ namespace FinalProject_Tetris
                 GenerateBag();
 
             return true;
+        }
+
+        private bool ClearLines()
+        {
+            // check for line clears
+            var listOfFullLines = GetFullLines();
+
+            if (listOfFullLines.Count != 0)
+            {
+                // TODO: line clear sound
+                // TODO: line clear particles
+
+                // increment score
+                // Scoring:
+                // 1 line clear: 40 * (level + 1)
+                // 2 line clear: 100 * (level + 1)
+                // 3 line clear: 300 * (level + 1)
+                // 4+ line clear: 1200 * (level + 1)
+                var incrementScore = listOfFullLines.Count switch
+                {
+                    0 => 40 * (Level + 1),
+                    1 => 100 * (Level + 1),
+                    2 => 300 * (Level + 1),
+                    _ => 1200 * (Level + 1)
+                };
+
+                // increment the score by the correct amount
+                Score += incrementScore;
+                LinesCleared += listOfFullLines.Count;
+
+                // every 10 lines cleared, increase level
+                Level = LinesCleared / 10;
+
+                // clear all rows
+                foreach (var row in listOfFullLines)
+                {
+                    Console.WriteLine("Line clear at row " + row);
+                    for (var i = 0; i < 10; i++)
+                    {
+                        TetrisSquares[i, row] = null;
+                    }
+                }
+
+                _inFreeFallMode = true;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         // gets a list of all line numbers that are full
