@@ -185,13 +185,38 @@ namespace FinalProject_Tetris
                     {
                         // code for getting the AI's moves here
                     }
+
+                    // check for a gravity update
+                    _timeSinceLastTick += gameTime.ElapsedGameTime;
+
+                    if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
+                    {
+                        // on gravity update, reset time to 0
+                        _timeSinceLastTick = TimeSpan.Zero;
+
+                        // get a new piece if we need
+                        if (CurrentPiece == null)
+                        {
+                            if (!PopBag())
+                            {
+                                // end the game here
+                                Console.WriteLine("Game over!");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Current piece: " + CurrentPiece.Type);
+                                Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
+                            }
+                        }
+
+                        // try to drop the piece, if we can't then we have a collision
+                        if (!SoftDropPiece())
+                        {
+                            // clear the current piece
+                            CurrentPiece = null;
+                        }
+                    }
                     break;
-            }
-            // reset time since last tick since if we exceed gravity time span
-            _timeSinceLastTick += gameTime.ElapsedGameTime;
-            if (_timeSinceLastTick >= GetGravityTimeSpan(15))
-            {
-                _timeSinceLastTick = TimeSpan.Zero;
             }
         }
 
@@ -283,6 +308,8 @@ namespace FinalProject_Tetris
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
+                // on soft drop, reset gravity timer to 0
+                _timeSinceLastTick = TimeSpan.Zero;
                 return true;
             }
             else
@@ -302,6 +329,10 @@ namespace FinalProject_Tetris
             {
                 // do nothing
             }
+
+            // hard drop should immediately lock into place
+            // we'll set the gravity tick to something real high
+            _timeSinceLastTick = TimeSpan.FromSeconds(5);
 
             return returnVal;
         }

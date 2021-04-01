@@ -153,10 +153,10 @@ Need to use mouse input for the menu.
 
 - [x] Basic rendering (pieces, in one state only)
     - 2 hours
-- [ ] Piece Movement / Rotation
-    - 4 hours
+- [x] Piece Movement / Rotation
+    - 5 hours
 - [ ] Row Clearing / Gravity falling / Game Updating
-    - 3 hours
+    - 4 hours
 - [ ] Scoring, level increasing
     - 1 hour
 - [ ] Menuing
