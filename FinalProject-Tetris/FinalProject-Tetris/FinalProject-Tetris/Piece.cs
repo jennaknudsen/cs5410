@@ -44,7 +44,7 @@ namespace FinalProject_Tetris
             var thisPiece = new Piece
             {
                 // all pieces are generated in the Down orientation
-                Orientation = Down,
+                Orientation = Up,
                 Type = pieceType
             };
 
@@ -54,23 +54,25 @@ namespace FinalProject_Tetris
             {
                 case I:
                     thisColor = Indigo;
-                    thisPiece.Squares[0] = new Square((3, 19), thisColor);
-                    thisPiece.Squares[1] = new Square((4, 19), thisColor);
-                    thisPiece.Squares[2] = new Square((5, 19), thisColor);
-                    thisPiece.Squares[3] = new Square((6, 19), thisColor);
+                    // for the I, spawn it in Left orientation, for better rotation
+                    thisPiece.Orientation = Left;
+                    thisPiece.Squares[0] = new Square((4, 19), thisColor);
+                    thisPiece.Squares[1] = new Square((4, 18), thisColor);
+                    thisPiece.Squares[2] = new Square((4, 17), thisColor);
+                    thisPiece.Squares[3] = new Square((4, 16), thisColor);
                     break;
                 case J:
                     thisColor = Blue;
                     thisPiece.Squares[0] = new Square((4, 19), thisColor);
-                    thisPiece.Squares[1] = new Square((5, 19), thisColor);
-                    thisPiece.Squares[2] = new Square((6, 19), thisColor);
+                    thisPiece.Squares[1] = new Square((4, 18), thisColor);
+                    thisPiece.Squares[2] = new Square((5, 18), thisColor);
                     thisPiece.Squares[3] = new Square((6, 18), thisColor);
                     break;
                 case L:
                     thisColor = Orange;
-                    thisPiece.Squares[0] = new Square((4, 19), thisColor);
-                    thisPiece.Squares[1] = new Square((5, 19), thisColor);
-                    thisPiece.Squares[2] = new Square((6, 19), thisColor);
+                    thisPiece.Squares[0] = new Square((6, 19), thisColor);
+                    thisPiece.Squares[1] = new Square((6, 18), thisColor);
+                    thisPiece.Squares[2] = new Square((5, 18), thisColor);
                     thisPiece.Squares[3] = new Square((4, 18), thisColor);
                     break;
                 case O:
@@ -89,10 +91,10 @@ namespace FinalProject_Tetris
                     break;
                 case T:
                     thisColor = Violet;
-                    thisPiece.Squares[0] = new Square((4, 19), thisColor);
-                    thisPiece.Squares[1] = new Square((5, 19), thisColor);
-                    thisPiece.Squares[2] = new Square((6, 19), thisColor);
-                    thisPiece.Squares[3] = new Square((5, 18), thisColor);
+                    thisPiece.Squares[0] = new Square((5, 19), thisColor);
+                    thisPiece.Squares[1] = new Square((4, 18), thisColor);
+                    thisPiece.Squares[2] = new Square((5, 18), thisColor);
+                    thisPiece.Squares[3] = new Square((6, 18), thisColor);
                     break;
                 case Z:
                     thisColor = Red;
@@ -198,8 +200,8 @@ namespace FinalProject_Tetris
             new PieceRotationProperty(O, Left, 3, (0, 0)),
             new PieceRotationProperty(S, Up, 0, (2, 3)),
             new PieceRotationProperty(S, Up, 1, (3, 3)),
-            new PieceRotationProperty(S, Up, 2, (2, 2)),
-            new PieceRotationProperty(S, Up, 3, (1, 2)),
+            new PieceRotationProperty(S, Up, 2, (1, 2)),
+            new PieceRotationProperty(S, Up, 3, (2, 2)),
             new PieceRotationProperty(S, Right, 0, (2, 3)),
             new PieceRotationProperty(S, Right, 1, (2, 2)),
             new PieceRotationProperty(S, Right, 2, (3, 2)),
