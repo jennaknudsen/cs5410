@@ -306,20 +306,120 @@ namespace FinalProject_Tetris
                             // on gravity update, reset time to 0
                             _timeSinceLastTick = TimeSpan.Zero;
 
-                            // we need to move all pieces down to lowest level, using sticky gravity
-                            var startingGroup = 0;
+                            // do this as many times as necessary
+                            var allPiecesDropped = false;
+                            while (!allPiecesDropped)
+                            {
+                                // we need to move all pieces down to lowest level, using sticky gravity
+                                var numGroups = 0;
 
-                            // mark all squares as unvisited for now
-                            var visitedSquares = new bool[10, 20];
-                            for (var i = 0; i < 10; i++)
+                                foreach (var square in TetrisSquares)
+                                {
+                                    if (square != null)
+                                    {
+                                        square.SquareGroup = 0;
+                                    }
+                                }
+
+                                // mark all squares as unvisited for now
+                                var visitedSquares = new bool[10, 20];
+                                for (var i = 0; i < 10; i++)
                                 for (var j = 0; j < 20; j++)
                                     visitedSquares[i, j] = false;
 
-                            // local function to traverse squares and assign groups to them
-                            void TraverseSquares((int x, int y) position, int group)
-                            {
-                                visitedSquares[position.x, position.y] = true;
-                                TetrisSquares[position.x, position.y].SquareGroup = group;
+                                // local function to traverse squares and assign groups to them
+                                void TraverseSquares((int x, int y) position, int group)
+                                {
+                                    // only traverse if not visited and not null
+                                    if (position.x < 0 || position.x > 9) return;
+                                    if (position.y < 0 || position.y > 19) return;
+                                    if (visitedSquares[position.x, position.y]) return;
+                                    if (TetrisSquares[position.x, position.y] == null) return;
+
+                                    visitedSquares[position.x, position.y] = true;
+                                    TetrisSquares[position.x, position.y].SquareGroup = group;
+
+                                    // recur on all neighbors
+                                    var newCoords = new List<(int x, int y)>
+                                    {
+                                        (position.x + 1, position.y + 1),
+                                        (position.x + 1, position.y - 1),
+                                        (position.x - 1, position.y + 1),
+                                        (position.x - 1, position.y - 1)
+                                    };
+
+                                    foreach (var coord in newCoords)
+                                    {
+                                        TraverseSquares(coord, group);
+                                    }
+                                }
+
+                                // now, iterate through each square by row and assign groups
+                                for (var i = 0; i < 10; i++)
+                                {
+                                    for (var j = 0; j < 20; j++)
+                                    {
+                                        if (TetrisSquares[i, j] != null && !visitedSquares[i, j])
+                                        {
+                                            TraverseSquares((i, j), numGroups);
+                                            numGroups++;
+                                        }
+                                    }
+                                }
+
+                                if (numGroups == 0)
+                                {
+                                    allPiecesDropped = true;
+                                }
+                                else
+                                {
+                                    for (int i = 0; i < numGroups; i++)
+                                    {
+                                        // for each group, find the max squares we can drop down
+                                        // only need to check the bottom row square for each col
+                                        var maxSquaresToFall = 100;
+                                        for (int col = 0; col < 9; col++)
+                                        {
+                                            var emptySpaces = 0;
+                                            for (var row = 0; row < 19; row++)
+                                            {
+                                                // only checking the bottom element in this col
+                                                if (TetrisSquares[col, row] == null)
+                                                {
+                                                    emptySpaces++;
+                                                    continue;
+                                                }
+                                                else if (TetrisSquares[col, row].SquareGroup != i)
+                                                {
+                                                    emptySpaces = 0;
+                                                    continue;
+                                                }
+                                                else
+                                                {
+                                                    if (emptySpaces < maxSquaresToFall)
+                                                    {
+                                                        maxSquaresToFall = emptySpaces;
+                                                        break;
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        // drop all squares in this group by this max
+                                        for (int col = 0; col < 9; col++)
+                                        {
+                                            for (var row = 0; row < 19 - maxSquaresToFall; row++)
+                                            {
+                                                if (TetrisSquares[col, row + maxSquaresToFall].SquareGroup == i)
+                                                {
+                                                    TetrisSquares[col, row] =
+                                                        TetrisSquares[col, row + maxSquaresToFall];
+                                                    TetrisSquares[col, row + maxSquaresToFall] = null;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
