@@ -25,7 +25,7 @@ namespace FinalProject_Tetris
         private SoundEffect _soundBlockPlace;
         private SoundEffect _soundLineClear;
         private SoundEffect _soundGameOver;
-        private Song _songTetris;
+        private SoundEffect _soundTetrisSong;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -76,10 +76,10 @@ namespace FinalProject_Tetris
             _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
             _soundLineClear = this.Content.Load<SoundEffect>("LineClear");
             _soundGameOver = this.Content.Load<SoundEffect>("GameOver");
-            _songTetris = this.Content.Load<Song>("Tetris");
+            _soundTetrisSong = this.Content.Load<SoundEffect>("Tetris");
 
             _tetrisGameController.SoundController = new SoundController(
-                _soundBlockPlace, _soundLineClear, _soundGameOver, _songTetris);
+                _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
 
             _tetrisGameController.StartGame();
         }

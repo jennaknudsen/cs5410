@@ -130,7 +130,7 @@
 
 #begin Tetris.wav
 /importer:WavImporter
-/processor:SongProcessor
+/processor:SoundEffectProcessor
 /processorParam:Quality=Medium
 /build:Tetris.wav
 

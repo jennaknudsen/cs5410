@@ -195,6 +195,9 @@ namespace FinalProject_Tetris
             // first, always get user input
             InputHandler.HandleInput();
 
+            // update the SoundController
+            SoundController.Update(gameTime);
+
             switch (GameState)
             {
                 case Running:
