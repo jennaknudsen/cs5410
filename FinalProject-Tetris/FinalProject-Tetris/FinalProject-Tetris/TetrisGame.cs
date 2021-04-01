@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using static FinalProject_Tetris.Piece.PieceType;
 using static FinalProject_Tetris.Square;
 using static FinalProject_Tetris.Square.PieceColor;
 using static FinalProject_Tetris.TetrisGameController;
@@ -104,6 +105,8 @@ namespace FinalProject_Tetris
             // create the background rectangle
             var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
             _spriteBatch.Draw(_texBoard, backgroundRect, Color.White);
+            // the width of a square on screen
+            var squareWidth = RescaleUnitsToPixels(PieceSize);
 
             // draw each square
             foreach (var square in _tetrisGameController.TetrisSquares)
@@ -112,7 +115,6 @@ namespace FinalProject_Tetris
                 if (square == null) continue;
 
                 var (squareX, squareY) = GetPixelLocationFromPieceLocation(square.PieceLocation);
-                var squareWidth = RescaleUnitsToPixels(PieceSize);
                 var renderRect = new Rectangle(squareX, squareY, squareWidth, squareWidth);
 
                 _spriteBatch.Draw(
@@ -123,6 +125,91 @@ namespace FinalProject_Tetris
                     0,
                     // center origin in the texture
                     new Vector2(0, _texRed.Height),
+                    SpriteEffects.None,
+                    0);
+            }
+
+            // draw the next piece
+            Texture2D texOfNextPiece;
+            Rectangle nextRect1;
+            Rectangle nextRect2;
+            Rectangle nextRect3;
+            Rectangle nextRect4;
+            (int x, int y) r1Coord;
+            (int x, int y) r2Coord;
+            (int x, int y) r3Coord;
+            (int x, int y) r4Coord;
+            switch (_tetrisGameController.BagOfPieces[0].Type)
+            {
+                case I:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                case J:
+                    texOfNextPiece = GetColor(Blue);
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 23));
+                    r2Coord = GetAbsolutePixelCoordinates((22.5f, 24));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 24));
+                    break;
+                case L:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                case O:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                case S:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                case T:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                case Z:
+                    texOfNextPiece = GetColor(Indigo);
+                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            var rect1 = new Rectangle(r1Coord.x, r1Coord.y, squareWidth, squareWidth);
+            var rect2 = new Rectangle(r2Coord.x, r2Coord.y, squareWidth, squareWidth);
+            var rect3 = new Rectangle(r3Coord.x, r3Coord.y, squareWidth, squareWidth);
+            var rect4 = new Rectangle(r4Coord.x, r4Coord.y, squareWidth, squareWidth);
+
+            // draw next four pieces
+            foreach (var rect in new[] {rect1, rect2, rect3, rect4})
+            {
+                _spriteBatch.Draw(
+                    texOfNextPiece,
+                    rect,
+                    null,
+                    Color.White,
+                    0,
+                    // center origin in the texture
+                    new Vector2(0, texOfNextPiece.Height),
                     SpriteEffects.None,
                     0);
             }
