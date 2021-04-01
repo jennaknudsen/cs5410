@@ -128,11 +128,11 @@
 /processorParam:TextureFormat=Color
 /build:red.png
 
-#begin Tetris.mp3
-/importer:Mp3Importer
+#begin Tetris.wav
+/importer:WavImporter
 /processor:SongProcessor
-/processorParam:Quality=Best
-/build:Tetris.mp3
+/processorParam:Quality=Medium
+/build:Tetris.wav
 
 #begin violet.png
 /importer:TextureImporter

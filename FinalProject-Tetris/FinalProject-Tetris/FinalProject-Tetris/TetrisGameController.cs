@@ -53,7 +53,7 @@ namespace FinalProject_Tetris
         // references to various objects that this class uses
         public InputHandler InputHandler;
         public ParticleController ParticleController;
-        public SoundController SoundController;
+        public SoundController SoundController;     // SoundController instantiated by the TetrisGame itself
         public AiController AiController;
         public MainMenuController MainMenuController;
 
@@ -124,7 +124,6 @@ namespace FinalProject_Tetris
             // set up all of the needed controllers and handlers
             InputHandler = new InputHandler();
             ParticleController = new ParticleController();
-            SoundController = new SoundController();
             AiController = new AiController();
             MainMenuController = new MainMenuController();
         }
@@ -186,6 +185,8 @@ namespace FinalProject_Tetris
             // TetrisSquares[8, 2] = new Square((8, 2), Blue);
             // TetrisSquares[9, 2] = new Square((9, 2), Blue);
             // TetrisSquares[5, 6] = new Square((5, 6), Blue);
+
+            SoundController.PlayMusic();
         }
 
         // this ticks every game loop
@@ -252,7 +253,8 @@ namespace FinalProject_Tetris
                                 // check for line clears, if not then we just have a piece drop
                                 if (!ClearLines())
                                 {
-                                    // TODO: piece drop sound
+                                    SoundController.PlayBlockPlace();
+
                                     // TODO: piece drop particles
                                     Console.WriteLine("Piece dropped at coordinates: ");
                                     foreach (var square in CurrentPiece.Squares)
@@ -742,9 +744,6 @@ namespace FinalProject_Tetris
 
             if (listOfFullLines.Count != 0)
             {
-                // TODO: line clear sound
-                // TODO: line clear particles
-
                 // increment score
                 // Scoring:
                 // 1 line clear: 40 * (level + 1)
@@ -775,6 +774,12 @@ namespace FinalProject_Tetris
                         TetrisSquares[i, row] = null;
                     }
                 }
+
+                // play the sound for clearing the lines
+                SoundController.PlayLineClear();
+
+                // generate particles
+                // TODO: line clear particles
 
                 _timeSinceLastPieceTick = TimeSpan.Zero;
                 _inFreeFallMode = true;
@@ -827,7 +832,8 @@ namespace FinalProject_Tetris
 
                 GameState = GameOver;
 
-                // TODO: game over sound
+                SoundController.StopMusic();
+                SoundController.PlayGameOver();
             }
             else
             {

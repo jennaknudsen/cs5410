@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using static FinalProject_Tetris.Square;
 using static FinalProject_Tetris.Square.PieceColor;
 using static FinalProject_Tetris.TetrisGameController;
@@ -20,6 +22,10 @@ namespace FinalProject_Tetris
         private Texture2D _texGray;
         private Texture2D _texBoard;
         private Texture2D _texBackgroundDimmer;
+        private SoundEffect _soundBlockPlace;
+        private SoundEffect _soundLineClear;
+        private SoundEffect _soundGameOver;
+        private Song _songTetris;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -46,7 +52,6 @@ namespace FinalProject_Tetris
             _graphics.ApplyChanges();
 
             _tetrisGameController = new TetrisGameController();
-            _tetrisGameController.StartGame();
 
             var canvasBounds = GraphicsDevice.Viewport.Bounds;
             _windowWidthPixels = canvasBounds.Width;
@@ -68,6 +73,15 @@ namespace FinalProject_Tetris
             _texGray = this.Content.Load<Texture2D>("gray");
             _texBoard = this.Content.Load<Texture2D>("board");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
+            _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
+            _soundLineClear = this.Content.Load<SoundEffect>("LineClear");
+            _soundGameOver = this.Content.Load<SoundEffect>("GameOver");
+            _songTetris = this.Content.Load<Song>("Tetris");
+
+            _tetrisGameController.SoundController = new SoundController(
+                _soundBlockPlace, _soundLineClear, _soundGameOver, _songTetris);
+
+            _tetrisGameController.StartGame();
         }
 
         protected override void Update(GameTime gameTime)
