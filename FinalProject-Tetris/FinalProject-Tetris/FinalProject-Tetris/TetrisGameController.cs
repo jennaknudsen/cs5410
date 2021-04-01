@@ -182,6 +182,7 @@ namespace FinalProject_Tetris
             TetrisSquares[7, 2] = new Square((7, 2), Blue);
             // TetrisSquares[8, 2] = new Square((8, 2), Blue);
             // TetrisSquares[9, 2] = new Square((9, 2), Blue);
+            TetrisSquares[5, 6] = new Square((5, 6), Blue);
         }
 
         // this ticks every game loop
@@ -448,8 +449,10 @@ namespace FinalProject_Tetris
                                                     if (TetrisSquares[col, row + maxSquaresToFall] != null &&
                                                         TetrisSquares[col, row + maxSquaresToFall].SquareGroup == group)
                                                     {
+                                                        // update both the reference in the array AND the piece location
                                                         TetrisSquares[col, row] =
                                                             TetrisSquares[col, row + maxSquaresToFall];
+                                                        TetrisSquares[col, row].PieceLocation = (col, row);
                                                         TetrisSquares[col, row + maxSquaresToFall] = null;
                                                     }
                                                 }
@@ -459,6 +462,7 @@ namespace FinalProject_Tetris
                                         }
                                     }
 
+                                    // all pieces have been dropped if we did not drop a group
                                     allPiecesDropped = !droppedAGroup;
                                 }
                             }
