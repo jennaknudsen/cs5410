@@ -20,8 +20,10 @@ namespace FinalProject_Tetris
         // 1 line clear: 40 * (level + 1)
         // 2 line clear: 100 * (level + 1)
         // 3 line clear: 300 * (level + 1)
-        // 4 line clear: 1200 * (level + 1)
-        public int Score = 0;
+        // 4+ line clear: 1200 * (level + 1)
+        public int Score;
+        // add 1 point for each consecutive drop
+        private int _dropScore;
 
         // total lines cleared / 10
         public int Level = 0;
@@ -131,6 +133,7 @@ namespace FinalProject_Tetris
             // reset score, board
             LinesCleared = 0;
             Score = 0;
+            _dropScore = 0;
             Level = 0;
             TetrisSquares = new Square[10, 20];
 
@@ -174,7 +177,7 @@ namespace FinalProject_Tetris
                             }
                             else if (InputHandler.SoftDropButton.Pressed)
                             {
-                                SoftDropPiece();
+                                SoftDropPiece(true);
                             }
                             else if (InputHandler.HardDropButton.Pressed)
                             {
@@ -227,8 +230,12 @@ namespace FinalProject_Tetris
                             }
 
                             // try to drop the piece, if we can't then we have a collision
-                            if (!SoftDropPiece())
+                            if (!SoftDropPiece(false))
                             {
+                                // increment score by drop score
+                                Score += _dropScore;
+                                _dropScore = 0;
+
                                 // check for line clears
                                 var listOfFullLines = GetFullLines();
 
@@ -236,6 +243,27 @@ namespace FinalProject_Tetris
                                 {
                                     // TODO: line clear sound
                                     // TODO: line clear particles
+
+                                    // increment score
+                                    // Scoring:
+                                    // 1 line clear: 40 * (level + 1)
+                                    // 2 line clear: 100 * (level + 1)
+                                    // 3 line clear: 300 * (level + 1)
+                                    // 4+ line clear: 1200 * (level + 1)
+                                    var incrementScore = listOfFullLines.Count switch
+                                    {
+                                        0 => 40 * (Level + 1),
+                                        1 => 100 * (Level + 1),
+                                        2 => 300 * (Level + 1),
+                                        _ => 1200 * (Level + 1)
+                                    };
+
+                                    // increment the score by the correct amount
+                                    Score += incrementScore;
+                                    LinesCleared += listOfFullLines.Count;
+
+                                    // every 10 lines cleared, increase level
+                                    Level = LinesCleared / 10;
 
                                     // clear all rows
                                     foreach (var row in listOfFullLines)
@@ -247,6 +275,7 @@ namespace FinalProject_Tetris
                                         }
                                     }
 
+                                    _inFreeFallMode = true;
                                 }
                                 else
                                 {
@@ -259,14 +288,40 @@ namespace FinalProject_Tetris
                                     }
                                 }
 
+                                Console.WriteLine("Score: " + Score);
+
                                 // clear the current piece
                                 CurrentPiece = null;
                             }
                         }
                     }
+                    // free fall mode: we need to calculate where pieces will drop
                     else
                     {
+                        // check for a gravity update
+                        _timeSinceLastTick += gameTime.ElapsedGameTime;
 
+                        if (_timeSinceLastTick >= GetGravityTimeSpan(Level))
+                        {
+                            // on gravity update, reset time to 0
+                            _timeSinceLastTick = TimeSpan.Zero;
+
+                            // we need to move all pieces down to lowest level, using sticky gravity
+                            var startingGroup = 0;
+
+                            // mark all squares as unvisited for now
+                            var visitedSquares = new bool[10, 20];
+                            for (var i = 0; i < 10; i++)
+                                for (var j = 0; j < 20; j++)
+                                    visitedSquares[i, j] = false;
+
+                            // local function to traverse squares and assign groups to them
+                            void TraverseSquares((int x, int y) position, int group)
+                            {
+                                visitedSquares[position.x, position.y] = true;
+                                TetrisSquares[position.x, position.y].SquareGroup = group;
+                            }
+                        }
                     }
 
                     break;
@@ -297,6 +352,8 @@ namespace FinalProject_Tetris
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
+                // reset drop score on this move
+                _dropScore = 0;
                 return true;
             }
             else
@@ -329,6 +386,8 @@ namespace FinalProject_Tetris
             if (CheckValidPiecePosition(newPosition))
             {
                 FinalizePieceMove(oldPosition, newPosition);
+                // reset drop score on this move
+                _dropScore = 0;
                 return true;
             }
             else
@@ -338,7 +397,7 @@ namespace FinalProject_Tetris
         }
 
         // soft drop: down *one* level
-        private bool SoftDropPiece()
+        private bool SoftDropPiece(bool incrementDropScore)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -363,6 +422,8 @@ namespace FinalProject_Tetris
                 FinalizePieceMove(oldPosition, newPosition);
                 // on soft drop, reset gravity timer to 0
                 _timeSinceLastTick = TimeSpan.Zero;
+                if (incrementDropScore)
+                    _dropScore++;
                 return true;
             }
             else
@@ -375,17 +436,20 @@ namespace FinalProject_Tetris
         private bool HardDropPiece()
         {
             // return value will be based on if we could soft drop *once*
-            var returnVal = SoftDropPiece();
+            var returnVal = SoftDropPiece(true);
 
             // keep dropping down until we can't anymore
-            while (SoftDropPiece())
+            while (SoftDropPiece(true))
             {
                 // do nothing
             }
 
             // hard drop should immediately lock into place
             // we'll set the gravity tick to something real high
-            _timeSinceLastTick = TimeSpan.FromSeconds(5);
+            if (CurrentPiece != null)
+            {
+                _timeSinceLastTick = TimeSpan.FromSeconds(5);
+            }
 
             return returnVal;
         }
@@ -451,6 +515,8 @@ namespace FinalProject_Tetris
             {
                 FinalizePieceMove(oldPosition, newPosition);
                 CurrentPiece.Orientation = CurrentPiece.GetCorrectOrientation(isCounterClockwise);
+                // reset drop score on this move
+                _dropScore = 0;
                 return true;
             }
             else
