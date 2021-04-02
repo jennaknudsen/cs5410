@@ -6,6 +6,9 @@ namespace FinalProject_Tetris.InputHandling
         public (int x, int y) StartPosition;
         public (int x, int y) EndPosition;
 
+        // whether mouse is hovering over this button or not
+        public bool IsHovered = false;
+
         // constructor
         public MouseButton((int x, int y) startPosition,
             (int x, int y) endPosition, bool isDebouncingButton) : base(isDebouncingButton)

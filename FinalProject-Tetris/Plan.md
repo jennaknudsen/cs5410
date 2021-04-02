@@ -155,9 +155,9 @@ Need to use mouse input for the menu.
     - 2 hours
 - [x] Piece Movement / Rotation
     - 5 hours
-- [ ] Row Clearing / Gravity falling / Game Updating
+- [x] Row Clearing / Gravity falling / Game Updating
     - 4 hours
-- [ ] Scoring, level increasing
+- [x] Scoring, level increasing
     - 1 hour
 - [ ] Menuing
     - 4 hours
@@ -167,7 +167,7 @@ Need to use mouse input for the menu.
     - 4 hours
 - [ ] Particles
     - 3 hours
-- [ ] Sound
+- [x] Sound
     - 3 hours
-- [ ] Final Rendering (text)
+- [x] Final Touches (text, piece preview)
     - 3 hours

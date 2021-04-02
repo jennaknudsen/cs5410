@@ -86,9 +86,6 @@ namespace FinalProject_Tetris
             // initialize the game controller's sound now that music is imported
             _tetrisGameController.SoundController = new SoundController(
                 _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
-
-            // need to start game once music is loaded, not before this
-            _tetrisGameController.StartGame();
         }
 
         protected override void Update(GameTime gameTime)

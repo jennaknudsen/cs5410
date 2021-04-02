@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using FinalProject_Tetris.InputHandling;
 using Microsoft.Xna.Framework.Input;
@@ -7,6 +8,7 @@ namespace FinalProject_Tetris.InputHandling
 {
     public class InputHandler
     {
+        // game buttons
         public readonly KeyboardButton MovePieceLeftButton;
         public readonly KeyboardButton MovePieceRightButton;
         public readonly KeyboardButton SoftDropButton;
@@ -22,7 +24,12 @@ namespace FinalProject_Tetris.InputHandling
         public readonly KeyboardButton MenuBackButton;
         public readonly KeyboardButton PauseButton;
 
+        // list holds all of our buttons (so we can iterate through them)
         private readonly List<Button> _listOfButtons;
+
+        // holds the coordinates of the mouse (so we can detect movement)
+        private (int x, int y) _mousePosition = (0, 0);
+        public bool MouseMoved = false;
 
         public InputHandler()
         {
@@ -69,6 +76,19 @@ namespace FinalProject_Tetris.InputHandling
         {
             var keyboardState = Keyboard.GetState();
             var mouseState = Mouse.GetState();
+
+            // flag for whether movement happened on this frame or not
+            if (mouseState.X != _mousePosition.x || mouseState.Y != _mousePosition.y)
+            {
+                MouseMoved = true;
+            }
+            else
+            {
+                MouseMoved = false;
+            }
+            _mousePosition.x = mouseState.X;
+            _mousePosition.y = mouseState.Y;
+
             var (mouseX, mouseY) = TetrisGame.GetRelativeBoardCoordinates((mouseState.X, mouseState.Y));
 
             // for each button, set its pressed to true if any of the corresponding keyboard keys are pressed
@@ -80,12 +100,21 @@ namespace FinalProject_Tetris.InputHandling
                 {
                     keyboardButton.PressButton();
                 }
-                else if (button is MouseButton mouseButton &&
-                         mouseX > mouseButton.StartPosition.x && mouseX < mouseButton.EndPosition.x &&
-                         mouseY > mouseButton.StartPosition.y && mouseY < mouseButton.EndPosition.y &&
-                         mouseState.LeftButton == ButtonState.Pressed)
+                else if (button is MouseButton mouseButton)
                 {
-                    mouseButton.PressButton();
+                    if (mouseX > mouseButton.StartPosition.x && mouseX < mouseButton.EndPosition.x &&
+                        mouseY > mouseButton.StartPosition.y && mouseY < mouseButton.EndPosition.y)
+                    {
+                        mouseButton.IsHovered = true;
+                        if (mouseState.LeftButton == ButtonState.Pressed)
+                        {
+                            mouseButton.PressButton();
+                        }
+                    }
+                    else
+                    {
+                        mouseButton.IsHovered = false;
+                    }
                 }
                 // release the button if no corresponding keys were pressed
                 else

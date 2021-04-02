@@ -127,6 +127,9 @@ namespace FinalProject_Tetris
             ParticleController = new ParticleController();
             AiController = new AiController();
             MainMenuController = new MainMenuController();
+
+            // main state is menu
+            GameState = MainMenu;
         }
 
         // this starts the game
@@ -153,39 +156,6 @@ namespace FinalProject_Tetris
 
             // we aren't in free fall mode
             _inFreeFallMode = false;
-
-            // COMMENT OUT this section if we don't want to create squares for testing
-            // TetrisSquares[0, 0] = new Square((0, 0), Blue);
-            // TetrisSquares[1, 0] = new Square((1, 0), Blue);
-            // TetrisSquares[2, 0] = new Square((2, 0), Blue);
-            // TetrisSquares[3, 0] = new Square((3, 0), Blue);
-            // TetrisSquares[4, 0] = new Square((4, 0), Blue);
-            // TetrisSquares[5, 0] = new Square((5, 0), Blue);
-            // TetrisSquares[6, 0] = new Square((6, 0), Blue);
-            // TetrisSquares[7, 0] = new Square((7, 0), Blue);
-            // TetrisSquares[8, 0] = new Square((8, 0), Blue);
-            // TetrisSquares[9, 0] = new Square((9, 0), Blue);
-            // TetrisSquares[0, 1] = new Square((0, 1), Blue);
-            // TetrisSquares[1, 1] = new Square((1, 1), Blue);
-            // TetrisSquares[2, 1] = new Square((2, 1), Blue);
-            // TetrisSquares[3, 1] = new Square((3, 1), Blue);
-            // TetrisSquares[4, 1] = new Square((4, 1), Blue);
-            // TetrisSquares[5, 1] = new Square((5, 1), Blue);
-            // TetrisSquares[6, 1] = new Square((6, 1), Blue);
-            // TetrisSquares[7, 1] = new Square((7, 1), Blue);
-            // TetrisSquares[8, 1] = new Square((8, 1), Blue);
-            // TetrisSquares[9, 1] = new Square((9, 1), Blue);
-            // TetrisSquares[0, 2] = new Square((0, 2), Blue);
-            // TetrisSquares[1, 2] = new Square((1, 2), Blue);
-            // TetrisSquares[2, 2] = new Square((2, 2), Blue);
-            // TetrisSquares[3, 2] = new Square((3, 2), Blue);
-            // TetrisSquares[4, 2] = new Square((4, 2), Blue);
-            // TetrisSquares[5, 2] = new Square((5, 2), Blue);
-            // TetrisSquares[6, 2] = new Square((6, 2), Blue);
-            // TetrisSquares[7, 2] = new Square((7, 2), Blue);
-            // TetrisSquares[8, 2] = new Square((8, 2), Blue);
-            // TetrisSquares[9, 2] = new Square((9, 2), Blue);
-            // TetrisSquares[5, 6] = new Square((5, 6), Blue);
 
             SoundController.PlayMusic();
         }
@@ -447,6 +417,9 @@ namespace FinalProject_Tetris
                             }
                         }
                     }
+                    break;
+                case MainMenu:
+                    StartGame();
                     break;
             }
         }
