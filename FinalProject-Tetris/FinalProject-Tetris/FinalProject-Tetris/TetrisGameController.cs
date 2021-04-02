@@ -240,6 +240,8 @@ namespace FinalProject_Tetris
                                     var locationsList = CurrentPiece.Squares.Select(
                                         square => square.PieceLocation).ToList();
 
+                                    var color = CurrentPiece.Squares[0].Color;
+
                                     foreach (var (x, y) in locationsList)
                                     {
                                         // right emitter
@@ -247,26 +249,26 @@ namespace FinalProject_Tetris
                                         {
                                             var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
                                             ParticleController.AddPieceEmitter(
-                                                boardX + 1, boardY + 0.5f, 0, gameTime);
+                                                boardX + 1, boardY + 0.5f, 0, color, gameTime);
                                         }
                                         // left emitter
                                         if (!locationsList.Contains((x - 1, y)))
                                         {
                                             var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
                                             ParticleController.AddPieceEmitter(
-                                                boardX, boardY + 0.5f, MathHelper.Pi, gameTime);
+                                                boardX, boardY + 0.5f, MathHelper.Pi, color, gameTime);
                                         }
                                         // top emitter
                                         if (!locationsList.Contains((x, y + 1)))
                                         {
                                             var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1, MathHelper.PiOver2, gameTime);
+                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1, MathHelper.PiOver2, color, gameTime);
                                         }
                                         // bottom emitter
                                         if (!locationsList.Contains((x, y - 1)))
                                         {
                                             var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY, 3 * MathHelper.PiOver2, gameTime);
+                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY, 3 * MathHelper.PiOver2, color, gameTime);
                                         }
                                     }
                                 }

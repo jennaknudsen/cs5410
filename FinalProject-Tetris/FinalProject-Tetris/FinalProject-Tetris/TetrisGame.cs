@@ -23,7 +23,6 @@ namespace FinalProject_Tetris
         private Texture2D _texGray;
         private Texture2D _texBoard;
         private Texture2D _texBackgroundDimmer;
-        private Texture2D _texPieceParticle;
         private Texture2D _texParticleRed;
         private Texture2D _texParticleOrange;
         private Texture2D _texParticleYellow;
@@ -91,8 +90,7 @@ namespace FinalProject_Tetris
             _texParticleBlue = this.Content.Load<Texture2D>("ParticleBlue");
             _texParticleIndigo = this.Content.Load<Texture2D>("ParticleIndigo");
             _texParticleViolet = this.Content.Load<Texture2D>("ParticleViolet");
-            _texPieceParticle = this.Content.Load<Texture2D>("PieceParticle");
-            _texClearLineParticle = this.Content.Load<Texture2D>("PieceParticle");
+            _texClearLineParticle = this.Content.Load<Texture2D>("ParticleClear");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
             _soundLineClear = this.Content.Load<SoundEffect>("LineClear");
@@ -105,8 +103,17 @@ namespace FinalProject_Tetris
             _tetrisGameController.SoundController = new SoundController(
                 _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
 
-            _tetrisGameController.ParticleController =
-                new ParticleController(_spriteBatch, _texPieceParticle, _texClearLineParticle);
+            _tetrisGameController.ParticleController = new ParticleController(
+                _spriteBatch,
+                _texParticleRed,
+                _texParticleOrange,
+                _texParticleYellow,
+                _texParticleGreen,
+                _texParticleBlue,
+                _texParticleIndigo,
+                _texParticleViolet,
+                _texClearLineParticle
+                );
         }
 
         protected override void Update(GameTime gameTime)
