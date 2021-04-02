@@ -69,7 +69,7 @@ namespace FinalProject_Tetris.Particles
                     ParticleRandom.Next(),
                     new Vector2(SourceX, SourceY),
                     direction,
-                    (float) Math.Abs(ParticleRandom.NextGaussian(Speed, 1)),
+                    (float) Math.Abs(ParticleRandom.NextGaussian(Speed, Speed / 2)),
                     Lifetime);
 
                 if (!Particles.ContainsKey(p.Name))

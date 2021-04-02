@@ -16,10 +16,10 @@ namespace FinalProject_Tetris
         private readonly SpriteBatch _spriteBatch;
 
         // List of emitters (all emitters will be updated every game update)
-        private List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
+        private readonly List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
 
         // Textures: Piece texture for each color, Clear texture
-        private Dictionary<PieceColor, Texture2D> _dictTextures;
+        private readonly Dictionary<PieceColor, Texture2D> _dictTextures;
         private Texture2D _texClearLine;
 
         // constructor sets the reference
@@ -53,19 +53,19 @@ namespace FinalProject_Tetris
             var (sourceX, sourceY) = TetrisGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
             var emitter = new TimedAngleEmitter(
-                TimeSpan.FromMilliseconds(25),
+                TimeSpan.FromMilliseconds(5),
                 sourceX,
                 sourceY,
-                4,
-                0.2f,
-                TimeSpan.FromMilliseconds(100),
+                3,
+                0.3f,
+                TimeSpan.FromMilliseconds(250),
                 _dictTextures[color],
-                TimeSpan.FromMilliseconds(75),
+                TimeSpan.FromMilliseconds(50),
                 false
             );
 
             emitter.Angle = angle;
-            emitter.Width = MathHelper.PiOver4;
+            emitter.Width = MathHelper.Pi;
             emitter.FireParticles();
 
             _emittersList.Add(emitter);
