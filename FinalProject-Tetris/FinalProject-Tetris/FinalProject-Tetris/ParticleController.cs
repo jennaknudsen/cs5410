@@ -71,6 +71,29 @@ namespace FinalProject_Tetris
             _emittersList.Add(emitter);
         }
 
+        public void AddLineClearEmitter(float boardX, float boardY, float angle, GameTime gameTime)
+        {
+            var (sourceX, sourceY) = TetrisGame.GetAbsolutePixelCoordinates((boardX, boardY));
+
+            var emitter = new TimedAngleEmitter(
+                TimeSpan.FromMilliseconds(40),
+                sourceX,
+                sourceY,
+                15,
+                0.6f,
+                TimeSpan.FromMilliseconds(500),
+                _texClearLine,
+                TimeSpan.FromMilliseconds(120),
+                false
+            );
+
+            emitter.Angle = angle;
+            emitter.Width = MathHelper.Pi;
+            emitter.FireParticles();
+
+            _emittersList.Add(emitter);
+        }
+
         public void Update(GameTime gameTime)
         {
             var emittersToRemove = new List<TimedAngleEmitter>();

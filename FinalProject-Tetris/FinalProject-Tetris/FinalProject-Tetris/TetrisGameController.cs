@@ -228,49 +228,54 @@ namespace FinalProject_Tetris
                                 Score += _dropScore;
                                 _dropScore = 0;
 
+                                // emit particles from this point
+                                var coordinatesList = new List<(float x, float y)>();
+                                var locationsList = CurrentPiece.Squares.Select(
+                                    square => square.PieceLocation).ToList();
+
+                                var color = CurrentPiece.Squares[0].Color;
+
+                                foreach (var (x, y) in locationsList)
+                                {
+                                    // right emitter
+                                    if (!locationsList.Contains((x + 1, y)))
+                                    {
+                                        var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                        ParticleController.AddPieceEmitter(
+                                            boardX + 1, boardY + 0.5f, 0, color, gameTime);
+                                    }
+
+                                    // left emitter
+                                    if (!locationsList.Contains((x - 1, y)))
+                                    {
+                                        var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                        ParticleController.AddPieceEmitter(
+                                            boardX, boardY + 0.5f, MathHelper.Pi, color, gameTime);
+                                    }
+
+                                    // top emitter
+                                    if (!locationsList.Contains((x, y + 1)))
+                                    {
+                                        var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                        // ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1,
+                                            // MathHelper.PiOver2, color, gameTime);
+                                        ParticleController.AddLineClearEmitter(boardX + 0.5f, boardY + 1,
+                                            MathHelper.PiOver2, gameTime);
+                                    }
+
+                                    // bottom emitter
+                                    if (!locationsList.Contains((x, y - 1)))
+                                    {
+                                        var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                        ParticleController.AddPieceEmitter(boardX + 0.5f, boardY,
+                                            3 * MathHelper.PiOver2, color, gameTime);
+                                    }
+                                }
+
                                 // check for line clears, if not then we just have a piece drop
-                                if (!ClearLines())
+                                if (!ClearLines(gameTime))
                                 {
                                     SoundController.PlayBlockPlace();
-
-                                    // TODO: piece drop particles
-                                    Console.WriteLine("Piece dropped at coordinates: ");
-
-                                    var coordinatesList = new List<(float x, float y)>();
-                                    var locationsList = CurrentPiece.Squares.Select(
-                                        square => square.PieceLocation).ToList();
-
-                                    var color = CurrentPiece.Squares[0].Color;
-
-                                    foreach (var (x, y) in locationsList)
-                                    {
-                                        // right emitter
-                                        if (!locationsList.Contains((x + 1, y)))
-                                        {
-                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(
-                                                boardX + 1, boardY + 0.5f, 0, color, gameTime);
-                                        }
-                                        // left emitter
-                                        if (!locationsList.Contains((x - 1, y)))
-                                        {
-                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(
-                                                boardX, boardY + 0.5f, MathHelper.Pi, color, gameTime);
-                                        }
-                                        // top emitter
-                                        if (!locationsList.Contains((x, y + 1)))
-                                        {
-                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1, MathHelper.PiOver2, color, gameTime);
-                                        }
-                                        // bottom emitter
-                                        if (!locationsList.Contains((x, y - 1)))
-                                        {
-                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY, 3 * MathHelper.PiOver2, color, gameTime);
-                                        }
-                                    }
                                 }
 
                                 Console.WriteLine("Score: " + Score);
@@ -307,7 +312,7 @@ namespace FinalProject_Tetris
 
                             // use these to exit free fall
                             var canExitFreeFall = false;
-                            var clearedLines = ClearLines();
+                            var clearedLines = ClearLines(gameTime);
                             var droppedAny = false;
 
                             // do this as many times as necessary
@@ -751,7 +756,7 @@ namespace FinalProject_Tetris
         }
 
         // clear lines if needed
-        private bool ClearLines()
+        private bool ClearLines(GameTime gameTime)
         {
             // check for line clears
             var listOfFullLines = GetFullLines();
@@ -780,12 +785,28 @@ namespace FinalProject_Tetris
                 Level = LinesCleared / 5;
 
                 // clear all rows
-                foreach (var row in listOfFullLines)
+                for (var row = 0; row < listOfFullLines.Count; row++)
                 {
-                    Console.WriteLine("Line clear at row " + row);
-                    for (var i = 0; i < 10; i++)
+                    for (var col = 0; col < 10; col++)
                     {
-                        TetrisSquares[i, row] = null;
+                        Console.WriteLine("Line clear at row " + row);
+                        TetrisSquares[col, listOfFullLines[row]] = null;
+
+                        // add particles
+                        var (x, y) = TetrisGame.GetBoardLocationFromPieceLocation((col, listOfFullLines[row]));
+
+                        // add emitter to left and right
+                        if (col == 0)
+                            ParticleController.AddLineClearEmitter(x, y + 0.5f, MathHelper.Pi, gameTime);
+                        else if (col == 9)
+                            ParticleController.AddLineClearEmitter(x + 1f, y + 0.5f, 0, gameTime);
+
+                        // add below if first row
+                        if (row == 0)
+                            ParticleController.AddLineClearEmitter(x + 0.5f, y, 3 * MathHelper.PiOver2, gameTime);
+                        // add above if last row
+                        if (row == listOfFullLines.Count - 1)
+                            ParticleController.AddLineClearEmitter(x + 0.5f, y + 1f, MathHelper.PiOver2, gameTime);
                     }
                 }
 
@@ -793,7 +814,6 @@ namespace FinalProject_Tetris
                 SoundController.PlayLineClear();
 
                 // generate particles
-                // TODO: line clear particles
 
                 _timeSinceLastPieceTick = TimeSpan.Zero;
                 _inFreeFallMode = true;
