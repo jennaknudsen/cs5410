@@ -33,19 +33,19 @@ namespace FinalProject_Tetris
             var (sourceX, sourceY) = TetrisGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
             var emitter = new TimedAngleEmitter(
-                TimeSpan.FromMilliseconds(10),
+                TimeSpan.FromMilliseconds(25),
                 sourceX,
                 sourceY,
-                5,
-                2,
-                TimeSpan.FromMilliseconds(1000),
+                4,
+                0.2f,
+                TimeSpan.FromMilliseconds(100),
                 _texPiece,
-                TimeSpan.FromMilliseconds(200),
+                TimeSpan.FromMilliseconds(75),
                 false
             );
 
             emitter.Angle = angle;
-            emitter.Width = MathHelper.Pi;
+            emitter.Width = MathHelper.PiOver4;
             emitter.FireParticles();
 
             _emittersList.Add(emitter);

@@ -185,7 +185,6 @@ namespace FinalProject_Tetris
                             if (InputHandler.MovePieceLeftButton.Pressed)
                             {
                                 MovePieceLeft();
-                                ParticleController.AddPieceEmitter(15, 15, MathHelper.Pi, gameTime);
                             }
                             else if (InputHandler.MovePieceRightButton.Pressed)
                             {
@@ -236,9 +235,39 @@ namespace FinalProject_Tetris
 
                                     // TODO: piece drop particles
                                     Console.WriteLine("Piece dropped at coordinates: ");
-                                    foreach (var square in CurrentPiece.Squares)
+
+                                    var coordinatesList = new List<(float x, float y)>();
+                                    var locationsList = CurrentPiece.Squares.Select(
+                                        square => square.PieceLocation).ToList();
+
+                                    foreach (var (x, y) in locationsList)
                                     {
-                                        Console.WriteLine(square.PieceLocation);
+                                        // right emitter
+                                        if (!locationsList.Contains((x + 1, y)))
+                                        {
+                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                            ParticleController.AddPieceEmitter(
+                                                boardX + 1, boardY + 0.5f, 0, gameTime);
+                                        }
+                                        // left emitter
+                                        if (!locationsList.Contains((x - 1, y)))
+                                        {
+                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                            ParticleController.AddPieceEmitter(
+                                                boardX, boardY + 0.5f, MathHelper.Pi, gameTime);
+                                        }
+                                        // top emitter
+                                        if (!locationsList.Contains((x, y + 1)))
+                                        {
+                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1, MathHelper.PiOver2, gameTime);
+                                        }
+                                        // bottom emitter
+                                        if (!locationsList.Contains((x, y - 1)))
+                                        {
+                                            var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
+                                            ParticleController.AddPieceEmitter(boardX + 0.5f, boardY, 3 * MathHelper.PiOver2, gameTime);
+                                        }
                                     }
                                 }
 
@@ -719,6 +748,7 @@ namespace FinalProject_Tetris
             return true;
         }
 
+        // clear lines if needed
         private bool ClearLines()
         {
             // check for line clears
@@ -798,6 +828,8 @@ namespace FinalProject_Tetris
             return returnList;
         }
 
+        // retrieves a new piece from the bag and places it
+        // or enters GameOver state if can't
         private void GetNewPiece()
         {
             if (!PopBag())
@@ -822,6 +854,28 @@ namespace FinalProject_Tetris
                 Console.WriteLine("Current piece: " + CurrentPiece.Type);
                 Console.WriteLine("Next piece: " + BagOfPieces[0].Type);
             }
+        }
+
+        // given a list of float pairs, return only those that are unique
+        private List<(float x, float y)> GetUniqueElements(List<(float x, float y)> inputList)
+        {
+            var returnList = new List<(float x, float y)>();
+            var itemsToRemove = new List<(float x, float y)>();
+
+            // mark duplicates, add unique
+            foreach (var item in inputList)
+            {
+                if (returnList.Contains(item))
+                    itemsToRemove.Add(item);
+                else
+                    returnList.Add(item);
+            }
+
+            // remove all duplicates
+            foreach (var item in itemsToRemove)
+                returnList.Remove(item);
+
+            return returnList;
         }
     }
 }

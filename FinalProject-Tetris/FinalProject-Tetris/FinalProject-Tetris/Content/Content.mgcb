@@ -130,7 +130,7 @@
 /processorParam:TextureFormat=Color
 /build:orange.png
 
-#begin ParticleWhite.png
+#begin PieceParticle.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -140,7 +140,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:ParticleWhite.png
+/build:PieceParticle.png
 
 #begin red.png
 /importer:TextureImporter

@@ -26,7 +26,7 @@ namespace FinalProject_Tetris.Particles
 
         // sets the attributes of the AngleEmitter
         public TimedAngleEmitter(TimeSpan rate, int sourceX, int sourceY,
-            int size, int speed, TimeSpan lifetime, Texture2D particleTexture,
+            int size, float speed, TimeSpan lifetime, Texture2D particleTexture,
             TimeSpan fireTime, bool normalized) :
             base(rate, sourceX, sourceY, size, speed, lifetime, particleTexture)
         {

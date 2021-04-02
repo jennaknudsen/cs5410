@@ -77,8 +77,8 @@ namespace FinalProject_Tetris
             _texViolet = this.Content.Load<Texture2D>("violet");
             _texGray = this.Content.Load<Texture2D>("gray");
             _texBoard = this.Content.Load<Texture2D>("board");
-            _texPieceParticle = this.Content.Load<Texture2D>("ParticleWhite");
-            _texClearLineParticle = this.Content.Load<Texture2D>("ParticleWhite");
+            _texPieceParticle = this.Content.Load<Texture2D>("PieceParticle");
+            _texClearLineParticle = this.Content.Load<Texture2D>("PieceParticle");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
             _soundLineClear = this.Content.Load<SoundEffect>("LineClear");

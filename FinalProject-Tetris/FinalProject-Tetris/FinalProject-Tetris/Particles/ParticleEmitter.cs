@@ -19,7 +19,7 @@ namespace FinalProject_Tetris.Particles
         public float SourceX;
         public float SourceY;
         protected int ParticleSize;
-        protected int Speed;
+        protected float Speed;
         protected TimeSpan Lifetime;
         // protected TimeSpan Switchover;
         protected Texture2D _particleTexture;
@@ -31,7 +31,7 @@ namespace FinalProject_Tetris.Particles
         protected TimeSpan Accumulated = TimeSpan.Zero;
 
         // Constructor sets the attributes
-        public ParticleEmitter(TimeSpan rate, int sourceX, int sourceY, int size, int speed,
+        public ParticleEmitter(TimeSpan rate, int sourceX, int sourceY, int size, float speed,
             TimeSpan lifetime, Texture2D particleTexture)
         {
             Rate = rate;
