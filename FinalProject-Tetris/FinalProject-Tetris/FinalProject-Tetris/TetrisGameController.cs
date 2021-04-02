@@ -58,7 +58,7 @@ namespace FinalProject_Tetris
 
         // These controllers need assets, so they are instantiated by the TetrisGame itself
         public SoundController SoundController;
-        public ParticleDrawController ParticleController;
+        public ParticleController ParticleController;
 
         // this gets the TimeSpan between gravity ticks
         private static TimeSpan GetGravityTimeSpan(int level)

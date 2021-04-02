@@ -24,6 +24,13 @@ namespace FinalProject_Tetris
         private Texture2D _texBoard;
         private Texture2D _texBackgroundDimmer;
         private Texture2D _texPieceParticle;
+        private Texture2D _texParticleRed;
+        private Texture2D _texParticleOrange;
+        private Texture2D _texParticleYellow;
+        private Texture2D _texParticleGreen;
+        private Texture2D _texParticleBlue;
+        private Texture2D _texParticleIndigo;
+        private Texture2D _texParticleViolet;
         private Texture2D _texClearLineParticle;
         private SoundEffect _soundBlockPlace;
         private SoundEffect _soundLineClear;
@@ -77,6 +84,13 @@ namespace FinalProject_Tetris
             _texViolet = this.Content.Load<Texture2D>("violet");
             _texGray = this.Content.Load<Texture2D>("gray");
             _texBoard = this.Content.Load<Texture2D>("board");
+            _texParticleRed = this.Content.Load<Texture2D>("ParticleRed");
+            _texParticleOrange = this.Content.Load<Texture2D>("ParticleOrange");
+            _texParticleYellow = this.Content.Load<Texture2D>("ParticleYellow");
+            _texParticleGreen = this.Content.Load<Texture2D>("ParticleGreen");
+            _texParticleBlue = this.Content.Load<Texture2D>("ParticleBlue");
+            _texParticleIndigo = this.Content.Load<Texture2D>("ParticleIndigo");
+            _texParticleViolet = this.Content.Load<Texture2D>("ParticleViolet");
             _texPieceParticle = this.Content.Load<Texture2D>("PieceParticle");
             _texClearLineParticle = this.Content.Load<Texture2D>("PieceParticle");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
@@ -92,7 +106,7 @@ namespace FinalProject_Tetris
                 _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
 
             _tetrisGameController.ParticleController =
-                new ParticleDrawController(_spriteBatch, _texPieceParticle, _texClearLineParticle);
+                new ParticleController(_spriteBatch, _texPieceParticle, _texClearLineParticle);
         }
 
         protected override void Update(GameTime gameTime)
