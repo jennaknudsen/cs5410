@@ -209,7 +209,7 @@ namespace FinalProject_Tetris
                         }
                         else if (GameState == AttractMode)
                         {
-                            // code for getting the AI's moves here
+                            AiController.Update(gameTime);
                         }
 
                         // check for a gravity update
