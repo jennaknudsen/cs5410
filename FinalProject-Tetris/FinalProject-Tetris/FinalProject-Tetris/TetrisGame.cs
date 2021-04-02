@@ -216,6 +216,25 @@ namespace FinalProject_Tetris
                     0);
             }
 
+            // draw score, level, lines cleared
+            var scoreString = "Score: " + _tetrisGameController.Score;
+            var levelString = "Level: " + _tetrisGameController.Level;
+            var linesClearedString = "Lines cleared: " + _tetrisGameController.LinesCleared;
+
+            var (scoreX, scoreY) = GetAbsolutePixelCoordinates((3f, 26.8f));
+            var (levelX, levelY) = GetAbsolutePixelCoordinates((3f, 25.3f));
+            var (linesX, linesY) = GetAbsolutePixelCoordinates((3f, 23.8f));
+
+            _spriteBatch.DrawString(_gameFont, scoreString,
+                new Vector2(scoreX, scoreY),
+                Color.Black);
+            _spriteBatch.DrawString(_gameFont, levelString,
+                new Vector2(levelX, levelY),
+                Color.Black);
+            _spriteBatch.DrawString(_gameFont, linesClearedString,
+                new Vector2(linesX, linesY),
+                Color.Black);
+
             base.Draw(gameTime);
 
             _spriteBatch.End();

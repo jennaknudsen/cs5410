@@ -25,7 +25,8 @@ namespace FinalProject_Tetris
         // add 1 point for each consecutive drop
         private int _dropScore;
 
-        // total lines cleared / 10
+        // total lines cleared / 5
+        // normally, tetris is every 10 lines, but I chose every 5 to speed up gameplay
         public int Level = 0;
 
         // reference to the current game state
@@ -766,7 +767,7 @@ namespace FinalProject_Tetris
                 LinesCleared += listOfFullLines.Count;
 
                 // every 10 lines cleared, increase level
-                Level = LinesCleared / 10;
+                Level = LinesCleared / 5;
 
                 // clear all rows
                 foreach (var row in listOfFullLines)
