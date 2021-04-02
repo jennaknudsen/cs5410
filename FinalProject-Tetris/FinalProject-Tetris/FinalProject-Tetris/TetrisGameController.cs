@@ -53,10 +53,12 @@ namespace FinalProject_Tetris
 
         // references to various objects that this class uses
         public InputHandler InputHandler;
-        public ParticleController ParticleController;
-        public SoundController SoundController;     // SoundController instantiated by the TetrisGame itself
         public AiController AiController;
         public MainMenuController MainMenuController;
+
+        // These controllers need assets, so they are instantiated by the TetrisGame itself
+        public SoundController SoundController;
+        public ParticleDrawController ParticleController;
 
         // this gets the TimeSpan between gravity ticks
         private static TimeSpan GetGravityTimeSpan(int level)
@@ -124,7 +126,6 @@ namespace FinalProject_Tetris
         {
             // set up all of the needed controllers and handlers
             InputHandler = new InputHandler();
-            ParticleController = new ParticleController();
             AiController = new AiController();
             MainMenuController = new MainMenuController();
 
@@ -173,6 +174,9 @@ namespace FinalProject_Tetris
             {
                 case Running:
                 case AttractMode:
+                    // update the ParticleController
+                    ParticleController.Update(gameTime);
+
                     if (!_inFreeFallMode)
                     {
                         if (GameState == Running)
@@ -181,6 +185,7 @@ namespace FinalProject_Tetris
                             if (InputHandler.MovePieceLeftButton.Pressed)
                             {
                                 MovePieceLeft();
+                                ParticleController.AddPieceEmitter(15, 15, MathHelper.Pi, gameTime);
                             }
                             else if (InputHandler.MovePieceRightButton.Pressed)
                             {

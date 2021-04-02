@@ -77,12 +77,10 @@ namespace FinalProject_Tetris
         // Draws all particle effects
         public void Draw()
         {
-            _spriteBatch.Begin();
             foreach (var emitter in _emittersList)
             {
                 emitter.Draw(_spriteBatch);
             }
-            _spriteBatch.End();
         }
 
         // Clears all particle effects

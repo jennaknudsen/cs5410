@@ -23,6 +23,8 @@ namespace FinalProject_Tetris
         private Texture2D _texGray;
         private Texture2D _texBoard;
         private Texture2D _texBackgroundDimmer;
+        private Texture2D _texPieceParticle;
+        private Texture2D _texClearLineParticle;
         private SoundEffect _soundBlockPlace;
         private SoundEffect _soundLineClear;
         private SoundEffect _soundGameOver;
@@ -75,6 +77,8 @@ namespace FinalProject_Tetris
             _texViolet = this.Content.Load<Texture2D>("violet");
             _texGray = this.Content.Load<Texture2D>("gray");
             _texBoard = this.Content.Load<Texture2D>("board");
+            _texPieceParticle = this.Content.Load<Texture2D>("ParticleWhite");
+            _texClearLineParticle = this.Content.Load<Texture2D>("ParticleWhite");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
             _soundLineClear = this.Content.Load<SoundEffect>("LineClear");
@@ -86,6 +90,9 @@ namespace FinalProject_Tetris
             // initialize the game controller's sound now that music is imported
             _tetrisGameController.SoundController = new SoundController(
                 _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
+
+            _tetrisGameController.ParticleController =
+                new ParticleDrawController(_spriteBatch, _texPieceParticle, _texClearLineParticle);
         }
 
         protected override void Update(GameTime gameTime)
@@ -231,6 +238,9 @@ namespace FinalProject_Tetris
             _spriteBatch.DrawString(_gameFont, linesClearedString,
                 new Vector2(linesX, linesY),
                 Color.Black);
+
+            // draw particles
+            _tetrisGameController.ParticleController.Draw();
 
             base.Draw(gameTime);
 
