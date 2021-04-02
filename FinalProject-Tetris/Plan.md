@@ -165,7 +165,7 @@ Need to use mouse input for the menu.
     - 2 hours
 - [ ] Attract Mode
     - 4 hours
-- [ ] Particles
+- [x] Particles
     - 3 hours
 - [x] Sound
     - 3 hours

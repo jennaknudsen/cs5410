@@ -257,10 +257,8 @@ namespace FinalProject_Tetris
                                     if (!locationsList.Contains((x, y + 1)))
                                     {
                                         var (boardX, boardY) = TetrisGame.GetBoardLocationFromPieceLocation((x, y));
-                                        // ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1,
-                                            // MathHelper.PiOver2, color, gameTime);
-                                        ParticleController.AddLineClearEmitter(boardX + 0.5f, boardY + 1,
-                                            MathHelper.PiOver2, gameTime);
+                                        ParticleController.AddPieceEmitter(boardX + 0.5f, boardY + 1,
+                                            MathHelper.PiOver2, color, gameTime);
                                     }
 
                                     // bottom emitter
