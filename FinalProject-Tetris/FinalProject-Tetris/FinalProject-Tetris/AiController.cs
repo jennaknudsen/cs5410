@@ -54,6 +54,12 @@ namespace FinalProject_Tetris
         private void GetNextMove(Piece currentPiece, Square[,] boardSquares)
         {
             // given the current piece, try all combinations of moves
+            var bestMove = new Move
+            {
+                PieceOrientation = Up,
+                LeftMostColumn = 0,
+                MoveScore = -10000f
+            };
 
             // try each orientation
             // for each orientation
@@ -63,10 +69,58 @@ namespace FinalProject_Tetris
                 {
                     var newPiece = Piece.GeneratePiece(currentPiece.Type);
 
+                    // set piece to the correct orientation
+                    while (newPiece.Orientation != orientation)
+                        RotatePiece(false, newPiece, boardSquares);
 
+                    // move to the correct spot
+                    while (GetPieceLeftPosition(newPiece) > col)
+                        MovePieceLeft(newPiece, boardSquares);
+
+                    while (GetPieceLeftPosition(newPiece) < col)
+                        if (!MovePieceRight(newPiece, boardSquares))
+                            break;
+
+                    // hard drop piece here and get resulting score
+                    while (SoftDropPiece(newPiece, boardSquares))
+                    {
+                        // do nothing
+                    }
+
+                    // score = -this.heightWeight * _grid.aggregateHeight()
+                    // + this.linesWeight * _grid.lines()
+                    // - this.holesWeight * _grid.holes()
+                    // - this.bumpinessWeight * _grid.bumpiness();
+                    var heightWeight = 0.510066f;
+                    var linesWeight = 0.760666f;
+                    var holesWeight = 0.35663f;
+                    var bumpinessWeight = 0.184483f;
+
+                    var thisScore = -1 * heightWeight * AggregateHeight(boardSquares) +
+                                    linesWeight * CompleteLines(boardSquares) -
+                                    holesWeight * Holes(boardSquares) -
+                                    bumpinessWeight * Bumpiness(boardSquares);
+
+                    if (thisScore > bestMove.MoveScore)
+                    {
+
+                        bestMove = new Move
+                        {
+                            LeftMostColumn = col,
+                            PieceOrientation = newPiece.Orientation,
+                            MoveScore = thisScore
+                        };
+                    }
+
+                    // clear the piece from the board
+                    foreach (var square in newPiece.Squares)
+                    {
+                        boardSquares[square.PieceLocation.x, square.PieceLocation.y] = null;
+                    }
                 }
             }
 
+            _nextMove = bestMove;
         }
 
         // move piece left one square
@@ -134,7 +188,7 @@ namespace FinalProject_Tetris
         }
 
         // soft drop: down *one* level
-        private bool SoftDropPiece(bool incrementDropScore, Piece CurrentPiece, Square[,] TetrisSquares)
+        private bool SoftDropPiece(Piece CurrentPiece, Square[,] TetrisSquares)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -158,6 +212,75 @@ namespace FinalProject_Tetris
             {
                 FinalizePieceMove(oldPosition, newPosition, CurrentPiece, TetrisSquares);
                 // on soft drop, reset gravity timer to 0
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        // rotation can be either clockwise or counterclockwise
+        private bool RotatePiece(bool isCounterClockwise, Piece CurrentPiece, Square[,] TetrisSquares)
+        {
+            // protect against nulls
+            if (CurrentPiece == null) return false;
+
+            // make a list with initial positions
+            var oldPosition = new List<(int x, int y)>();
+            foreach (var square in CurrentPiece.Squares)
+            {
+                oldPosition.Add(square.PieceLocation);
+            }
+
+            // get the rotation matrix for this rotation
+            // we'll use the rotation matrix to determine how to translate these points
+            var rotationMatrix = CurrentPiece.GetRotationMatrix(isCounterClockwise);
+
+            // make a new list with all of the positions translated down by 1
+            var newPosition = new List<(int x, int y)>();
+
+            // translate based on rotation matrix
+            for (int i = 0; i < 4; i++)
+            {
+                newPosition.Add((CurrentPiece.Squares[i].PieceLocation.x + rotationMatrix[i].x,
+                    CurrentPiece.Squares[i].PieceLocation.y + rotationMatrix[i].y));
+            }
+
+            // wall kick
+            // get min and max X value on this piece
+            var minX = 9;
+            var maxX = 0;
+            for (var i = 0; i < 4; i++)
+            {
+                var curX = newPosition[i].x;
+                if (curX < minX)
+                    minX = curX;
+                if (curX > maxX)
+                    maxX = curX;
+            }
+            // if min X is less than 0 then translate all pieces by 0 - minX
+            // if max X is greater than 9 then translate all pieces by 9 - maxX
+            if (minX < 0)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    newPosition[i] = (newPosition[i].x - minX, newPosition[i].y);
+                }
+            }
+            else if (maxX > 9)
+            {
+                for (var i = 0; i < 4; i++)
+                {
+                    newPosition[i] = (newPosition[i].x + 9 - maxX, newPosition[i].y);
+                }
+            }
+
+            // only move if it's a valid position
+            if (CheckValidPiecePosition(newPosition, CurrentPiece, TetrisSquares))
+            {
+                FinalizePieceMove(oldPosition, newPosition, CurrentPiece, TetrisSquares);
+                CurrentPiece.Orientation = CurrentPiece.GetCorrectOrientation(isCounterClockwise);
                 return true;
             }
             else
@@ -204,6 +327,18 @@ namespace FinalProject_Tetris
                 return false;
             }
             return true;
+        }
+
+        private int GetPieceLeftPosition(Piece CurrentPiece)
+        {
+            var leftmost = 9;
+            foreach (var square in CurrentPiece.Squares)
+            {
+                if (square.PieceLocation.x < leftmost)
+                    leftmost = square.PieceLocation.x;
+            }
+
+            return leftmost;
         }
 
         #region AI aggregation scores
