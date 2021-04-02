@@ -131,10 +131,6 @@ namespace FinalProject_Tetris
 
             // draw the next piece
             Texture2D texOfNextPiece;
-            Rectangle nextRect1;
-            Rectangle nextRect2;
-            Rectangle nextRect3;
-            Rectangle nextRect4;
             (int x, int y) r1Coord;
             (int x, int y) r2Coord;
             (int x, int y) r3Coord;
@@ -156,39 +152,39 @@ namespace FinalProject_Tetris
                     r4Coord = GetAbsolutePixelCoordinates((24.5f, 24));
                     break;
                 case L:
-                    texOfNextPiece = GetColor(Indigo);
-                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    texOfNextPiece = GetColor(Orange);
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 23));
                     r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
-                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    r3Coord = GetAbsolutePixelCoordinates((24.5f, 23));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 24));
                     break;
                 case O:
-                    texOfNextPiece = GetColor(Indigo);
-                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
-                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
-                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    texOfNextPiece = GetColor(Yellow);
+                    r1Coord = GetAbsolutePixelCoordinates((23, 23));
+                    r2Coord = GetAbsolutePixelCoordinates((23, 24));
+                    r3Coord = GetAbsolutePixelCoordinates((24, 23));
+                    r4Coord = GetAbsolutePixelCoordinates((24, 24));
                     break;
                 case S:
-                    texOfNextPiece = GetColor(Indigo);
-                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    texOfNextPiece = GetColor(Green);
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 23));
                     r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
                     r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 24));
                     break;
                 case T:
-                    texOfNextPiece = GetColor(Indigo);
-                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
+                    texOfNextPiece = GetColor(Violet);
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 23));
                     r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
                     r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 23));
                     break;
                 case Z:
-                    texOfNextPiece = GetColor(Indigo);
-                    r1Coord = GetAbsolutePixelCoordinates((23.5f, 22));
-                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 23));
-                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((23.5f, 25));
+                    texOfNextPiece = GetColor(Red);
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 24));
+                    r2Coord = GetAbsolutePixelCoordinates((23.5f, 24));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 23));
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
