@@ -126,7 +126,7 @@ namespace FinalProject_Tetris
         {
             // set up all of the needed controllers and handlers
             InputHandler = new InputHandler();
-            AiController = new AiController();
+            AiController = new AiController(this);
             MainMenuController = new MainMenuController();
 
             // main state is menu
