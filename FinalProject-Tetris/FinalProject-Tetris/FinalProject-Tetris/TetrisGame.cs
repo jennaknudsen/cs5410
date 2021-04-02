@@ -27,6 +27,8 @@ namespace FinalProject_Tetris
         private SoundEffect _soundLineClear;
         private SoundEffect _soundGameOver;
         private SoundEffect _soundTetrisSong;
+        private SpriteFont _gameFont;
+        private SpriteFont _menuFont;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -78,10 +80,14 @@ namespace FinalProject_Tetris
             _soundLineClear = this.Content.Load<SoundEffect>("LineClear");
             _soundGameOver = this.Content.Load<SoundEffect>("GameOver");
             _soundTetrisSong = this.Content.Load<SoundEffect>("Tetris");
+            _gameFont = this.Content.Load<SpriteFont>("GameFont");
+            _menuFont = this.Content.Load<SpriteFont>("MenuFont");
 
+            // initialize the game controller's sound now that music is imported
             _tetrisGameController.SoundController = new SoundController(
                 _soundBlockPlace, _soundLineClear, _soundGameOver, _soundTetrisSong);
 
+            // need to start game once music is loaded, not before this
             _tetrisGameController.StartGame();
         }
 
