@@ -60,12 +60,16 @@ namespace FinalProject_Tetris.LocalStorage
                         else
                         {
                             // Make default control scheme if file doesn't exist
-                            var thrustKeys = new[] {Keys.Up};
                             var leftKeys = new[] {Keys.Left};
                             var rightKeys = new[] {Keys.Right};
+                            var upKeys = new[] {Keys.Up};
+                            var downKeys = new[] {Keys.Down};
+                            var rotateClockwiseKeys = new[] {Keys.PageUp, Keys.E};
+                            var rotateCounterClockwiseKeys = new[] {Keys.Home, Keys.Q};
 
                             // save this as default scheme
-                            SaveControlScheme(thrustKeys, leftKeys, rightKeys);
+                            SaveControlScheme(leftKeys, rightKeys, upKeys, downKeys,
+                                rotateClockwiseKeys, rotateCounterClockwiseKeys);
 
                             // wait for save to finish before loading
                             while (this._savingControls)
@@ -91,7 +95,8 @@ namespace FinalProject_Tetris.LocalStorage
         }
 
         // public facing method to save controls
-        public void SaveControlScheme(Keys[] thrustKeys, Keys[] rotateLeftKeys, Keys[] rotateRightKeys)
+        public void SaveControlScheme(Keys[] leftKeys, Keys[] rightKeys, Keys[] upKeys, Keys[] downKeys,
+            Keys[] rotateClockwiseKeys, Keys[] rotateCounterClockwiseKeys)
         {
             lock (this)
             {
@@ -102,7 +107,8 @@ namespace FinalProject_Tetris.LocalStorage
                 this._savingControls = true;
 
                 // Create something to save
-                var myState = new ControlScheme(thrustKeys, rotateLeftKeys, rotateRightKeys);
+                var myState = new ControlScheme(leftKeys, rightKeys, upKeys, downKeys,
+                    rotateClockwiseKeys, rotateCounterClockwiseKeys);
 
                 // save this control scheme
                 FinalizeSaveControlsAsync(myState);
@@ -173,7 +179,7 @@ namespace FinalProject_Tetris.LocalStorage
                         }
                         else
                         {
-                            var hsList = new List<float>();
+                            var hsList = new List<int>();
 
                             // save high scores list (empty for now)
                             SaveHighScores(hsList);
@@ -202,7 +208,7 @@ namespace FinalProject_Tetris.LocalStorage
         }
 
         // public facing method to save controls
-        public void SaveHighScores(List<float> hsList)
+        public void SaveHighScores(List<int> hsList)
         {
             lock (this)
             {

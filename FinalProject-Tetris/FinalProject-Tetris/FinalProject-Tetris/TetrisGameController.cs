@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using Microsoft.Xna.Framework;
 using FinalProject_Tetris.InputHandling;
+using FinalProject_Tetris.LocalStorage;
 using static FinalProject_Tetris.GameState;
 using static FinalProject_Tetris.Piece.PieceType;
 using static FinalProject_Tetris.Square.PieceColor;
@@ -55,6 +57,7 @@ namespace FinalProject_Tetris
         public InputHandler InputHandler;
         public AiController AiController;
         public MainMenuController MainMenuController;
+        public LocalStorageManager LocalStorageManager;
 
         // These controllers need assets, so they are instantiated by the TetrisGame itself
         public SoundController SoundController;
@@ -66,6 +69,33 @@ namespace FinalProject_Tetris
             InputHandler = new InputHandler();
             AiController = new AiController(this);
             MainMenuController = new MainMenuController(this);
+            LocalStorageManager = new LocalStorageManager();
+
+            // in constructor, read in the control scheme and high scores initially
+            LocalStorageManager.LoadControlScheme();
+
+            // need to wait for a control scheme to be loaded
+            while (LocalStorageManager.StoredControlScheme == null)
+            {
+                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
+            }
+
+            // set the correct control scheme after load
+            InputHandler.MovePieceLeftButton.BoundKeys = LocalStorageManager.StoredControlScheme.LeftKeys;
+            InputHandler.MovePieceRightButton.BoundKeys = LocalStorageManager.StoredControlScheme.RightKeys;
+            InputHandler.SoftDropButton.BoundKeys = LocalStorageManager.StoredControlScheme.DownKeys;
+            InputHandler.HardDropButton.BoundKeys = LocalStorageManager.StoredControlScheme.UpKeys;
+            InputHandler.RotateClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateClockwiseKeys;
+            InputHandler.RotateCounterClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateCounterClockwiseKeys;
+
+            // need to wait for high scores to be loaded
+            while (LocalStorageManager.StoredHighScores == null)
+            {
+                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
+            }
+
+            // set the high scores list to what we just read in
+            MainMenuController.HighScoresIntList = LocalStorageManager.StoredHighScores.HighScores;
 
             // main state is menu
             GameState = MainMenu;
