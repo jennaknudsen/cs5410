@@ -60,10 +60,10 @@ namespace FinalProject_Tetris.InputHandling
 
             LeftControlButton = new MouseButton((3, 23), (13, 25), true);
             RightControlButton = new MouseButton((18, 23), (28, 25), true);
-            DownControlButton = new MouseButton((3, 18), (13, 20), true);
-            UpControlButton = new MouseButton((18, 18), (28, 20), true);
-            CounterClockwiseControlButton = new MouseButton((3, 11), (13, 13), true);
-            ClockwiseControlButton = new MouseButton((18, 11), (28, 13), true);
+            DownControlButton = new MouseButton((3, 19), (13, 21), true);
+            UpControlButton = new MouseButton((18, 19), (28, 21), true);
+            CounterClockwiseControlButton = new MouseButton((3, 15), (13, 17), true);
+            ClockwiseControlButton = new MouseButton((18, 15), (28, 17), true);
 
             ResetToDefaultsButton = new MouseButton((3, 7), (20, 9), true);
             BackToMainButton = new MouseButton((3, 5), (20, 7), true);
