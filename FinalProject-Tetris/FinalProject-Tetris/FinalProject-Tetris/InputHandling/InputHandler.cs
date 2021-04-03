@@ -58,14 +58,14 @@ namespace FinalProject_Tetris.InputHandling
             CustomizeControlsButton = new MouseButton((3, 11), (20, 13), true);
             ViewCreditsButton = new MouseButton((3, 5), (20, 7), true);
 
-            LeftControlButton = new MouseButton((3, 5), (20, 7), true);
-            RightControlButton = new MouseButton((3, 5), (20, 7), true);
-            UpControlButton = new MouseButton((3, 5), (20, 7), true);
-            DownControlButton = new MouseButton((3, 5), (20, 7), true);
-            CounterClockwiseControlButton = new MouseButton((3, 5), (20, 7), true);
-            ClockwiseControlButton = new MouseButton((3, 5), (20, 7), true);
-            ResetToDefaultsButton = new MouseButton((3, 5), (20, 7), true);
+            LeftControlButton = new MouseButton((3, 23), (13, 25), true);
+            RightControlButton = new MouseButton((18, 23), (28, 25), true);
+            DownControlButton = new MouseButton((3, 18), (13, 20), true);
+            UpControlButton = new MouseButton((18, 18), (28, 20), true);
+            CounterClockwiseControlButton = new MouseButton((3, 11), (13, 13), true);
+            ClockwiseControlButton = new MouseButton((18, 11), (28, 13), true);
 
+            ResetToDefaultsButton = new MouseButton((3, 7), (20, 9), true);
             BackToMainButton = new MouseButton((3, 5), (20, 7), true);
 
             // the physical left mouse button

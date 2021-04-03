@@ -449,7 +449,14 @@ namespace FinalProject_Tetris
                     _spriteBatch.DrawString(_gameFont, rotateCounterClockwiseChars,
                         new Vector2(rcctX, rcctY),
                         rotateCounterClockwiseKeysColor);
-
+                    // defaults
+                    _spriteBatch.DrawString(_menuFont, resetDefaultsString,
+                        new Vector2(defX, defY),
+                        resetDefaultsColor);
+                    // back to main menu
+                    _spriteBatch.DrawString(_menuFont, mmString2,
+                        new Vector2(mm2X, mm2Y),
+                        mainMenuColor2);
 
                     break;
 
