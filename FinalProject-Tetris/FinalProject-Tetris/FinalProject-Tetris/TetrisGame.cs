@@ -249,6 +249,49 @@ namespace FinalProject_Tetris
                         mmColor1);
 
                     break;
+                case Controls:
+                    break;
+                case Credits:
+                    var creditsString = "CREDITS:";
+                    var creditsBodyString = @"All game logic, artwork, and sounds created
+by me (Jonas Knudsen), with the exception of some
+starter code provided by the instructor, and the
+background cloud texture, which I found at:
+https://opengameart.org/sites/default/
+files/tilesetOpenGameBackground_1.png
+
+Got information about how Tetris works from:
+https://tetris.fandom.com/wiki/Tetris_Wiki
+
+Got the AI for Attract Mode from:
+https://codemyroad.wordpress.com/2013/04/14/
+tetris-ai-the-near-perfect-player/
+
+Used StackOverflow for a couple of small code
+snippets. These snippets are cited in comments
+found in the source code.";
+
+                    var mmString3 = "Main Menu";
+                    var mmColor3 = inputHandler.BackToMainButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    var (crTitleX, crTitleY) = GetAbsolutePixelCoordinates((3, 24));
+                    var (crContentsX, crContentsY) = GetAbsolutePixelCoordinates((3, 20));
+                    var returnToMainPos3 = GetMouseButtonPixelCoordinates(inputHandler.BackToMainButton);
+
+                    // draw the menu items
+                    _spriteBatch.DrawString(_menuFont, creditsString,
+                        new Vector2(crTitleX, crTitleY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_gameFont, creditsBodyString,
+                        new Vector2(crContentsX, crContentsY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, mmString3,
+                        new Vector2(returnToMainPos3.x, returnToMainPos3.y),
+                        mmColor3);
+
+                    break;
                 default:
                     break;
             }

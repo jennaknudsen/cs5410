@@ -47,6 +47,7 @@ namespace FinalProject_Tetris
                     }
                     break;
                 case HighScores:
+                case Credits:
                     if (inputHandler.BackToMainButton.Pressed)
                         MenuState = Main;
                     break;

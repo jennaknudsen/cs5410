@@ -17,7 +17,6 @@ namespace FinalProject_Tetris.InputHandling
         public readonly KeyboardButton RotateClockwiseButton;
 
         // menu buttons
-        // public readonly KeyboardButton MenuUpButton;
         public readonly MouseButton NewGameButton;
         public readonly MouseButton HighScoresButton;
         public readonly MouseButton CustomizeControlsButton;
@@ -31,6 +30,9 @@ namespace FinalProject_Tetris.InputHandling
         public readonly MouseButton ResetToDefaultsButton;
         public readonly MouseButton BackToMainButton;
 
+        // debounce the left mouse button itself with this
+        public readonly Button PhysicalMouseButton;
+
 
         // list holds all of our buttons (so we can iterate through them)
         private readonly List<Button> _listOfButtons;
@@ -38,6 +40,7 @@ namespace FinalProject_Tetris.InputHandling
         // holds the coordinates of the mouse (so we can detect movement)
         private (int x, int y) _mousePosition = (0, 0);
         public bool MouseMoved = false;
+        public bool KeyPressed = false;
 
         public InputHandler()
         {
@@ -46,12 +49,10 @@ namespace FinalProject_Tetris.InputHandling
             MovePieceRightButton = new KeyboardButton(new[] {Keys.Right}, true);
             SoftDropButton = new KeyboardButton(new[] {Keys.Down, Keys.D}, true);
             HardDropButton = new KeyboardButton(new[] {Keys.Up}, true);
-            // TODO: fix these bindings in final submission
             RotateCounterClockwiseButton = new KeyboardButton(new[] {Keys.Home, Keys.Q}, true);
             RotateClockwiseButton = new KeyboardButton(new[] {Keys.PageUp, Keys.E}, true);
 
             // buttons for menu controls
-            // MenuUpButton = new KeyboardButton(new[] {Keys.Up}, true);
             NewGameButton = new MouseButton((3, 23), (20, 25), true);
             HighScoresButton = new MouseButton((3, 17), (20, 19), true);
             CustomizeControlsButton = new MouseButton((3, 11), (20, 13), true);
@@ -67,6 +68,8 @@ namespace FinalProject_Tetris.InputHandling
 
             BackToMainButton = new MouseButton((3, 5), (20, 7), true);
 
+            // the physical left mouse button
+            PhysicalMouseButton = new Button(true);
 
             // add all buttons to the listOfButtons
             _listOfButtons = new List<Button>
@@ -114,7 +117,20 @@ namespace FinalProject_Tetris.InputHandling
             _mousePosition.x = mouseState.X;
             _mousePosition.y = mouseState.Y;
 
+            // flag for whether key was pressed this frame or not
+            KeyPressed = keyboardState.GetPressedKeys().Any();
+
             var (mouseX, mouseY) = TetrisGame.GetRelativeBoardCoordinates((mouseState.X, mouseState.Y));
+
+            // get the mouse button input
+            if (mouseState.LeftButton == ButtonState.Pressed)
+            {
+                PhysicalMouseButton.PressButton();
+            }
+            else
+            {
+                PhysicalMouseButton.ReleaseButton();
+            }
 
             // for each button, set its pressed to true if any of the corresponding keyboard keys are pressed
             foreach (var button in _listOfButtons)
@@ -131,14 +147,19 @@ namespace FinalProject_Tetris.InputHandling
                         mouseY > mouseButton.StartPosition.y && mouseY < mouseButton.EndPosition.y)
                     {
                         mouseButton.IsHovered = true;
-                        if (mouseState.LeftButton == ButtonState.Pressed)
+                        if (PhysicalMouseButton.Pressed)
                         {
                             mouseButton.PressButton();
+                        }
+                        else
+                        {
+                            mouseButton.ReleaseButton();
                         }
                     }
                     else
                     {
                         mouseButton.IsHovered = false;
+                        mouseButton.ReleaseButton();
                     }
                 }
                 // release the button if no corresponding keys were pressed

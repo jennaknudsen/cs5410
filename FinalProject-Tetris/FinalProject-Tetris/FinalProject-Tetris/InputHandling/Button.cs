@@ -1,6 +1,6 @@
 namespace FinalProject_Tetris.InputHandling
 {
-    public abstract class Button
+    public class Button
     {
         // whether this key should send a Pressed signal or not
         // only the Button itself should be able to set the Pressed property
@@ -13,7 +13,7 @@ namespace FinalProject_Tetris.InputHandling
         private readonly bool _isDebouncingButton;
 
         // parent constructor to assign this readonly bool
-        protected Button(bool isDebouncingButton)
+        public Button(bool isDebouncingButton)
         {
             _isDebouncingButton = isDebouncingButton;
         }
