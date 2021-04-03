@@ -214,7 +214,7 @@ namespace FinalProject_Tetris
 
                         foreach (var hs in _tetrisGameController.MainMenuController.HighScoresIntList)
                         {
-                            highScoresBodyString += position + ") " + hs;
+                            highScoresBodyString += position + ") " + hs + "\n";
                             position++;
 
                             // only display the top 5 scores
@@ -364,7 +364,7 @@ namespace FinalProject_Tetris
                     if (inBinding && rebindingButton == inputHandler.RotateClockwiseButton)
                     {
                         rotateClockwiseChars = _tetrisGameController.MainMenuController.BindingKeysString;
-                        rotateClockwiseColor = Color.Yellow;
+                        rotateClockwiseKeysColor = Color.Yellow;
                     }
                     else
                     {
@@ -378,7 +378,7 @@ namespace FinalProject_Tetris
                     if (inBinding && rebindingButton == inputHandler.RotateCounterClockwiseButton)
                     {
                         rotateCounterClockwiseChars = _tetrisGameController.MainMenuController.BindingKeysString;
-                        rotateClockwiseColor = Color.Yellow;
+                        rotateCounterClockwiseKeysColor = Color.Yellow;
                     }
                     else
                     {
@@ -441,7 +441,7 @@ namespace FinalProject_Tetris
                         rotateClockwiseColor);
                     _spriteBatch.DrawString(_gameFont, rotateClockwiseChars,
                         new Vector2(rctX, rctY),
-                        rotateCounterClockwiseKeysColor);
+                        rotateClockwiseKeysColor);
                     // rotate counterclockwise
                     _spriteBatch.DrawString(_menuFont, rotateCounterClockwiseString,
                         new Vector2(rccX, rccY),

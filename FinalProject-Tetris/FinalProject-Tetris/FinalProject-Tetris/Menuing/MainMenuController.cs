@@ -16,7 +16,6 @@ namespace FinalProject_Tetris
 
         // used for control binding
         public bool InControlBinding = false;
-        private bool _waitingToReleaseEnter = false;
         private List<Keys> _bindingKeysList;
         public string BindingKeysString;
         public KeyboardButton RebindingButton;

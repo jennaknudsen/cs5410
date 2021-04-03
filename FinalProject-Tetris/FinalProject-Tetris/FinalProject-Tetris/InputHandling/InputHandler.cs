@@ -62,7 +62,7 @@ namespace FinalProject_Tetris.InputHandling
             RightControlButton = new MouseButton((18, 23), (28, 25), true);
             DownControlButton = new MouseButton((3, 19), (13, 21), true);
             UpControlButton = new MouseButton((18, 19), (28, 21), true);
-            CounterClockwiseControlButton = new MouseButton((3, 15), (13, 17), true);
+            CounterClockwiseControlButton = new MouseButton((3, 15), (16, 17), true);
             ClockwiseControlButton = new MouseButton((18, 15), (28, 17), true);
 
             ResetToDefaultsButton = new MouseButton((3, 7), (20, 9), true);
