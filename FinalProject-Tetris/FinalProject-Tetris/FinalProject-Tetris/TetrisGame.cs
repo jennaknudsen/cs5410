@@ -3,6 +3,8 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
+using static FinalProject_Tetris.GameState;
+using static FinalProject_Tetris.Menuing.MenuState;
 using static FinalProject_Tetris.Piece.PieceType;
 using static FinalProject_Tetris.Square;
 using static FinalProject_Tetris.Square.PieceColor;
@@ -139,6 +141,80 @@ namespace FinalProject_Tetris
             // the width of a square on screen
             var squareWidth = RescaleUnitsToPixels(PieceSize);
 
+            if (_tetrisGameController.GameState == MainMenu)
+            {
+                // main menu will always have the background rectangle drawn
+                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
+                DrawMenu(gameTime);
+            }
+            else
+            {
+                DrawGameRunning(gameTime);
+            }
+
+            _spriteBatch.End();
+            base.Draw(gameTime);
+        }
+
+        // draws the main menu
+        private void DrawMenu(GameTime gameTime)
+        {
+            var inputHandler = _tetrisGameController.InputHandler;
+            switch (_tetrisGameController.MainMenuController.MenuState)
+            {
+                case Main:
+                    // draw input button
+                    var ngColor = inputHandler.NewGameButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var hsColor = inputHandler.HighScoresButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var ccColor = inputHandler.CustomizeControlsButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var vcColor = inputHandler.ViewCreditsButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    var newGameString = "New Game";
+                    var highScoresString = "High Scores";
+                    var customizeControlsString = "Customize Controls";
+                    var viewCreditsString = "View Credits";
+
+                    var (ngX, ngY) = GetAbsolutePixelCoordinates((inputHandler.NewGameButton.StartPosition.x,
+                        inputHandler.NewGameButton.EndPosition.y));
+                    var (hsX, hsY) = GetAbsolutePixelCoordinates((inputHandler.HighScoresButton.StartPosition.x,
+                        inputHandler.HighScoresButton.EndPosition.y));
+                    var (ccX, ccY) = GetAbsolutePixelCoordinates((inputHandler.CustomizeControlsButton.StartPosition.x,
+                        inputHandler.CustomizeControlsButton.EndPosition.y));
+                    var (vcX, vcY) = GetAbsolutePixelCoordinates((inputHandler.ViewCreditsButton.StartPosition.x,
+                        inputHandler.ViewCreditsButton.EndPosition.y));
+
+                    // now, draw the strings
+                    _spriteBatch.DrawString(_menuFont, newGameString,
+                        new Vector2(ngX, ngY),
+                        ngColor);
+                    _spriteBatch.DrawString(_menuFont, highScoresString,
+                        new Vector2(hsX, hsY),
+                        hsColor);
+                    _spriteBatch.DrawString(_menuFont, customizeControlsString,
+                        new Vector2(ccX, ccY),
+                        ccColor);
+                    _spriteBatch.DrawString(_menuFont, viewCreditsString,
+                        new Vector2(vcX, vcY),
+                        vcColor);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // draws the game actually running
+        private void DrawGameRunning(GameTime gameTime)
+        {
+            var squareWidth = RescaleUnitsToPixels(PieceSize);
+
             // draw each square
             foreach (var square in _tetrisGameController.TetrisSquares)
             {
@@ -262,12 +338,7 @@ namespace FinalProject_Tetris
 
             // draw particles
             _tetrisGameController.ParticleController.Draw();
-
-            base.Draw(gameTime);
-
-            _spriteBatch.End();
         }
-
         // game board will have relative dimensions in a square
         // this function gets the absolute dimensions
         public static (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)

@@ -18,11 +18,19 @@ namespace FinalProject_Tetris.InputHandling
 
         // menu buttons
         // public readonly KeyboardButton MenuUpButton;
-        public readonly MouseButton MenuUpButton;
-        public readonly KeyboardButton MenuDownButton;
-        public readonly KeyboardButton MenuConfirmButton;
-        public readonly KeyboardButton MenuBackButton;
-        public readonly KeyboardButton PauseButton;
+        public readonly MouseButton NewGameButton;
+        public readonly MouseButton HighScoresButton;
+        public readonly MouseButton CustomizeControlsButton;
+        public readonly MouseButton ViewCreditsButton;
+        public readonly MouseButton LeftControlButton;
+        public readonly MouseButton RightControlButton;
+        public readonly MouseButton UpControlButton;
+        public readonly MouseButton DownControlButton;
+        public readonly MouseButton CounterClockwiseControlButton;
+        public readonly MouseButton ClockwiseControlButton;
+        public readonly MouseButton ResetToDefaultsButton;
+        public readonly MouseButton BackToMainButton;
+
 
         // list holds all of our buttons (so we can iterate through them)
         private readonly List<Button> _listOfButtons;
@@ -44,11 +52,10 @@ namespace FinalProject_Tetris.InputHandling
 
             // buttons for menu controls
             // MenuUpButton = new KeyboardButton(new[] {Keys.Up}, true);
-            MenuUpButton = new MouseButton((10, 3), (11, 4), true);
-            MenuDownButton = new KeyboardButton(new[] {Keys.Down}, true);
-            MenuConfirmButton = new KeyboardButton(new[] {Keys.Enter}, true);
-            MenuBackButton = new KeyboardButton(new[] {Keys.Escape}, true);
-            PauseButton = new KeyboardButton(new[] {Keys.Escape}, true);
+            NewGameButton = new MouseButton((3, 23), (20, 25), true);
+            HighScoresButton = new MouseButton((3, 17), (20, 19), true);
+            CustomizeControlsButton = new MouseButton((3, 11), (20, 13), true);
+            ViewCreditsButton = new MouseButton((3, 5), (20, 7), true);
 
 
             // add all buttons to the listOfButtons
@@ -63,11 +70,10 @@ namespace FinalProject_Tetris.InputHandling
                 RotateClockwiseButton,
 
                 // menu buttons
-                MenuUpButton,
-                MenuDownButton,
-                MenuConfirmButton,
-                MenuBackButton,
-                PauseButton,
+                NewGameButton,
+                HighScoresButton,
+                CustomizeControlsButton,
+                ViewCreditsButton,
             };
         }
 

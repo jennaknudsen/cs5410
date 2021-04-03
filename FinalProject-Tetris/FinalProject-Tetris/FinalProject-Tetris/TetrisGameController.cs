@@ -60,6 +60,45 @@ namespace FinalProject_Tetris
         public SoundController SoundController;
         public ParticleController ParticleController;
 
+        public TetrisGameController()
+        {
+            // set up all of the needed controllers and handlers
+            InputHandler = new InputHandler();
+            AiController = new AiController(this);
+            MainMenuController = new MainMenuController(this);
+
+            // main state is menu
+            GameState = MainMenu;
+        }
+
+        // this starts the game
+        public void StartGame(bool attractMode)
+        {
+            // reset score, board
+            LinesCleared = 0;
+            Score = 0;
+            _dropScore = 0;
+            Level = 0;
+            TetrisSquares = new Square[10, 20];
+
+            // make new bag of pieces and pop first piece
+            BagOfPieces = new List<Piece>();
+            GenerateBag();
+            PopBag();
+
+            // reset gravity tick
+            _timeSinceLastGravityTick = TimeSpan.Zero;
+            _timeSinceLastPieceTick = TimeSpan.Zero;
+
+            // set the game state to be Running
+            GameState = attractMode? AttractMode: Running;
+
+            // we aren't in free fall mode
+            _inFreeFallMode = false;
+
+            // SoundController.PlayMusic();
+        }
+
         // this gets the TimeSpan between gravity ticks
         private static TimeSpan GetGravityTimeSpan(int level)
         {
@@ -120,45 +159,6 @@ namespace FinalProject_Tetris
 
             // return this fraction of seconds as a TimeSpan
             return TimeSpan.FromSeconds(correctSeconds);
-        }
-
-        public TetrisGameController()
-        {
-            // set up all of the needed controllers and handlers
-            InputHandler = new InputHandler();
-            AiController = new AiController(this);
-            MainMenuController = new MainMenuController();
-
-            // main state is menu
-            GameState = MainMenu;
-        }
-
-        // this starts the game
-        public void StartGame(bool attractMode)
-        {
-            // reset score, board
-            LinesCleared = 0;
-            Score = 0;
-            _dropScore = 0;
-            Level = 0;
-            TetrisSquares = new Square[10, 20];
-
-            // make new bag of pieces and pop first piece
-            BagOfPieces = new List<Piece>();
-            GenerateBag();
-            PopBag();
-
-            // reset gravity tick
-            _timeSinceLastGravityTick = TimeSpan.Zero;
-            _timeSinceLastPieceTick = TimeSpan.Zero;
-
-            // set the game state to be Running
-            GameState = attractMode? AttractMode: Running;
-
-            // we aren't in free fall mode
-            _inFreeFallMode = false;
-
-            // SoundController.PlayMusic();
         }
 
         // this ticks every game loop
@@ -462,7 +462,8 @@ namespace FinalProject_Tetris
                     }
                     break;
                 case MainMenu:
-                    StartGame(false);
+                    ParticleController.ClearAllParticles();
+                    MainMenuController.ProcessMenu(InputHandler);
                     break;
             }
         }
