@@ -301,7 +301,6 @@ namespace FinalProject_Tetris
                     var rotateClockwiseKeysColor = Color.White;
                     var rotateCounterClockwiseKeysColor = Color.White;
 
-                    // 3, 24 - title
                     var inBinding = _tetrisGameController.MainMenuController.InControlBinding;
                     var rebindingButton = _tetrisGameController.MainMenuController.RebindingButton;
 
@@ -361,7 +360,99 @@ namespace FinalProject_Tetris
                             hardDropChars = hardDropChars.Remove(hardDropChars.Length - 2);
                     }
 
+                    // rotate clockwise
+                    if (inBinding && rebindingButton == inputHandler.RotateClockwiseButton)
+                    {
+                        rotateClockwiseChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        rotateClockwiseColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.RotateClockwiseButton.BoundKeys)
+                            rotateClockwiseChars += key.ToString() + ", ";
+                        if (rotateClockwiseChars.Length > 0)
+                            rotateClockwiseChars = rotateClockwiseChars.Remove(rotateClockwiseChars.Length - 2);
+                    }
+
+                    // rotate counterclockwise
+                    if (inBinding && rebindingButton == inputHandler.RotateCounterClockwiseButton)
+                    {
+                        rotateCounterClockwiseChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        rotateClockwiseColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.RotateCounterClockwiseButton.BoundKeys)
+                            rotateCounterClockwiseChars += key.ToString() + ", ";
+                        if (rotateCounterClockwiseChars.Length > 0)
+                            rotateCounterClockwiseChars = rotateCounterClockwiseChars.Remove(rotateCounterClockwiseChars.Length - 2);
+                    }
+
+                    // 3, 24 - title
+                    var verticalOffset = 30;
+                    var (titleX, titleY) = GetAbsolutePixelCoordinates((3, 24));
+                    var (mlX, mlY) = GetMouseButtonPixelCoordinates(inputHandler.LeftControlButton);
+                    var (mltX, mltY) = (mlX, mlY + verticalOffset);
+                    var (mrX, mrY) = GetMouseButtonPixelCoordinates(inputHandler.RightControlButton);
+                    var (mrtX, mrtY) = (mrX, mrY + verticalOffset);
+                    var (sdX, sdY) = GetMouseButtonPixelCoordinates(inputHandler.DownControlButton);
+                    var (sdtX, sdtY) = (sdX, sdY + verticalOffset);
+                    var (hdX, hdY) = GetMouseButtonPixelCoordinates(inputHandler.UpControlButton);
+                    var (hdtX, hdtY) = (hdX, hdY + verticalOffset);
+                    var (rcX, rcY) = GetMouseButtonPixelCoordinates(inputHandler.ClockwiseControlButton);
+                    var (rctX, rctY) = (rcX, rcY + verticalOffset);
+                    var (rccX, rccY) = GetMouseButtonPixelCoordinates(inputHandler.CounterClockwiseControlButton);
+                    var (rcctX, rcctY) = (rccX, rccY + verticalOffset);
+                    var (defX, defY) = GetMouseButtonPixelCoordinates(inputHandler.ResetToDefaultsButton);
+                    var (mm2X, mm2Y) = GetMouseButtonPixelCoordinates(inputHandler.BackToMainButton);
+
+                    // draw strings for buttons
+                    // left
+                    _spriteBatch.DrawString(_menuFont, moveLeftString,
+                        new Vector2(mlX, mlY),
+                        leftColor);
+                    _spriteBatch.DrawString(_gameFont, moveLeftChars,
+                        new Vector2(mltX, mltY),
+                        moveLeftKeysColor);
+                    // right
+                    _spriteBatch.DrawString(_menuFont, moveRightString,
+                        new Vector2(mrX, mrY),
+                        rightColor);
+                    _spriteBatch.DrawString(_gameFont, moveRightChars,
+                        new Vector2(mrtX, mrtY),
+                        moveRightKeysColor);
+                    // down
+                    _spriteBatch.DrawString(_menuFont, softDropString,
+                        new Vector2(sdX, sdY),
+                        downColor);
+                    _spriteBatch.DrawString(_gameFont, softDropChars,
+                        new Vector2(sdtX, sdtY),
+                        softDropKeysColor);
+                    // up
+                    _spriteBatch.DrawString(_menuFont, hardDropString,
+                        new Vector2(hdX, hdY),
+                        upColor);
+                    _spriteBatch.DrawString(_gameFont, hardDropChars,
+                        new Vector2(hdtX, hdtY),
+                        hardDropKeysColor);
+                    // rotate clockwise
+                    _spriteBatch.DrawString(_menuFont, rotateClockwiseString,
+                        new Vector2(rcX, rcY),
+                        rotateClockwiseColor);
+                    _spriteBatch.DrawString(_gameFont, rotateClockwiseChars,
+                        new Vector2(rctX, rctY),
+                        rotateCounterClockwiseKeysColor);
+                    // rotate counterclockwise
+                    _spriteBatch.DrawString(_menuFont, rotateCounterClockwiseString,
+                        new Vector2(rccX, rccY),
+                        rotateCounterClockwiseColor);
+                    _spriteBatch.DrawString(_gameFont, rotateCounterClockwiseChars,
+                        new Vector2(rcctX, rcctY),
+                        rotateCounterClockwiseKeysColor);
+
+
                     break;
+
                 case Credits:
                     var creditsString = "CREDITS:";
                     var creditsBodyString = @"All game logic, artwork, and sounds created
