@@ -250,6 +250,117 @@ namespace FinalProject_Tetris
 
                     break;
                 case Controls:
+                    var leftColor = inputHandler.LeftControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var rightColor = inputHandler.RightControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var upColor = inputHandler.UpControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var downColor = inputHandler.DownControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var rotateClockwiseColor = inputHandler.ClockwiseControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var rotateCounterClockwiseColor = inputHandler.CounterClockwiseControlButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var resetDefaultsColor = inputHandler.ResetToDefaultsButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+                    var mainMenuColor2 = inputHandler.BackToMainButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    // buttons themselves
+                    var moveLeftString = "Move left: ";
+                    var moveRightString = "Move right: ";
+                    var softDropString = "Soft drop: ";
+                    var hardDropString = "Hard drop: ";
+                    var rotateClockwiseString = "Rotate clockwise: ";
+                    var rotateCounterClockwiseString = "Rotate counterclockwise: ";
+                    var resetDefaultsString = "Reset to Defaults";
+                    var mmString2 = "Main Menu";
+
+                    // key bind indicators
+                    var moveLeftChars = "";
+                    var moveRightChars = "";
+                    var softDropChars = "";
+                    var hardDropChars = "";
+                    var rotateClockwiseChars = "";
+                    var rotateCounterClockwiseChars = "";
+
+                    // key indicator colors
+                    var moveLeftKeysColor = Color.White;
+                    var moveRightKeysColor = Color.White;
+                    var softDropKeysColor = Color.White;
+                    var hardDropKeysColor = Color.White;
+                    var rotateClockwiseKeysColor = Color.White;
+                    var rotateCounterClockwiseKeysColor = Color.White;
+
+                    // 3, 24 - title
+                    var inBinding = _tetrisGameController.MainMenuController.InControlBinding;
+                    var rebindingButton = _tetrisGameController.MainMenuController.RebindingButton;
+
+                    // move left
+                    if (inBinding && rebindingButton == inputHandler.MovePieceLeftButton)
+                    {
+                        moveLeftChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        moveLeftKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.MovePieceLeftButton.BoundKeys)
+                            moveLeftChars += key.ToString() + ", ";
+                        if (moveLeftChars.Length > 0)
+                            moveLeftChars = moveLeftChars.Remove(moveLeftChars.Length - 2);
+                    }
+
+                    // move right
+                    if (inBinding && rebindingButton == inputHandler.MovePieceRightButton)
+                    {
+                        moveRightChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        moveRightKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.MovePieceRightButton.BoundKeys)
+                            moveRightChars += key.ToString() + ", ";
+                        if (moveRightChars.Length > 0)
+                            moveRightChars = moveRightChars.Remove(moveRightChars.Length - 2);
+                    }
+
+                    // soft drop
+                    if (inBinding && rebindingButton == inputHandler.SoftDropButton)
+                    {
+                        softDropChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        softDropKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.SoftDropButton.BoundKeys)
+                            softDropChars += key.ToString() + ", ";
+                        if (softDropChars.Length > 0)
+                            softDropChars = softDropChars.Remove(softDropChars.Length - 2);
+                    }
+
+                    // hard drop
+                    if (inBinding && rebindingButton == inputHandler.HardDropButton)
+                    {
+                        hardDropChars = _tetrisGameController.MainMenuController.BindingKeysString;
+                        hardDropKeysColor = Color.Yellow;
+                    }
+                    else
+                    {
+                        foreach (var key in inputHandler.HardDropButton.BoundKeys)
+                            hardDropChars += key.ToString() + ", ";
+                        if (hardDropChars.Length > 0)
+                            hardDropChars = hardDropChars.Remove(hardDropChars.Length - 2);
+                    }
+
                     break;
                 case Credits:
                     var creditsString = "CREDITS:";

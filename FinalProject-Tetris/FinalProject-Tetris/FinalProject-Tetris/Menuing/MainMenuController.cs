@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using FinalProject_Tetris.InputHandling;
 using FinalProject_Tetris.Menuing;
+using Microsoft.Xna.Framework.Input;
 using static FinalProject_Tetris.Menuing.MenuState;
 
 namespace FinalProject_Tetris
@@ -12,6 +13,13 @@ namespace FinalProject_Tetris
 
         // holds a list of all high scores
         public List<int> HighScoresIntList;
+
+        // used for control binding
+        public bool InControlBinding = false;
+        private bool _waitingToReleaseEnter = false;
+        private List<Keys> _bindingKeysList;
+        public string BindingKeysString;
+        public Button RebindingButton;
 
         public MainMenuController(TetrisGameController controller)
         {
