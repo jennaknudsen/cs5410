@@ -119,7 +119,8 @@ namespace FinalProject_Tetris
             var correctSeconds = frames / 60d;
 
             // return this fraction of seconds as a TimeSpan
-            return TimeSpan.FromSeconds(correctSeconds);
+            // return TimeSpan.FromSeconds(correctSeconds);
+            return TimeSpan.FromSeconds(0.1);
         }
 
         public TetrisGameController()
@@ -785,7 +786,8 @@ namespace FinalProject_Tetris
                 LinesCleared += listOfFullLines.Count;
 
                 // every 10 lines cleared, increase level
-                Level = LinesCleared / 10;
+                // Level = LinesCleared / 10;
+                Level = LinesCleared / 1;
 
                 // clear all rows
                 for (var row = 0; row < listOfFullLines.Count; row++)

@@ -17,7 +17,8 @@ namespace FinalProject_Tetris
         public Move NextMove = null;
 
         // decides how fast the AI can move
-        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(200);
+        // private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(125);
+        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(125000);
         private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
 
         public AiController(TetrisGameController tetrisGameController)
@@ -38,8 +39,9 @@ namespace FinalProject_Tetris
             // get the next move
             if (NextMove == null)
             {
-                var pieceToMove = _tetrisGameController.CurrentPiece ?? _tetrisGameController.BagOfPieces[0];
-                GetNextMove(pieceToMove, _tetrisGameController.TetrisSquares);
+                // var pieceToMove = _tetrisGameController.CurrentPiece ?? _tetrisGameController.BagOfPieces[0];
+                // GetNextMove(pieceToMove, _tetrisGameController.TetrisSquares);
+                GetNextMove(_tetrisGameController.CurrentPiece, _tetrisGameController.TetrisSquares);
             }
 
 
@@ -49,7 +51,7 @@ namespace FinalProject_Tetris
 
             _timeSinceLastMove = TimeSpan.Zero;
             // do a movement if the game has a current piece
-            if (_tetrisGameController.CurrentPiece != null)
+            if (NextMove != null)
             {
                 var leftPos = GetPieceLeftPosition(_tetrisGameController.CurrentPiece);
                 if (_tetrisGameController.CurrentPiece.Orientation != NextMove.PieceOrientation)
@@ -81,6 +83,8 @@ namespace FinalProject_Tetris
         // https://github.com/LeeYiyuan/tetrisai
         private void GetNextMove(Piece currentPiece, Square[,] boardSquares)
         {
+            if (currentPiece == null) return;
+
             // given the current piece, try all combinations of moves
             var bestMove = new Move
             {
@@ -97,13 +101,22 @@ namespace FinalProject_Tetris
                 {
                     var newPiece = Piece.GeneratePiece(currentPiece.Type);
 
+                    // we can't make a move if spot is taken
+                    foreach (var square in newPiece.Squares)
+                    {
+                        if (boardSquares[square.PieceLocation.x, square.PieceLocation.y] != null)
+                            return;
+                    }
+
                     // set piece to the correct orientation
                     while (newPiece.Orientation != orientation)
-                        RotatePiece(false, newPiece, boardSquares);
+                        if (!RotatePiece(false, newPiece, boardSquares))
+                            break;
 
                     // move to the correct spot
                     while (GetPieceLeftPosition(newPiece) > col)
-                        MovePieceLeft(newPiece, boardSquares);
+                        if (!MovePieceLeft(newPiece, boardSquares))
+                            break;
 
                     while (GetPieceLeftPosition(newPiece) < col)
                         if (!MovePieceRight(newPiece, boardSquares))
