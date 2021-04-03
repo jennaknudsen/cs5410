@@ -119,8 +119,7 @@ namespace FinalProject_Tetris
             var correctSeconds = frames / 60d;
 
             // return this fraction of seconds as a TimeSpan
-            // return TimeSpan.FromSeconds(correctSeconds);
-            return TimeSpan.FromSeconds(0.1);
+            return TimeSpan.FromSeconds(correctSeconds);
         }
 
         public TetrisGameController()
@@ -135,7 +134,7 @@ namespace FinalProject_Tetris
         }
 
         // this starts the game
-        public void StartGame()
+        public void StartGame(bool attractMode)
         {
             // reset score, board
             LinesCleared = 0;
@@ -154,8 +153,7 @@ namespace FinalProject_Tetris
             _timeSinceLastPieceTick = TimeSpan.Zero;
 
             // set the game state to be Running
-            // GameState = Running;
-            GameState = AttractMode;
+            GameState = attractMode? AttractMode: Running;
 
             // we aren't in free fall mode
             _inFreeFallMode = false;
@@ -464,7 +462,7 @@ namespace FinalProject_Tetris
                     }
                     break;
                 case MainMenu:
-                    StartGame();
+                    StartGame(false);
                     break;
             }
         }
@@ -786,15 +784,14 @@ namespace FinalProject_Tetris
                 LinesCleared += listOfFullLines.Count;
 
                 // every 10 lines cleared, increase level
-                // Level = LinesCleared / 10;
-                Level = LinesCleared / 1;
+                Level = LinesCleared / 10;
 
                 // clear all rows
                 for (var row = 0; row < listOfFullLines.Count; row++)
                 {
+                    Console.WriteLine("Line clear at row " + listOfFullLines[row]);
                     for (var col = 0; col < 10; col++)
                     {
-                        Console.WriteLine("Line clear at row " + row);
                         TetrisSquares[col, listOfFullLines[row]] = null;
 
                         // add particles

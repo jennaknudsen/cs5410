@@ -163,7 +163,7 @@ Need to use mouse input for the menu.
     - 4 hours
 - [ ] Persistent Storage (High Scores, controls)
     - 2 hours
-- [ ] Attract Mode
+- [x] Attract Mode
     - 4 hours
 - [x] Particles
     - 3 hours

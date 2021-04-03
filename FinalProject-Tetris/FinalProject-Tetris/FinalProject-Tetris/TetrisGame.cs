@@ -177,10 +177,10 @@ namespace FinalProject_Tetris
                     break;
                 case J:
                     texOfNextPiece = GetColor(Blue);
-                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 23));
-                    r2Coord = GetAbsolutePixelCoordinates((22.5f, 24));
-                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 24));
-                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 24));
+                    r1Coord = GetAbsolutePixelCoordinates((22.5f, 24));
+                    r2Coord = GetAbsolutePixelCoordinates((22.5f, 23));
+                    r3Coord = GetAbsolutePixelCoordinates((23.5f, 23));
+                    r4Coord = GetAbsolutePixelCoordinates((24.5f, 23));
                     break;
                 case L:
                     texOfNextPiece = GetColor(Orange);

@@ -10,15 +10,15 @@ namespace FinalProject_Tetris
 {
     public class AiController
     {
-        private TetrisGameController _tetrisGameController;
+        private readonly TetrisGameController _tetrisGameController;
 
         // reference to the move we're going to make
         // if null, we haven't decided on the move yet
         public Move NextMove = null;
 
         // decides how fast the AI can move
-        // private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(125);
-        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(125000);
+        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(125);
+        // private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(12500);
         private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
 
         public AiController(TetrisGameController tetrisGameController)
@@ -40,10 +40,8 @@ namespace FinalProject_Tetris
             if (NextMove == null)
             {
                 // var pieceToMove = _tetrisGameController.CurrentPiece ?? _tetrisGameController.BagOfPieces[0];
-                // GetNextMove(pieceToMove, _tetrisGameController.TetrisSquares);
-                GetNextMove(_tetrisGameController.CurrentPiece, _tetrisGameController.TetrisSquares);
+                GetNextMove(_tetrisGameController.CurrentPiece, (Square[,]) _tetrisGameController.TetrisSquares.Clone());
             }
-
 
             // only do movement updates within the specified move rate
             _timeSinceLastMove += gameTime.ElapsedGameTime;
@@ -101,13 +99,6 @@ namespace FinalProject_Tetris
                 {
                     var newPiece = Piece.GeneratePiece(currentPiece.Type);
 
-                    // we can't make a move if spot is taken
-                    foreach (var square in newPiece.Squares)
-                    {
-                        if (boardSquares[square.PieceLocation.x, square.PieceLocation.y] != null)
-                            return;
-                    }
-
                     // set piece to the correct orientation
                     while (newPiece.Orientation != orientation)
                         if (!RotatePiece(false, newPiece, boardSquares))
@@ -128,10 +119,6 @@ namespace FinalProject_Tetris
                         // do nothing
                     }
 
-                    // score = -this.heightWeight * _grid.aggregateHeight()
-                    // + this.linesWeight * _grid.lines()
-                    // - this.holesWeight * _grid.holes()
-                    // - this.bumpinessWeight * _grid.bumpiness();
                     var heightWeight = 0.510066f;
                     var linesWeight = 0.760666f;
                     var holesWeight = 0.35663f;
@@ -142,9 +129,9 @@ namespace FinalProject_Tetris
                                     holesWeight * Holes(boardSquares) -
                                     bumpinessWeight * Bumpiness(boardSquares);
 
+                    // make this the best move if it has a higher score
                     if (thisScore > bestMove.MoveScore)
                     {
-
                         bestMove = new Move
                         {
                             LeftMostColumn = col,
