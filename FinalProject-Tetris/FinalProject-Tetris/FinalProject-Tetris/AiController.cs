@@ -14,10 +14,10 @@ namespace FinalProject_Tetris
 
         // reference to the move we're going to make
         // if null, we haven't decided on the move yet
-        private Move _nextMove = null;
+        public Move NextMove = null;
 
         // decides how fast the AI can move
-        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(300);
+        private readonly TimeSpan _moveRate = TimeSpan.FromMilliseconds(200);
         private TimeSpan _timeSinceLastMove = TimeSpan.Zero;
 
         public AiController(TetrisGameController tetrisGameController)
@@ -26,7 +26,7 @@ namespace FinalProject_Tetris
         }
 
         // this struct holds information about an object move
-        private class Move
+        public class Move
         {
             public PieceOrientation PieceOrientation;
             public int LeftMostColumn;
@@ -36,14 +36,42 @@ namespace FinalProject_Tetris
         public void Update(GameTime gameTime)
         {
             // get the next move
-            if (_nextMove == null)
-                GetNextMove(_tetrisGameController.CurrentPiece, _tetrisGameController.TetrisSquares);
+            if (NextMove == null)
+            {
+                var pieceToMove = _tetrisGameController.CurrentPiece ?? _tetrisGameController.BagOfPieces[0];
+                GetNextMove(pieceToMove, _tetrisGameController.TetrisSquares);
+            }
+
 
             // only do movement updates within the specified move rate
             _timeSinceLastMove += gameTime.ElapsedGameTime;
             if (_timeSinceLastMove < _moveRate) return;
 
             _timeSinceLastMove = TimeSpan.Zero;
+            // do a movement if the game has a current piece
+            if (_tetrisGameController.CurrentPiece != null)
+            {
+                var leftPos = GetPieceLeftPosition(_tetrisGameController.CurrentPiece);
+                if (_tetrisGameController.CurrentPiece.Orientation != NextMove.PieceOrientation)
+                {
+                    if (NextMove.PieceOrientation == Left)
+                        _tetrisGameController.RotatePiece(true);
+                    else
+                        _tetrisGameController.RotatePiece(false);
+                }
+                else if (leftPos > NextMove.LeftMostColumn)
+                {
+                    _tetrisGameController.MovePieceLeft();
+                }
+                else if (leftPos < NextMove.LeftMostColumn)
+                {
+                    _tetrisGameController.MovePieceRight();
+                }
+                else
+                {
+                    _tetrisGameController.HardDropPiece();
+                }
+            }
 
         }
 
@@ -120,7 +148,7 @@ namespace FinalProject_Tetris
                 }
             }
 
-            _nextMove = bestMove;
+            NextMove = bestMove;
         }
 
         // move piece left one square
@@ -156,7 +184,7 @@ namespace FinalProject_Tetris
         }
 
         // move piece right one square
-        private bool MovePieceRight(Piece CurrentPiece, Square[,] TetrisSquares)
+        public bool MovePieceRight(Piece CurrentPiece, Square[,] TetrisSquares)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -221,7 +249,7 @@ namespace FinalProject_Tetris
         }
 
         // rotation can be either clockwise or counterclockwise
-        private bool RotatePiece(bool isCounterClockwise, Piece CurrentPiece, Square[,] TetrisSquares)
+        public bool RotatePiece(bool isCounterClockwise, Piece CurrentPiece, Square[,] TetrisSquares)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;

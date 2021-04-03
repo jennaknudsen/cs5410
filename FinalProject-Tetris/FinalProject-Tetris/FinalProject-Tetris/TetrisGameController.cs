@@ -153,12 +153,13 @@ namespace FinalProject_Tetris
             _timeSinceLastPieceTick = TimeSpan.Zero;
 
             // set the game state to be Running
-            GameState = Running;
+            // GameState = Running;
+            GameState = AttractMode;
 
             // we aren't in free fall mode
             _inFreeFallMode = false;
 
-            SoundController.PlayMusic();
+            // SoundController.PlayMusic();
         }
 
         // this ticks every game loop
@@ -280,6 +281,10 @@ namespace FinalProject_Tetris
 
                                 // clear the current piece
                                 CurrentPiece = null;
+
+                                // reset "best move" for AI
+                                if (GameState == AttractMode)
+                                    AiController.NextMove = null;
 
                                 // on a collision, reset time since last piece tick
                                 _timeSinceLastPieceTick = TimeSpan.Zero;
@@ -464,7 +469,7 @@ namespace FinalProject_Tetris
         }
 
         // move piece left one square
-        private bool MovePieceLeft()
+        public bool MovePieceLeft()
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -498,7 +503,7 @@ namespace FinalProject_Tetris
         }
 
         // move piece right one square
-        private bool MovePieceRight()
+        public bool MovePieceRight()
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -568,7 +573,7 @@ namespace FinalProject_Tetris
         }
 
         // hard drop: keep soft dropping until we can't
-        private bool HardDropPiece()
+        public bool HardDropPiece()
         {
             // return value will be based on if we could soft drop *once*
             var returnVal = SoftDropPiece(true);
@@ -590,7 +595,7 @@ namespace FinalProject_Tetris
         }
 
         // rotation can be either clockwise or counterclockwise
-        private bool RotatePiece(bool isCounterClockwise)
+        public bool RotatePiece(bool isCounterClockwise)
         {
             // protect against nulls
             if (CurrentPiece == null) return false;
@@ -780,7 +785,7 @@ namespace FinalProject_Tetris
                 LinesCleared += listOfFullLines.Count;
 
                 // every 10 lines cleared, increase level
-                Level = LinesCleared / 5;
+                Level = LinesCleared / 10;
 
                 // clear all rows
                 for (var row = 0; row < listOfFullLines.Count; row++)
