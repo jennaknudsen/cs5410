@@ -88,6 +88,8 @@ namespace FinalProject_Tetris
             InputHandler.RotateClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateClockwiseKeys;
             InputHandler.RotateCounterClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateCounterClockwiseKeys;
 
+            LocalStorageManager.LoadHighScores();
+
             // need to wait for high scores to be loaded
             while (LocalStorageManager.StoredHighScores == null)
             {
@@ -897,6 +899,19 @@ namespace FinalProject_Tetris
                 {
                     if (square != null)
                         square.Color = Gray;
+                }
+
+                // save high score if not in attract mode
+                if (GameState != AttractMode)
+                {
+                    // add score to the list
+                    MainMenuController.HighScoresIntList.Add(Score);
+
+                    // sort list from high to low
+                    MainMenuController.HighScoresIntList.Sort((a, b) => b.CompareTo(a));
+
+                    // actually save the high scores
+                    LocalStorageManager.SaveHighScores(MainMenuController.HighScoresIntList);
                 }
 
                 GameState = GameOver;

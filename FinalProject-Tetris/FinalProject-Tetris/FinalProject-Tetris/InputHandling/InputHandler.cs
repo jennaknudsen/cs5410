@@ -57,6 +57,16 @@ namespace FinalProject_Tetris.InputHandling
             CustomizeControlsButton = new MouseButton((3, 11), (20, 13), true);
             ViewCreditsButton = new MouseButton((3, 5), (20, 7), true);
 
+            LeftControlButton = new MouseButton((3, 5), (20, 7), true);
+            RightControlButton = new MouseButton((3, 5), (20, 7), true);
+            UpControlButton = new MouseButton((3, 5), (20, 7), true);
+            DownControlButton = new MouseButton((3, 5), (20, 7), true);
+            CounterClockwiseControlButton = new MouseButton((3, 5), (20, 7), true);
+            ClockwiseControlButton = new MouseButton((3, 5), (20, 7), true);
+            ResetToDefaultsButton = new MouseButton((3, 5), (20, 7), true);
+
+            BackToMainButton = new MouseButton((3, 5), (20, 7), true);
+
 
             // add all buttons to the listOfButtons
             _listOfButtons = new List<Button>
@@ -74,6 +84,15 @@ namespace FinalProject_Tetris.InputHandling
                 HighScoresButton,
                 CustomizeControlsButton,
                 ViewCreditsButton,
+
+                LeftControlButton,
+                RightControlButton,
+                UpControlButton,
+                DownControlButton,
+                CounterClockwiseControlButton,
+                ClockwiseControlButton,
+                ResetToDefaultsButton,
+                BackToMainButton
             };
         }
 

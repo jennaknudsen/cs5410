@@ -202,6 +202,53 @@ namespace FinalProject_Tetris
                         new Vector2(vcX, vcY),
                         vcColor);
                     break;
+                case HighScores:
+                    var highScoresTitleString = "High Scores:";
+                    var highScoresBodyString = "";
+
+                    // this will only be null for one frame
+                    // this will only be null for one frame
+                    if (_tetrisGameController.MainMenuController.HighScoresIntList != null)
+                    {
+                        var position = 1;
+
+                        foreach (var hs in _tetrisGameController.MainMenuController.HighScoresIntList)
+                        {
+                            highScoresBodyString += position + ") " + hs;
+                            position++;
+
+                            // only display the top 5 scores
+                            if (position > 5) break;
+                        }
+
+                        if (highScoresBodyString.Equals(""))
+                        {
+                            highScoresBodyString = "No high scores yet.";
+                        }
+                    }
+
+                    // get color of button
+                    var mmString1 = "Main Menu";
+                    var mmColor1 = inputHandler.BackToMainButton.IsHovered
+                        ? Color.Yellow
+                        : Color.LightGray;
+
+                    var (hsTitleX, hsTitleY) = GetAbsolutePixelCoordinates((3, 24));
+                    var (hsContentsX, hsContentsY) = GetAbsolutePixelCoordinates((3, 20));
+                    var returnToMainPos = GetMouseButtonPixelCoordinates(inputHandler.BackToMainButton);
+
+                    // draw the menu items
+                    _spriteBatch.DrawString(_menuFont, highScoresTitleString,
+                        new Vector2(hsTitleX, hsTitleY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, highScoresBodyString,
+                        new Vector2(hsContentsX, hsContentsY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, mmString1,
+                        new Vector2(returnToMainPos.x, returnToMainPos.y),
+                        mmColor1);
+
+                    break;
                 default:
                     break;
             }
