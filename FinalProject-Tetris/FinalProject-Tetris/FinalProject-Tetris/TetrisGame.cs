@@ -676,7 +676,7 @@ found in the source code.";
 
                 _spriteBatch.DrawString(_menuFont, gameOverText,
                     new Vector2(textPosX, textPosY),
-                    Color.Red);
+                    Color.OrangeRed);
             }
         }
 

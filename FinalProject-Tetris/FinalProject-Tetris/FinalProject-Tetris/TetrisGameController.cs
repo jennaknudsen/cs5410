@@ -141,7 +141,7 @@ namespace FinalProject_Tetris
             GameOverTime = _gameOverEndTime;
 
             // play the background music
-            // SoundController.PlayMusic();
+            SoundController.PlayMusic();
         }
 
         // this gets the TimeSpan between gravity ticks
@@ -258,6 +258,7 @@ namespace FinalProject_Tetris
                             if (InputHandler.KeyPressed || InputHandler.MouseMoved)
                             {
                                 GameState = MainMenu;
+                                SoundController.StopMusic();
                                 return;
                             }
                             AiController.Update(gameTime);
@@ -529,6 +530,7 @@ namespace FinalProject_Tetris
                     // if we exceed the threshold for inactivity, then start attract moe
                     if (_inactiveTime >= _attractModeThreshold)
                     {
+                        _inactiveTime = TimeSpan.Zero;
                         StartGame(true);
                     }
                     break;
