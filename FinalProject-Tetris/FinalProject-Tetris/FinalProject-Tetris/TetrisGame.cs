@@ -644,6 +644,40 @@ found in the source code.";
 
             // draw particles
             _tetrisGameController.ParticleController.Draw();
+
+            // if game over, draw the game over text
+            if (_tetrisGameController.GameState == GameOver)
+            {
+                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 18));
+                var width = RescaleUnitsToPixels(30);
+                var height = RescaleUnitsToPixels(6);
+                var gameOverRect = new Rectangle(rectX, rectY, width, height);
+
+                _spriteBatch.Draw(_texBackgroundDimmer, gameOverRect, Color.White);
+
+                // draw the text over the dimmed background
+                var gameOverText = "Game Over. Final score: " + _tetrisGameController.Score + "\n" +
+                                   "Returning to main menu in ";
+
+                var resetTime = _tetrisGameController.GameOverTime;
+                if (resetTime.TotalSeconds > 4)
+                    gameOverText += "5";
+                else if (resetTime.TotalSeconds > 3)
+                    gameOverText += "4";
+                else if (resetTime.TotalSeconds > 2)
+                    gameOverText += "3";
+                else if (resetTime.TotalSeconds > 1)
+                    gameOverText += "2";
+                else
+                    gameOverText += "1";
+
+                // get position of the text on screen
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((7, 16));
+
+                _spriteBatch.DrawString(_menuFont, gameOverText,
+                    new Vector2(textPosX, textPosY),
+                    Color.Red);
+            }
         }
 
         // game board will have relative dimensions in a square

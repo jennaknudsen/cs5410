@@ -68,6 +68,10 @@ namespace FinalProject_Tetris
         private readonly TimeSpan _attractModeThreshold = TimeSpan.FromSeconds(10);
         private TimeSpan _inactiveTime = TimeSpan.Zero;
 
+        // Timeout for game over
+        private readonly TimeSpan _gameOverEndTime = TimeSpan.FromSeconds(5);
+        public TimeSpan GameOverTime = TimeSpan.Zero;
+
         public TetrisGameController()
         {
             // set up all of the needed controllers and handlers
@@ -133,6 +137,10 @@ namespace FinalProject_Tetris
             // we aren't in free fall mode
             _inFreeFallMode = false;
 
+            // reset the game over time
+            GameOverTime = _gameOverEndTime;
+
+            // play the background music
             // SoundController.PlayMusic();
         }
 
@@ -207,13 +215,13 @@ namespace FinalProject_Tetris
             // update the SoundController
             SoundController.Update(gameTime);
 
+            // update the ParticleController
+            ParticleController.Update(gameTime);
+
             switch (GameState)
             {
                 case Running:
                 case AttractMode:
-                    // update the ParticleController
-                    ParticleController.Update(gameTime);
-
                     if (!_inFreeFallMode)
                     {
                         if (GameState == Running)
@@ -523,6 +531,11 @@ namespace FinalProject_Tetris
                     {
                         StartGame(true);
                     }
+                    break;
+                case GameOver:
+                    GameOverTime -= gameTime.ElapsedGameTime;
+                    if (GameOverTime < TimeSpan.Zero)
+                        GameState = MainMenu;
                     break;
             }
         }
