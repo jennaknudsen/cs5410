@@ -1,4 +1,5 @@
 ﻿using System;
+using FinalProject_Tetris.InputHandling;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
@@ -182,14 +183,10 @@ namespace FinalProject_Tetris
                     var customizeControlsString = "Customize Controls";
                     var viewCreditsString = "View Credits";
 
-                    var (ngX, ngY) = GetAbsolutePixelCoordinates((inputHandler.NewGameButton.StartPosition.x,
-                        inputHandler.NewGameButton.EndPosition.y));
-                    var (hsX, hsY) = GetAbsolutePixelCoordinates((inputHandler.HighScoresButton.StartPosition.x,
-                        inputHandler.HighScoresButton.EndPosition.y));
-                    var (ccX, ccY) = GetAbsolutePixelCoordinates((inputHandler.CustomizeControlsButton.StartPosition.x,
-                        inputHandler.CustomizeControlsButton.EndPosition.y));
-                    var (vcX, vcY) = GetAbsolutePixelCoordinates((inputHandler.ViewCreditsButton.StartPosition.x,
-                        inputHandler.ViewCreditsButton.EndPosition.y));
+                    var (ngX, ngY) = GetMouseButtonPixelCoordinates(inputHandler.NewGameButton);
+                    var (hsX, hsY) = GetMouseButtonPixelCoordinates(inputHandler.HighScoresButton);
+                    var (ccX, ccY) = GetMouseButtonPixelCoordinates(inputHandler.CustomizeControlsButton);
+                    var (vcX, vcY) = GetMouseButtonPixelCoordinates(inputHandler.ViewCreditsButton);
 
                     // now, draw the strings
                     _spriteBatch.DrawString(_menuFont, newGameString,
@@ -208,6 +205,16 @@ namespace FinalProject_Tetris
                 default:
                     break;
             }
+        }
+
+        // get pixel coordinates of a mouse button
+        private (int x, int y) GetMouseButtonPixelCoordinates(MouseButton mouseButton)
+        {
+            var (x, _) = GetAbsolutePixelCoordinates(mouseButton.StartPosition);
+            var (_, y1) = GetAbsolutePixelCoordinates(mouseButton.StartPosition);
+            var (_, y2) = GetAbsolutePixelCoordinates(mouseButton.EndPosition);
+
+            return (x, y1 + (y2 - y1) / 2);
         }
 
         // draws the game actually running
@@ -339,6 +346,7 @@ namespace FinalProject_Tetris
             // draw particles
             _tetrisGameController.ParticleController.Draw();
         }
+
         // game board will have relative dimensions in a square
         // this function gets the absolute dimensions
         public static (int x, int y) GetAbsolutePixelCoordinates((float x, float y) relativeCoordinates)
