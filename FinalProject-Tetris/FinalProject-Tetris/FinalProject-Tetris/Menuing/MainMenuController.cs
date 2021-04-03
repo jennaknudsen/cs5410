@@ -28,6 +28,18 @@ namespace FinalProject_Tetris
                     {
                         GameController.StartGame(false);
                     }
+                    else if (inputHandler.HighScoresButton.Pressed)
+                    {
+                        MenuState = HighScores;
+                    }
+                    else if (inputHandler.CustomizeControlsButton.Pressed)
+                    {
+                        MenuState = Controls;
+                    }
+                    else if (inputHandler.ViewCreditsButton.Pressed)
+                    {
+                        MenuState = Credits;
+                    }
                     break;
                 default:
                     break;
