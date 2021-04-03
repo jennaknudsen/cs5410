@@ -5,6 +5,7 @@ using System.Threading;
 using Microsoft.Xna.Framework;
 using FinalProject_Tetris.InputHandling;
 using FinalProject_Tetris.LocalStorage;
+using FinalProject_Tetris.Menuing;
 using static FinalProject_Tetris.GameState;
 using static FinalProject_Tetris.Piece.PieceType;
 using static FinalProject_Tetris.Square.PieceColor;
@@ -62,6 +63,10 @@ namespace FinalProject_Tetris
         // These controllers need assets, so they are instantiated by the TetrisGame itself
         public SoundController SoundController;
         public ParticleController ParticleController;
+
+        // Counter for attract mode
+        private readonly TimeSpan _attractModeThreshold = TimeSpan.FromSeconds(10);
+        private TimeSpan _inactiveTime = TimeSpan.Zero;
 
         public TetrisGameController()
         {
@@ -241,6 +246,12 @@ namespace FinalProject_Tetris
                         }
                         else if (GameState == AttractMode)
                         {
+                            // in attract mode, pressing any key or moving the mouse resets to main menu
+                            if (InputHandler.KeyPressed || InputHandler.MouseMoved)
+                            {
+                                GameState = MainMenu;
+                                return;
+                            }
                             AiController.Update(gameTime);
                         }
 
@@ -494,8 +505,24 @@ namespace FinalProject_Tetris
                     }
                     break;
                 case MainMenu:
+                    // check whether input was pressed
+                    if (InputHandler.KeyPressed || InputHandler.MouseMoved ||
+                        MainMenuController.MenuState != MenuState.Main)
+                    {
+                        _inactiveTime = TimeSpan.Zero;
+                    }
+                    else
+                    {
+                        _inactiveTime += gameTime.ElapsedGameTime;
+                    }
                     ParticleController.ClearAllParticles();
                     MainMenuController.ProcessMenu(InputHandler);
+
+                    // if we exceed the threshold for inactivity, then start attract moe
+                    if (_inactiveTime >= _attractModeThreshold)
+                    {
+                        StartGame(true);
+                    }
                     break;
             }
         }
