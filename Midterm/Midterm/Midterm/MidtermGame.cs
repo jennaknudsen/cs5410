@@ -100,12 +100,6 @@ namespace Midterm
                 _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
                 DrawMainMenu(gameTime);
             }
-            else if (_midtermGameController.GameState == Paused)
-            {
-                // pause menu will always have the background rectangle drawn
-                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
-                DrawPauseMenu(gameTime);
-            }
             else
             {
                 DrawGameRunning(gameTime);
@@ -540,6 +534,17 @@ AT A LATER TIME (DO THIS).";
                 _spriteBatch.DrawString(_menuFont, gameOverText,
                     new Vector2(textPosX, textPosY),
                     Color.OrangeRed);
+            }
+            else if (_midtermGameController.GameState == Paused)
+            {
+                // pause menu will always have the background rectangle drawn
+                // get pixel coordinates from board coordinates
+                var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+                var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+                // create the background rectangle
+                var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
+                DrawPauseMenu(gameTime);
             }
         }
 

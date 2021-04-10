@@ -17,16 +17,50 @@ namespace Midterm
         // List of emitters (all emitters will be updated every game update)
         private readonly List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
 
+        // generic emitter
+        private AngleEmitter _angleEmitter;
+
         // constructor sets the reference
         public ParticleController(
             SpriteBatch spriteBatch, Texture2D tex1)
         {
             _spriteBatch = spriteBatch;
             _tex1 = tex1;
-
         }
 
-        public void AddTex1AngleEmitter(float boardX, float boardY, float angle, GameTime gameTime)
+        public void FireGenericAngleEmitter(float boardX, float boardY, float angle)
+        {
+            var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
+
+            if (_angleEmitter == null)
+            {
+                _angleEmitter = new AngleEmitter(
+                    TimeSpan.FromMilliseconds(5),
+                    sourceX,
+                    sourceY,
+                    6,
+                    0.8f,
+                    TimeSpan.FromMilliseconds(250),
+                    _tex1,
+                    false
+                );
+            }
+
+            _angleEmitter.Angle = angle;
+            _angleEmitter.SourceX = sourceX;
+            _angleEmitter.SourceY = sourceY;
+            _angleEmitter.Width = MathHelper.PiOver2;
+
+            _angleEmitter.FireParticles(true);
+        }
+
+        public void StopGenericAngleEmitter()
+        {
+
+            _angleEmitter.FireParticles(false);
+        }
+
+        public void AddTex1TimedAngleEmitter(float boardX, float boardY, float angle)
         {
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
@@ -34,15 +68,18 @@ namespace Midterm
                 TimeSpan.FromMilliseconds(5),
                 sourceX,
                 sourceY,
-                3,
-                0.3f,
-                TimeSpan.FromMilliseconds(250),
+                6,
+                0.8f,
+                // TimeSpan.FromMilliseconds(250),
+                TimeSpan.FromMilliseconds(2050),
                 _tex1,
-                TimeSpan.FromMilliseconds(50),
+                // TimeSpan.FromMilliseconds(50),
+                TimeSpan.FromMilliseconds(500),
                 false
             );
 
             emitter.Angle = angle;
+            // change the width here
             emitter.Width = MathHelper.Pi;
             emitter.FireParticles();
 

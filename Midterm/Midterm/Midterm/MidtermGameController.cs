@@ -30,6 +30,9 @@ namespace Midterm
         public SoundController SoundController;
         public ParticleController ParticleController;
 
+        // TODO delete this
+        private bool _firedOnce = false;
+
         // // Counter for attract mode
         // private readonly TimeSpan _attractModeThreshold = TimeSpan.FromSeconds(10);
         // private TimeSpan _inactiveTime = TimeSpan.Zero;
@@ -118,6 +121,20 @@ namespace Midterm
                         PauseMenuController.OpenMenu();
                     }
 
+                    if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(6))
+                    {
+                        ParticleController.StopGenericAngleEmitter();
+                    }
+                    else if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(3))
+                    {
+                        if (!_firedOnce)
+                        {
+                            ParticleController.AddTex1TimedAngleEmitter(30, 30, MathHelper.TwoPi);
+                            _firedOnce = true;
+                        }
+
+                        ParticleController.FireGenericAngleEmitter(50, 50, MathHelper.PiOver2);
+                    }
                     break;
                 case Paused:
                     PauseMenuController.ProcessMenu(InputHandler);
