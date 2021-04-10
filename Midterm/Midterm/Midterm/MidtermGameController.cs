@@ -121,20 +121,21 @@ namespace Midterm
                         PauseMenuController.OpenMenu();
                     }
 
-                    if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(6))
-                    {
-                        ParticleController.StopGenericAngleEmitter();
-                    }
-                    else if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(3))
-                    {
-                        if (!_firedOnce)
-                        {
-                            ParticleController.AddTex1TimedAngleEmitter(30, 30, MathHelper.TwoPi);
-                            _firedOnce = true;
-                        }
-
-                        ParticleController.FireGenericAngleEmitter(50, 50, MathHelper.PiOver2);
-                    }
+                    // demonstration of particle effects
+                    // if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(6))
+                    // {
+                    //     ParticleController.StopGenericAngleEmitter();
+                    // }
+                    // else if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(3))
+                    // {
+                    //     if (!_firedOnce)
+                    //     {
+                    //         ParticleController.AddTex1TimedAngleEmitter(30, 30, MathHelper.TwoPi);
+                    //         _firedOnce = true;
+                    //     }
+                    //
+                    //     ParticleController.FireGenericAngleEmitter(50, 50, MathHelper.PiOver2);
+                    // }
                     break;
                 case Paused:
                     PauseMenuController.ProcessMenu(InputHandler);

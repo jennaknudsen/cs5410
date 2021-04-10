@@ -11,9 +11,6 @@ namespace Midterm.Particles
         public float Angle;
         public float Width;
 
-        // whether we want to be currently emitting particles or not
-        public bool EmitParticles;
-
         // whether we want the distribution to be uniform or normalized
         private readonly bool _normalized;
 
@@ -26,7 +23,6 @@ namespace Midterm.Particles
             bool normalized) :
             base(rate, sourceX, sourceY, size, speed, lifetime, particleTexture)
         {
-            EmitParticles = false;
             _normalized = normalized;
         }
 

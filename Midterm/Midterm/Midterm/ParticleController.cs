@@ -26,25 +26,25 @@ namespace Midterm
         {
             _spriteBatch = spriteBatch;
             _tex1 = tex1;
+
+            var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((50, 50));
+
+            // set up generic angle emitter
+            _angleEmitter = new AngleEmitter(
+                TimeSpan.FromMilliseconds(5),
+                sourceX,
+                sourceY,
+                10,
+                0.8f,
+                TimeSpan.FromMilliseconds(1000),
+                _tex1,
+                false
+            );
         }
 
         public void FireGenericAngleEmitter(float boardX, float boardY, float angle)
         {
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
-
-            if (_angleEmitter == null)
-            {
-                _angleEmitter = new AngleEmitter(
-                    TimeSpan.FromMilliseconds(5),
-                    sourceX,
-                    sourceY,
-                    6,
-                    0.8f,
-                    TimeSpan.FromMilliseconds(250),
-                    _tex1,
-                    false
-                );
-            }
 
             _angleEmitter.Angle = angle;
             _angleEmitter.SourceX = sourceX;
@@ -56,7 +56,6 @@ namespace Midterm
 
         public void StopGenericAngleEmitter()
         {
-
             _angleEmitter.FireParticles(false);
         }
 
@@ -68,13 +67,11 @@ namespace Midterm
                 TimeSpan.FromMilliseconds(5),
                 sourceX,
                 sourceY,
-                6,
+                10,
                 0.8f,
-                // TimeSpan.FromMilliseconds(250),
-                TimeSpan.FromMilliseconds(2050),
-                _tex1,
-                // TimeSpan.FromMilliseconds(50),
                 TimeSpan.FromMilliseconds(500),
+                _tex1,
+                TimeSpan.FromMilliseconds(50),
                 false
             );
 
@@ -102,6 +99,9 @@ namespace Midterm
                 }
             }
 
+            // manually update all other emitters
+            _angleEmitter.Update(gameTime);
+
             // remove all emitters we don't need anymore
             foreach (var emitter in emittersToRemove)
             {
@@ -116,6 +116,9 @@ namespace Midterm
             {
                 emitter.Draw(_spriteBatch);
             }
+
+            // manually update all other emitters
+            _angleEmitter.Draw(_spriteBatch);
         }
 
         // Clears all particle effects
