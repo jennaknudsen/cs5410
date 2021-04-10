@@ -53,20 +53,20 @@ namespace Midterm.InputHandling
             RotateClockwiseButton = new KeyboardButton(new[] {Keys.PageUp, Keys.E}, true);
 
             // buttons for menu controls
-            NewGameButton = new MouseButton((3, 23), (20, 25), true);
-            HighScoresButton = new MouseButton((3, 17), (20, 19), true);
-            CustomizeControlsButton = new MouseButton((3, 11), (20, 13), true);
-            ViewCreditsButton = new MouseButton((3, 5), (20, 7), true);
+            NewGameButton = new MouseButton((10, 76), (50, 82), true);
+            HighScoresButton = new MouseButton((10, 57), (50, 63), true);
+            CustomizeControlsButton = new MouseButton((10, 38), (50, 44), true);
+            ViewCreditsButton = new MouseButton((10, 19), (50, 25), true);
 
-            LeftControlButton = new MouseButton((3, 23), (13, 25), true);
-            RightControlButton = new MouseButton((18, 23), (28, 25), true);
-            DownControlButton = new MouseButton((3, 19), (13, 21), true);
-            UpControlButton = new MouseButton((18, 19), (28, 21), true);
-            CounterClockwiseControlButton = new MouseButton((3, 15), (16, 17), true);
-            ClockwiseControlButton = new MouseButton((18, 15), (28, 17), true);
+            LeftControlButton = new MouseButton((10, 76), (40, 82), true);
+            RightControlButton = new MouseButton((60, 76), (90, 82), true);
+            DownControlButton = new MouseButton((10, 63), (40, 69), true);
+            UpControlButton = new MouseButton((60, 63), (90, 69), true);
+            CounterClockwiseControlButton = new MouseButton((10, 50), (40, 56), true);
+            ClockwiseControlButton = new MouseButton((60, 50), (90, 56), true);
 
-            ResetToDefaultsButton = new MouseButton((3, 7), (20, 9), true);
-            BackToMainButton = new MouseButton((3, 5), (20, 7), true);
+            ResetToDefaultsButton = new MouseButton((10, 23), (50, 29), true);
+            BackToMainButton = new MouseButton((10, 14), (50, 20), true);
 
             // the physical left mouse button
             PhysicalMouseButton = new Button(true);
