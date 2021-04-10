@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace FinalProject_Tetris.Particles
+namespace Midterm.Particles
 {
     public class ParticleEmitter
     {

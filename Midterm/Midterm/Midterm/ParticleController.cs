@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using FinalProject_Tetris.Particles;
+using Midterm.Particles;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using static Midterm.Square;
-using static Midterm.Square.PieceColor;
 
 namespace Midterm
 {
@@ -18,39 +16,17 @@ namespace Midterm
         // List of emitters (all emitters will be updated every game update)
         private readonly List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
 
-        // Textures: Piece texture for each color, Clear texture
-        private readonly Dictionary<PieceColor, Texture2D> _dictTextures;
-        private Texture2D _texClearLine;
-
         // constructor sets the reference
         public ParticleController(
-            SpriteBatch spriteBatch,
-            Texture2D texParticleRed,
-            Texture2D texParticleOrange,
-            Texture2D texParticleYellow,
-            Texture2D texParticleGreen,
-            Texture2D texParticleBlue,
-            Texture2D texParticleIndigo,
-            Texture2D texParticleViolet,
-            Texture2D texClearLine)
+            SpriteBatch spriteBatch)
         {
             _spriteBatch = spriteBatch;
-            _texClearLine = texClearLine;
-            _dictTextures = new Dictionary<PieceColor, Texture2D>
-            {
-                {Red, texParticleRed},
-                {Orange, texParticleOrange},
-                {Yellow, texParticleYellow},
-                {Green, texParticleGreen},
-                {Blue, texParticleBlue},
-                {Indigo, texParticleIndigo},
-                {Violet, texParticleViolet}
-            };
+
         }
 
-        public void AddPieceEmitter(float boardX, float boardY, float angle, PieceColor color, GameTime gameTime)
+        public void AddAngleEmitter(float boardX, float boardY, float angle, Texture2D texture, GameTime gameTime)
         {
-            var (sourceX, sourceY) = TetrisGame.GetAbsolutePixelCoordinates((boardX, boardY));
+            var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
             var emitter = new TimedAngleEmitter(
                 TimeSpan.FromMilliseconds(5),
@@ -59,31 +35,8 @@ namespace Midterm
                 3,
                 0.3f,
                 TimeSpan.FromMilliseconds(250),
-                _dictTextures[color],
+                texture,
                 TimeSpan.FromMilliseconds(50),
-                false
-            );
-
-            emitter.Angle = angle;
-            emitter.Width = MathHelper.Pi;
-            emitter.FireParticles();
-
-            _emittersList.Add(emitter);
-        }
-
-        public void AddLineClearEmitter(float boardX, float boardY, float angle, GameTime gameTime)
-        {
-            var (sourceX, sourceY) = TetrisGame.GetAbsolutePixelCoordinates((boardX, boardY));
-
-            var emitter = new TimedAngleEmitter(
-                TimeSpan.FromMilliseconds(40),
-                sourceX,
-                sourceY,
-                15,
-                0.6f,
-                TimeSpan.FromMilliseconds(500),
-                _texClearLine,
-                TimeSpan.FromMilliseconds(120),
                 false
             );
 

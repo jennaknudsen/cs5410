@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace FinalProject_Tetris.Particles
+namespace Midterm.Particles
 {
     public class Particle
     {
