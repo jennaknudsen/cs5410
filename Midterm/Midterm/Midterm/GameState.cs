@@ -5,6 +5,7 @@ namespace Midterm
         Running,
         GameOver,
         AttractMode,
-        MainMenu
+        MainMenu,
+        Paused
     }
 }

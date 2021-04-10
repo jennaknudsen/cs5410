@@ -23,6 +23,7 @@ namespace Midterm
         public InputHandler InputHandler;
         // public AiController AiController;
         public MainMenuController MainMenuController;
+        public PauseMenuController PauseMenuController;
         public LocalStorageManager LocalStorageManager;
 
         // These controllers need assets, so they are instantiated by the TetrisGame itself
@@ -43,6 +44,7 @@ namespace Midterm
             InputHandler = new InputHandler();
             // AiController = new AiController(this);
             MainMenuController = new MainMenuController(this);
+            PauseMenuController = new PauseMenuController(this);
             LocalStorageManager = new LocalStorageManager();
 
             // in constructor, read in the control scheme and high scores initially
@@ -90,7 +92,7 @@ namespace Midterm
             GameOverTime = _gameOverEndTime;
 
             // play the background music
-            // SoundController.PlayMusic();
+            SoundController.PlayMusic();
         }
 
         // this ticks every game loop
@@ -102,15 +104,23 @@ namespace Midterm
             // update the SoundController
             SoundController.Update(gameTime);
 
-            // update the ParticleController
-            ParticleController.Update(gameTime);
+            // update the ParticleController (unless game is paused)
+            if (GameState != Paused) ParticleController.Update(gameTime);
 
             switch (GameState)
             {
                 case Running:
                 case AttractMode:
-
                     // code to actually run the game
+
+                    if (InputHandler.PauseGameButton.Pressed)
+                    {
+                        PauseMenuController.OpenMenu();
+                    }
+
+                    break;
+                case Paused:
+                    PauseMenuController.ProcessMenu(InputHandler);
                     break;
                 case MainMenu:
                     // check whether input was pressed

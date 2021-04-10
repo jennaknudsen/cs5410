@@ -69,3 +69,9 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:ParticleClear.png
+
+#begin Tetris.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Medium
+/build:Tetris.wav

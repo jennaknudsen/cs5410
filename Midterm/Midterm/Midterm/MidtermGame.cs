@@ -14,6 +14,7 @@ namespace Midterm
         // import textures here
         private Texture2D _texBoard;
         private SoundEffect _soundBlockPlace;
+        private SoundEffect _soundBackgroundMusic;
         private Texture2D _texParticle;
         private Texture2D _texBackgroundDimmer;
         private SpriteFont _menuFont;
@@ -60,12 +61,13 @@ namespace Midterm
             _texParticle = this.Content.Load<Texture2D>("ParticleClear");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
+            _soundBackgroundMusic = this.Content.Load<SoundEffect>("Tetris");
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
 
             // initialize the game controller's sound now that music is imported
             _midtermGameController.SoundController = new SoundController(
-                _soundBlockPlace);
+                _soundBlockPlace, _soundBackgroundMusic);
 
             // initialize the particle controller
             _midtermGameController.ParticleController = new ParticleController(
@@ -96,7 +98,13 @@ namespace Midterm
             {
                 // main menu will always have the background rectangle drawn
                 _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
-                DrawMenu(gameTime);
+                DrawMainMenu(gameTime);
+            }
+            else if (_midtermGameController.GameState == Paused)
+            {
+                // pause menu will always have the background rectangle drawn
+                _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
+                DrawPauseMenu(gameTime);
             }
             else
             {
@@ -109,7 +117,7 @@ namespace Midterm
         }
 
         // draws the main menu
-        private void DrawMenu(GameTime gameTime)
+        private void DrawMainMenu(GameTime gameTime)
         {
             var inputHandler = _midtermGameController.InputHandler;
             switch (_midtermGameController.MainMenuController.MenuState)
@@ -442,6 +450,40 @@ AT A LATER TIME (DO THIS).";
             }
         }
 
+        // draws the pause menu
+        private void DrawPauseMenu(GameTime gameTime)
+        {
+            var inputHandler = _midtermGameController.InputHandler;
+
+            var pausedString = "=== PAUSED ===";
+            var resumeString = "Resume";
+            var quitString = "Quit";
+
+            var (pausedX, pausedY) = GetAbsolutePixelCoordinates((10, 85));
+            var (resumeX, resumeY) = GetMouseButtonPixelCoordinates(inputHandler.ResumeButton);
+            var (quitX, quitY) = GetMouseButtonPixelCoordinates(inputHandler.QuitButton);
+
+            var resumeColor = inputHandler.ResumeButton.IsHovered
+                ? Color.Yellow
+                : Color.LightGray;
+            var quitColor = inputHandler.QuitButton.IsHovered
+                ? Color.Yellow
+                : Color.LightGray;
+
+            // PAUSED
+            _spriteBatch.DrawString(_menuFont, pausedString,
+                new Vector2(pausedX, pausedY),
+                Color.LightGray);
+            // resume
+            _spriteBatch.DrawString(_menuFont, resumeString,
+                new Vector2(resumeX, resumeY),
+                resumeColor);
+            // quit to main menu
+            _spriteBatch.DrawString(_menuFont, quitString,
+                new Vector2(quitX, quitY),
+                quitColor);
+        }
+
         // get pixel coordinates of a mouse button
         private (int x, int y) GetMouseButtonPixelCoordinates(MouseButton mouseButton)
         {
@@ -455,10 +497,9 @@ AT A LATER TIME (DO THIS).";
         // draws the game actually running
         private void DrawGameRunning(GameTime gameTime)
         {
-
             // draw score, level, lines cleared
             var scoreString = "Score: " + _midtermGameController.Score;
-            var (scoreX, scoreY) = GetAbsolutePixelCoordinates((3f, 26.8f));
+            var (scoreX, scoreY) = GetAbsolutePixelCoordinates((12f, 85f));
 
             _spriteBatch.DrawString(_gameFont, scoreString,
                 new Vector2(scoreX, scoreY),

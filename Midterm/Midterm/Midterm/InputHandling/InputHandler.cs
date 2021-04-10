@@ -15,8 +15,9 @@ namespace Midterm.InputHandling
         public readonly KeyboardButton HardDropButton;
         public readonly KeyboardButton RotateCounterClockwiseButton;
         public readonly KeyboardButton RotateClockwiseButton;
+        public readonly KeyboardButton PauseGameButton;
 
-        // menu buttons
+        // main menu buttons
         public readonly MouseButton NewGameButton;
         public readonly MouseButton HighScoresButton;
         public readonly MouseButton CustomizeControlsButton;
@@ -30,9 +31,12 @@ namespace Midterm.InputHandling
         public readonly MouseButton ResetToDefaultsButton;
         public readonly MouseButton BackToMainButton;
 
+        // pause menu buttons
+        public readonly MouseButton ResumeButton;
+        public readonly MouseButton QuitButton;
+
         // debounce the left mouse button itself with this
         public readonly Button PhysicalMouseButton;
-
 
         // list holds all of our buttons (so we can iterate through them)
         private readonly List<Button> _listOfButtons;
@@ -51,8 +55,9 @@ namespace Midterm.InputHandling
             HardDropButton = new KeyboardButton(new[] {Keys.Up}, true);
             RotateCounterClockwiseButton = new KeyboardButton(new[] {Keys.Home, Keys.Q}, true);
             RotateClockwiseButton = new KeyboardButton(new[] {Keys.PageUp, Keys.E}, true);
+            PauseGameButton = new KeyboardButton(new[] {Keys.Escape}, true);
 
-            // buttons for menu controls
+            // buttons for main menu controls
             NewGameButton = new MouseButton((10, 76), (50, 82), true);
             HighScoresButton = new MouseButton((10, 57), (50, 63), true);
             CustomizeControlsButton = new MouseButton((10, 38), (50, 44), true);
@@ -68,6 +73,10 @@ namespace Midterm.InputHandling
             ResetToDefaultsButton = new MouseButton((10, 23), (50, 29), true);
             BackToMainButton = new MouseButton((10, 14), (50, 20), true);
 
+            // buttons for pause menu controls
+            ResumeButton = new MouseButton((10, 23), (50, 29), true);
+            QuitButton = new MouseButton((10, 14), (50, 20), true);
+
             // the physical left mouse button
             PhysicalMouseButton = new Button(true);
 
@@ -81,8 +90,9 @@ namespace Midterm.InputHandling
                 HardDropButton,
                 RotateCounterClockwiseButton,
                 RotateClockwiseButton,
+                PauseGameButton,
 
-                // menu buttons
+                // main menu buttons
                 NewGameButton,
                 HighScoresButton,
                 CustomizeControlsButton,
@@ -95,7 +105,11 @@ namespace Midterm.InputHandling
                 CounterClockwiseControlButton,
                 ClockwiseControlButton,
                 ResetToDefaultsButton,
-                BackToMainButton
+                BackToMainButton,
+
+                // pause menu buttons
+                ResumeButton,
+                QuitButton
             };
         }
 
