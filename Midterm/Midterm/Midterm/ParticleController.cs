@@ -12,19 +12,21 @@ namespace Midterm
     {
         // reference to LanderGame's SpriteBatch
         private readonly SpriteBatch _spriteBatch;
+        private readonly Texture2D _tex1;
 
         // List of emitters (all emitters will be updated every game update)
         private readonly List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
 
         // constructor sets the reference
         public ParticleController(
-            SpriteBatch spriteBatch)
+            SpriteBatch spriteBatch, Texture2D tex1)
         {
             _spriteBatch = spriteBatch;
+            _tex1 = tex1;
 
         }
 
-        public void AddAngleEmitter(float boardX, float boardY, float angle, Texture2D texture, GameTime gameTime)
+        public void AddTex1AngleEmitter(float boardX, float boardY, float angle, GameTime gameTime)
         {
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
@@ -35,7 +37,7 @@ namespace Midterm
                 3,
                 0.3f,
                 TimeSpan.FromMilliseconds(250),
-                texture,
+                _tex1,
                 TimeSpan.FromMilliseconds(50),
                 false
             );

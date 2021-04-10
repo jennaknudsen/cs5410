@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static Midterm.MidtermGameController;
@@ -8,7 +9,9 @@ namespace Midterm
     public class MidtermGame : Game
     {
         // import textures here
-        // private Texture2D ...
+        private Texture2D _texBoard;
+        private SoundEffect _soundBlockPlace;
+        private Texture2D _texParticle;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -47,24 +50,40 @@ namespace Midterm
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+            _texBoard = this.Content.Load<Texture2D>("board");
+            _texParticle = this.Content.Load<Texture2D>("ParticleClear");
+            _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
+
+            // initialize the game controller's sound now that music is imported
+            _midtermGameController.SoundController = new SoundController(
+                _soundBlockPlace);
+
+            // initialize the particle controller
+            _midtermGameController.ParticleController = new ParticleController(
+                _spriteBatch, _texParticle);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
-            // TODO: Add your update logic here
+            _midtermGameController.Update(gameTime);
 
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            // get pixel coordinates from board coordinates
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var rectSizePixels = RescaleUnitsToPixels(BoardSize);
+            // create the background rectangle
+            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            _spriteBatch.Draw(_texBoard, backgroundRect, Color.White);
+
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }
@@ -124,7 +143,7 @@ namespace Midterm
         public static int RescaleUnitsToPixels(float units)
         {
             // rescale by ratio of game area in pixels to board size
-            var rescaledUnits = (int) (_windowHeightPixels / BoardSize * units);
+            var rescaledUnits = (int) (_windowHeightPixels / (float) BoardSize * units);
             return rescaledUnits;
         }
 

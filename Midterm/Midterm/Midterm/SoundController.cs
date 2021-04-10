@@ -8,25 +8,26 @@ namespace Midterm
     public class SoundController
     {
         private readonly SoundEffect _soundBlockPlace;
-        private readonly SoundEffect _soundLineClear;
-        private readonly SoundEffect _soundGameOver;
-        private readonly SoundEffect _soundTetrisSong;
-        private readonly SoundEffectInstance _instanceTetrisSong;
+        // private readonly SoundEffect _soundLineClear;
+        // private readonly SoundEffect _soundGameOver;
+        // private readonly SoundEffect _soundTetrisSong;
+        // private readonly SoundEffectInstance _instanceTetrisSong;
 
         private bool _fadingOutMusicPause = false;
         private bool _fadingOutMusicStop = false;
         private bool _fadingInMusic = false;
 
         public SoundController(
-            SoundEffect soundBlockPlace, SoundEffect soundLineClear,
-            SoundEffect soundGameOver, SoundEffect soundTetrisSong)
+            SoundEffect soundBlockPlace)
+            // SoundEffect soundBlockPlace, SoundEffect soundLineClear,
+            // SoundEffect soundGameOver, SoundEffect soundTetrisSong)
         {
             _soundBlockPlace = soundBlockPlace;
-            _soundLineClear = soundLineClear;
-            _soundGameOver = soundGameOver;
-            _soundTetrisSong = soundTetrisSong;
-            _instanceTetrisSong = _soundTetrisSong.CreateInstance();
-            _instanceTetrisSong.IsLooped = true;
+            // _soundLineClear = soundLineClear;
+            // _soundGameOver = soundGameOver;
+            // _soundTetrisSong = soundTetrisSong;
+            // _instanceTetrisSong = _soundTetrisSong.CreateInstance();
+            // _instanceTetrisSong.IsLooped = true;
         }
 
         public void PlayBlockPlace()
@@ -34,18 +35,18 @@ namespace Midterm
             var instanceBlockPlace = _soundBlockPlace.CreateInstance();
             instanceBlockPlace.Play();
         }
-
-        public void PlayLineClear()
-        {
-            var instanceLineClear = _soundLineClear.CreateInstance();
-            instanceLineClear.Play();
-        }
-
-        public void PlayGameOver()
-        {
-            var instanceGameOver = _soundGameOver.CreateInstance();
-            instanceGameOver.Play();
-        }
+        //
+        // public void PlayLineClear()
+        // {
+        //     var instanceLineClear = _soundLineClear.CreateInstance();
+        //     instanceLineClear.Play();
+        // }
+        //
+        // public void PlayGameOver()
+        // {
+        //     var instanceGameOver = _soundGameOver.CreateInstance();
+        //     instanceGameOver.Play();
+        // }
 
         public void PlayMusic()
         {
@@ -75,18 +76,18 @@ namespace Midterm
         // use this Update loop to control fading in / out background music
         public void Update(GameTime gameTime)
         {
-            if (_fadingInMusic)
-            {
-                FadeInSoundEffect(_instanceTetrisSong);
-            }
-            else if (_fadingOutMusicPause)
-            {
-                FadeOutSoundEffect(_instanceTetrisSong, false);
-            }
-            else if (_fadingOutMusicStop)
-            {
-                FadeOutSoundEffect(_instanceTetrisSong, true);
-            }
+            // if (_fadingInMusic)
+            // {
+            //     FadeInSoundEffect(_instanceTetrisSong);
+            // }
+            // else if (_fadingOutMusicPause)
+            // {
+            //     FadeOutSoundEffect(_instanceTetrisSong, false);
+            // }
+            // else if (_fadingOutMusicStop)
+            // {
+            //     FadeOutSoundEffect(_instanceTetrisSong, true);
+            // }
         }
 
         // fade in a sound effect instead of cutting in

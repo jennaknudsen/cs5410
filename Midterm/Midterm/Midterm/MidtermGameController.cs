@@ -14,42 +14,10 @@ namespace Midterm
     {
         public const int BoardSize = 100;
 
-        // public int LinesCleared = 0;
-
-        // Scoring:
-        // 1 line clear: 40 * (level + 1)
-        // 2 line clear: 100 * (level + 1)
-        // 3 line clear: 300 * (level + 1)
-        // 4+ line clear: 1200 * (level + 1)
         public int Score;
-        // add 1 point for each consecutive drop
-        // private int _dropScore;
-
-        // total lines cleared / 5
-        // normally, tetris is every 10 lines, but I chose every 5 to speed up gameplay
-        // public int Level = 0;
 
         // reference to the current game state
         public GameState GameState;
-
-        // whether we are in Free Fall mode or not
-        // private bool _inFreeFallMode;
-
-        // 10 col, 20 row TetrisSquares array
-        // where TetrisSquares[0, 0] is bottom left
-        //       TetrisSquares[9, 19] is top right
-        // public Square[,] TetrisSquares;
-
-        // references to current piece
-        // public Piece CurrentPiece;
-
-        // a "bag" of pieces: ensures that we don't get repeats that are too frequent
-        // public List<Piece> BagOfPieces;
-
-        // // time since last gravity tick
-        // private TimeSpan _timeSinceLastGravityTick;
-        // private TimeSpan _timeSinceLastPieceTick;
-        // private readonly TimeSpan _pieceTickTimeSpan = TimeSpan.FromMilliseconds(400);
 
         // references to various objects that this class uses
         public InputHandler InputHandler;
