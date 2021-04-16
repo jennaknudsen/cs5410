@@ -49,6 +49,9 @@ namespace Midterm
         private readonly TimeSpan _levelTransitionTimeSpan = TimeSpan.FromSeconds(3);
         public TimeSpan CurrentLevelTransitionTimeSpan;
 
+        // total game time
+        public TimeSpan GameTimeTimeSpan;
+
         public MidtermGameController()
         {
             // set up all of the needed controllers and handlers
@@ -102,11 +105,14 @@ namespace Midterm
             Bombs = new Bomb[12];
 
             // game starts on level 1
-            _level = 1;
+            _level = 3;
             StartLevel(_level);
 
             // reset the game over time
             GameOverTime = _gameOverEndTime;
+
+            // reset total elapsed game time
+            GameTimeTimeSpan = TimeSpan.Zero;
         }
 
         public void StartLevel(int level)
@@ -135,6 +141,10 @@ namespace Midterm
                         PauseMenuController.OpenMenu();
                     }
 
+                    // increment the total game time
+                    GameTimeTimeSpan += gameTime.ElapsedGameTime;
+
+                    // handle pressing the bombs
                     for (var i = 0; i < 12; i++)
                     {
                         if (BombButtons[i].Pressed)
@@ -150,7 +160,6 @@ namespace Midterm
                     // increment current timespan tick time, see if we need to explode any bombs
                     _currentTickTimeSpan += gameTime.ElapsedGameTime;
 
-                    var didWeTickABomb = false;
                     if (_currentTickTimeSpan > _tickTimeSpan)
                     {
                         _currentTickTimeSpan = TimeSpan.Zero;
@@ -158,7 +167,6 @@ namespace Midterm
                         {
                             if (bomb.IsEnabled && !bomb.Defused && !bomb.Exploded)
                             {
-                                didWeTickABomb = true;
                                 bomb.FuseTime--;
                                 if (bomb.FuseTime == 0)
                                 {
@@ -170,17 +178,33 @@ namespace Midterm
                             }
                         }
                     }
-                    else
+
+                    var areAllBombsComplete = true;
+                    foreach (var bomb in Bombs)
                     {
-                        // include this here so that on non-tick frames, we don't auto-advance
-                        didWeTickABomb = true;
+                        if (bomb.IsEnabled && !bomb.Defused && !bomb.Exploded)
+                        {
+                            areAllBombsComplete = false;
+                        }
                     }
 
                     // if no bombs were ticked, go to next level
-                    if (!didWeTickABomb)
+                    if (areAllBombsComplete)
                     {
-                        _level++;
-                        StartLevel(_level);
+                        if (_level < 3)
+                        {
+                            _level++;
+                            StartLevel(_level);
+                        }
+                        else
+                        {
+                            // TODO save high scores
+
+                            // exit back to main menu
+                            GameOverTime = _gameOverEndTime;
+                            GameState = GameOver;
+
+                        }
                     }
 
                     // demonstration of particle effects

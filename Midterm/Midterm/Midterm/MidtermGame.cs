@@ -391,15 +391,16 @@ AT A LATER TIME (DO THIS).";
             // if game over, draw the game over text
             if (_midtermGameController.GameState == GameOver)
             {
-                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 18));
-                var width = RescaleUnitsToPixels(30);
-                var height = RescaleUnitsToPixels(6);
+                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 90));
+                var width = RescaleUnitsToPixels(100);
+                var height = RescaleUnitsToPixels(20);
                 var gameOverRect = new Rectangle(rectX, rectY, width, height);
 
                 _spriteBatch.Draw(_texBackgroundDimmer, gameOverRect, Color.White);
 
                 // draw the text over the dimmed background
                 var gameOverText = "Game Over. Final score: " + _midtermGameController.Score + "\n" +
+                                   "Total elapsed game time: " + _midtermGameController.GameTimeTimeSpan.TotalSeconds + "\n" +
                                    "Returning to main menu in ";
 
                 var resetTime = _midtermGameController.GameOverTime;
@@ -415,11 +416,11 @@ AT A LATER TIME (DO THIS).";
                     gameOverText += "1";
 
                 // get position of the text on screen
-                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((7, 16));
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((25, 86));
 
                 _spriteBatch.DrawString(_menuFont, gameOverText,
                     new Vector2(textPosX, textPosY),
-                    Color.OrangeRed);
+                    Color.Yellow);
             }
             else if (_midtermGameController.GameState == Paused)
             {
@@ -453,11 +454,11 @@ AT A LATER TIME (DO THIS).";
                     transitionLevelText += "1";
 
                 // get position of the text on screen
-                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((30, 83));
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((30, 82));
 
                 _spriteBatch.DrawString(_menuFont, transitionLevelText,
                     new Vector2(textPosX, textPosY),
-                    Color.LimeGreen);
+                    Color.Yellow);
             }
         }
 
