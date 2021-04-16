@@ -35,7 +35,12 @@ namespace Midterm
         private readonly TimeSpan _gameOverEndTime = TimeSpan.FromSeconds(5);
         public TimeSpan GameOverTime = TimeSpan.Zero;
 
+        // array holds all bombs
         public Bomb[] Bombs;
+
+        // timespan of tick
+        private readonly TimeSpan _tickTimeSpan = TimeSpan.FromSeconds(1.5);
+        private TimeSpan _currentTickTimeSpan;
 
         public MidtermGameController()
         {
@@ -82,6 +87,7 @@ namespace Midterm
         public void StartLevel(int level)
         {
             PrimeBombs(level);
+            _currentTickTimeSpan = TimeSpan.Zero;
         }
 
         // this ticks every game loop
@@ -105,6 +111,28 @@ namespace Midterm
                     {
                         PauseMenuController.OpenMenu();
                     }
+
+                    // increment current timespan tick time, see if we need to explode any bombs
+                    _currentTickTimeSpan += gameTime.ElapsedGameTime;
+                    if (_currentTickTimeSpan > _tickTimeSpan)
+                    {
+                        _currentTickTimeSpan = TimeSpan.Zero;
+                        foreach (var bomb in Bombs)
+                        {
+                            if (bomb.IsEnabled && !bomb.Defused && !bomb.Exploded)
+                            {
+                                bomb.FuseTime--;
+                                if (bomb.FuseTime == 0)
+                                {
+                                    bomb.Exploded = true;
+                                    // subtract from score
+                                    Score -= 3;
+                                    if (Score < 0) Score = 0;
+                                }
+                            }
+                        }
+                    }
+
 
                     // demonstration of particle effects
                     // if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(6))

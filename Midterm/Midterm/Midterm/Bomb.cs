@@ -7,6 +7,7 @@ namespace Midterm
         // public TimeSpan FuseTime;
         public int FuseTime;
         public bool Exploded;
+        public bool Defused;
         public bool IsEnabled;
 
         public Bomb(int fuseTime, bool isEnabled)
@@ -14,6 +15,7 @@ namespace Midterm
             Exploded = false;
             FuseTime = fuseTime;
             IsEnabled = isEnabled;
+            Defused = false;
         }
     }
 }
