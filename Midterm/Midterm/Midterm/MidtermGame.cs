@@ -75,7 +75,7 @@ namespace Midterm
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
             _texBomb = this.Content.Load <Texture2D> ("Bomb");
             _texExplosion = this.Content.Load<Texture2D>("Explosion");
-            _texCheckmark = this.Content.Load<Texture2D>("Explosion");
+            _texCheckmark = this.Content.Load<Texture2D>("Checkmark");
             _texNum0 = this.Content.Load<Texture2D>("glass_numbers_0");
             _texNum1 = this.Content.Load<Texture2D>("glass_numbers_1");
             _texNum2 = this.Content.Load<Texture2D>("glass_numbers_2");
@@ -323,29 +323,64 @@ AT A LATER TIME (DO THIS).";
                     };
 
                     var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
-                    var (scaledNumX, scaledNumY) = GetAbsolutePixelCoordinates((x + 2.6f, y + 0.25f));
-                    var bombRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
-                    var numRect = new Rectangle(scaledNumX, scaledNumY, (int) (bombSize * 0.75), (int) (bombSize * 0.75));
-                    _spriteBatch.Draw(
-                        _texBomb,
-                        bombRect,
-                        null,
-                        Color.White,
-                        0,
-                        new Vector2(0, _texBomb.Height),
-                        SpriteEffects.None,
-                        0
+
+                    // if the bomb is ticking
+                    if (_midtermGameController.Bombs[i].Defused)
+                    {
+                        var defusedRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                        _spriteBatch.Draw(
+                            _texCheckmark,
+                            defusedRect,
+                            null,
+                            Color.White,
+                            0,
+                            new Vector2(0, _texCheckmark.Height),
+                            SpriteEffects.None,
+                            0
                         );
-                    _spriteBatch.Draw(
-                        GetNumTexture(_midtermGameController.Bombs[i].FuseTime),
-                        numRect,
-                        null,
-                        Color.White,
-                        0,
-                        new Vector2(0, _texNum0.Height),
-                        SpriteEffects.None,
-                        0
-                    );
+                    }
+                    else if (_midtermGameController.Bombs[i].Exploded)
+                    {
+                        var explodedRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                        _spriteBatch.Draw(
+                            _texExplosion,
+                            explodedRect,
+                            null,
+                            Color.White,
+                            0,
+                            new Vector2(0, _texCheckmark.Height),
+                            SpriteEffects.None,
+                            0
+                        );
+                    }
+                    else
+                    {
+                        var (scaledNumX, scaledNumY) = GetAbsolutePixelCoordinates((x + 2.6f, y + 0.25f));
+                        var bombRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                        var numRect = new Rectangle(scaledNumX, scaledNumY, (int) (bombSize * 0.75),
+                            (int) (bombSize * 0.75));
+                        _spriteBatch.Draw(
+                            _texBomb,
+                            bombRect,
+                            null,
+                            Color.White,
+                            0,
+                            new Vector2(0, _texBomb.Height),
+                            SpriteEffects.None,
+                            0
+                        );
+
+                        _spriteBatch.Draw(
+                            GetNumTexture(_midtermGameController.Bombs[i].FuseTime),
+                            numRect,
+                            null,
+                            Color.White,
+                            0,
+                            new Vector2(0, _texNum0.Height),
+                            SpriteEffects.None,
+                            0
+                        );
+                    }
                 }
             }
 

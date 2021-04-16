@@ -37,6 +37,7 @@ namespace Midterm
 
         // array holds all bombs
         public Bomb[] Bombs;
+        public MouseButton[] BombButtons;
 
         // timespan of tick
         private readonly TimeSpan _tickTimeSpan = TimeSpan.FromSeconds(1.5);
@@ -60,6 +61,23 @@ namespace Midterm
 
             // set the high scores list to what we just read in
             MainMenuController.HighScoresIntList = LocalStorageManager.StoredHighScores.HighScores;
+
+            // set mouse buttons
+            BombButtons = new[]
+            {
+                InputHandler.bomb1,
+                InputHandler.bomb2,
+                InputHandler.bomb3,
+                InputHandler.bomb4,
+                InputHandler.bomb5,
+                InputHandler.bomb6,
+                InputHandler.bomb7,
+                InputHandler.bomb8,
+                InputHandler.bomb9,
+                InputHandler.bomb10,
+                InputHandler.bomb11,
+                InputHandler.bomb12,
+            };
 
             // main state is menu
             GameState = MainMenu;
@@ -103,13 +121,21 @@ namespace Midterm
             {
                 case Running:
                     // code to actually run the game
-                    if (InputHandler.bomb1.Pressed)
-                    {
-                        Console.WriteLine("Bomb1 pressed");
-                    }
                     if (InputHandler.PauseGameButton.Pressed)
                     {
                         PauseMenuController.OpenMenu();
+                    }
+
+                    for (var i = 0; i < 12; i++)
+                    {
+                        if (BombButtons[i].Pressed)
+                        {
+                            if (Bombs[i].IsEnabled && !Bombs[i].Defused && !Bombs[i].Exploded)
+                            {
+                                Bombs[i].Defused = true;
+                                Score += Bombs[i].FuseTime;
+                            }
+                        }
                     }
 
                     // increment current timespan tick time, see if we need to explode any bombs
@@ -239,15 +265,6 @@ namespace Midterm
                 // otherwise, not enabled
                 else
                     Bombs[i] = new Bomb(99, false);
-            }
-        }
-
-        public void ClickBomb(Bomb bomb)
-        {
-            if (bomb.IsEnabled)
-            {
-                // TODO change this
-                Console.WriteLine("Bomb clicked!");
             }
         }
     }
