@@ -4,11 +4,12 @@ namespace Midterm
 {
     public class Bomb
     {
-        public TimeSpan FuseTime;
+        // public TimeSpan FuseTime;
+        public int FuseTime;
         public bool Exploded;
         public bool IsEnabled;
 
-        public Bomb(TimeSpan fuseTime, bool isEnabled)
+        public Bomb(int fuseTime, bool isEnabled)
         {
             Exploded = false;
             FuseTime = fuseTime;

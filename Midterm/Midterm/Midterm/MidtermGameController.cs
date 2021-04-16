@@ -148,6 +148,66 @@ namespace Midterm
             }
         }
 
+        public void PrimeBombs(int level)
+        {
+            var countdownArray = new List<int>
+            {
+                // TimeSpan.FromSeconds(3),
+                // TimeSpan.FromSeconds(3),
+                // TimeSpan.FromSeconds(2),
+                // TimeSpan.FromSeconds(2),
+                // TimeSpan.FromSeconds(1),
+                // TimeSpan.FromSeconds(1)
+                3,
+                3,
+                2,
+                2,
+                1,
+                1
+            };
+
+            if (level > 1)
+            {
+                // countdownArray.Add(TimeSpan.FromSeconds(4));
+                // countdownArray.Add(TimeSpan.FromSeconds(3));
+                // countdownArray.Add(TimeSpan.FromSeconds(2));
+                countdownArray.Add(4);
+                countdownArray.Add(3);
+                countdownArray.Add(2);
+            }
+            if (level > 2)
+            {
+                // countdownArray.Add(TimeSpan.FromSeconds(5));
+                // countdownArray.Add(TimeSpan.FromSeconds(4));
+                // countdownArray.Add(TimeSpan.FromSeconds(3));
+                countdownArray.Add(5);
+                countdownArray.Add(4);
+                countdownArray.Add(3);
+            }
+
+            // shuffle this list
+            var random = new Random();
+            var secondList = new List<int>(countdownArray.OrderBy(a => random.Next()));
+
+            // now, start creating new bombs
+            for (var i = 0; i < 12; i++)
+            // foreach (var timespan in secondList)
+            {
+                // 1-6: always on
+                if (i < 6)
+                    Bombs[i] = new Bomb(secondList[i], true);
+                // 7-9: on if level is greater than 1
+                else if (i < 9 && level > 1)
+                    Bombs[i] = new Bomb(secondList[i], true);
+                // 10-12: on if level is 3
+                else if (level > 2)
+                    Bombs[i] = new Bomb(secondList[i], true);
+                // otherwise, not enabled
+                else
+                    Bombs[i] = new Bomb(secondList[i], false);
+            }
+        }
+
         public void ClickBomb(Bomb bomb)
         {
             if (bomb.IsEnabled)
