@@ -49,23 +49,6 @@ namespace Midterm
             PauseMenuController = new PauseMenuController(this);
             LocalStorageManager = new LocalStorageManager();
 
-            // in constructor, read in the control scheme and high scores initially
-            LocalStorageManager.LoadControlScheme();
-
-            // need to wait for a control scheme to be loaded
-            while (LocalStorageManager.StoredControlScheme == null)
-            {
-                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
-            }
-
-            // set the correct control scheme after load
-            InputHandler.MovePieceLeftButton.BoundKeys = LocalStorageManager.StoredControlScheme.LeftKeys;
-            InputHandler.MovePieceRightButton.BoundKeys = LocalStorageManager.StoredControlScheme.RightKeys;
-            InputHandler.SoftDropButton.BoundKeys = LocalStorageManager.StoredControlScheme.DownKeys;
-            InputHandler.HardDropButton.BoundKeys = LocalStorageManager.StoredControlScheme.UpKeys;
-            InputHandler.RotateClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateClockwiseKeys;
-            InputHandler.RotateCounterClockwiseButton.BoundKeys = LocalStorageManager.StoredControlScheme.RotateCounterClockwiseKeys;
-
             LocalStorageManager.LoadHighScores();
 
             // need to wait for high scores to be loaded
