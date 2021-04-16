@@ -24,7 +24,6 @@ namespace Midterm.Menuing
         {
             // set calling controller's state to Paused
             GameController.GameState = GameState.Paused;
-            GameController.SoundController.PauseMusic();
         }
 
         // this will be very simple:
@@ -35,12 +34,10 @@ namespace Midterm.Menuing
             if (inputHandler.ResumeButton.Pressed || inputHandler.PauseGameButton.Pressed)
             {
                 GameController.GameState = Running;
-                GameController.SoundController.PlayMusic();
             }
             else if (inputHandler.QuitButton.Pressed)
             {
                 GameController.MainMenuController.OpenMenu();
-                GameController.SoundController.StopMusic();
             }
         }
     }

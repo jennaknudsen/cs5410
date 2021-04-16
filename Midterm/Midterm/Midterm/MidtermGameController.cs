@@ -27,7 +27,6 @@ namespace Midterm
         public LocalStorageManager LocalStorageManager;
 
         // These controllers need assets, so they are instantiated by the TetrisGame itself
-        public SoundController SoundController;
         public ParticleController ParticleController;
 
         // TODO delete this
@@ -93,9 +92,6 @@ namespace Midterm
 
             // reset the game over time
             GameOverTime = _gameOverEndTime;
-
-            // play the background music
-            SoundController.PlayMusic();
         }
 
         // this ticks every game loop
@@ -103,9 +99,6 @@ namespace Midterm
         {
             // first, always get user input
             InputHandler.HandleInput();
-
-            // update the SoundController
-            SoundController.Update(gameTime);
 
             // update the ParticleController (unless game is paused)
             if (GameState != Paused) ParticleController.Update(gameTime);

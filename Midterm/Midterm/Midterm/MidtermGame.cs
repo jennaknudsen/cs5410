@@ -13,8 +13,6 @@ namespace Midterm
     {
         // import textures here
         private Texture2D _texBoard;
-        private SoundEffect _soundBlockPlace;
-        private SoundEffect _soundBackgroundMusic;
         private Texture2D _texParticle;
         private Texture2D _texBackgroundDimmer;
         private SpriteFont _menuFont;
@@ -57,17 +55,11 @@ namespace Midterm
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _texBoard = this.Content.Load<Texture2D>("board");
+            _texBoard = this.Content.Load<Texture2D>("Background");
             _texParticle = this.Content.Load<Texture2D>("ParticleClear");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
-            _soundBlockPlace = this.Content.Load<SoundEffect>("BlockPlace");
-            _soundBackgroundMusic = this.Content.Load<SoundEffect>("Tetris");
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
-
-            // initialize the game controller's sound now that music is imported
-            _midtermGameController.SoundController = new SoundController(
-                _soundBlockPlace, _soundBackgroundMusic);
 
             // initialize the particle controller
             _midtermGameController.ParticleController = new ParticleController(
