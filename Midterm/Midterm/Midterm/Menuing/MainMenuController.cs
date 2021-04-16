@@ -38,10 +38,6 @@ namespace Midterm.Menuing
                     {
                         MenuState = HighScores;
                     }
-                    else if (inputHandler.CustomizeControlsButton.Pressed)
-                    {
-                        MenuState = Controls;
-                    }
                     else if (inputHandler.ViewCreditsButton.Pressed)
                     {
                         MenuState = Credits;

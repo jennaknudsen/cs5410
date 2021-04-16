@@ -116,9 +116,6 @@ namespace Midterm
                     var hsColor = inputHandler.HighScoresButton.IsHovered
                         ? Color.Yellow
                         : Color.LightGray;
-                    var ccColor = inputHandler.CustomizeControlsButton.IsHovered
-                        ? Color.Yellow
-                        : Color.LightGray;
                     var vcColor = inputHandler.ViewCreditsButton.IsHovered
                         ? Color.Yellow
                         : Color.LightGray;
@@ -130,7 +127,6 @@ namespace Midterm
 
                     var (ngX, ngY) = GetMouseButtonPixelCoordinates(inputHandler.NewGameButton);
                     var (hsX, hsY) = GetMouseButtonPixelCoordinates(inputHandler.HighScoresButton);
-                    var (ccX, ccY) = GetMouseButtonPixelCoordinates(inputHandler.CustomizeControlsButton);
                     var (vcX, vcY) = GetMouseButtonPixelCoordinates(inputHandler.ViewCreditsButton);
 
                     // now, draw the strings
@@ -140,9 +136,6 @@ namespace Midterm
                     _spriteBatch.DrawString(_menuFont, highScoresString,
                         new Vector2(hsX, hsY),
                         hsColor);
-                    _spriteBatch.DrawString(_menuFont, customizeControlsString,
-                        new Vector2(ccX, ccY),
-                        ccColor);
                     _spriteBatch.DrawString(_menuFont, viewCreditsString,
                         new Vector2(vcX, vcY),
                         vcColor);

@@ -9,26 +9,24 @@ namespace Midterm.InputHandling
     public class InputHandler
     {
         // game buttons
-        public readonly KeyboardButton MovePieceLeftButton;
-        public readonly KeyboardButton MovePieceRightButton;
-        public readonly KeyboardButton SoftDropButton;
-        public readonly KeyboardButton HardDropButton;
-        public readonly KeyboardButton RotateCounterClockwiseButton;
-        public readonly KeyboardButton RotateClockwiseButton;
+        public readonly MouseButton bomb1;
+        public readonly MouseButton bomb2;
+        public readonly MouseButton bomb3;
+        public readonly MouseButton bomb4;
+        public readonly MouseButton bomb5;
+        public readonly MouseButton bomb6;
+        public readonly MouseButton bomb7;
+        public readonly MouseButton bomb8;
+        public readonly MouseButton bomb9;
+        public readonly MouseButton bomb10;
+        public readonly MouseButton bomb11;
+        public readonly MouseButton bomb12;
         public readonly KeyboardButton PauseGameButton;
 
         // main menu buttons
         public readonly MouseButton NewGameButton;
         public readonly MouseButton HighScoresButton;
-        public readonly MouseButton CustomizeControlsButton;
         public readonly MouseButton ViewCreditsButton;
-        public readonly MouseButton LeftControlButton;
-        public readonly MouseButton RightControlButton;
-        public readonly MouseButton UpControlButton;
-        public readonly MouseButton DownControlButton;
-        public readonly MouseButton CounterClockwiseControlButton;
-        public readonly MouseButton ClockwiseControlButton;
-        public readonly MouseButton ResetToDefaultsButton;
         public readonly MouseButton BackToMainButton;
 
         // pause menu buttons
@@ -49,28 +47,27 @@ namespace Midterm.InputHandling
         public InputHandler()
         {
             // buttons for game controls
-            MovePieceLeftButton = new KeyboardButton(new[] {Keys.Left}, true);
-            MovePieceRightButton = new KeyboardButton(new[] {Keys.Right}, true);
-            SoftDropButton = new KeyboardButton(new[] {Keys.Down, Keys.D}, true);
-            HardDropButton = new KeyboardButton(new[] {Keys.Up}, true);
-            RotateCounterClockwiseButton = new KeyboardButton(new[] {Keys.Home, Keys.Q}, true);
-            RotateClockwiseButton = new KeyboardButton(new[] {Keys.PageUp, Keys.E}, true);
+            bomb1 = new MouseButton((35, 30), (45, 40), true);
+            bomb2 = new MouseButton((45, 30), (55, 40), true);
+            bomb3 = new MouseButton((55, 30), (65, 40), true);
+
+            bomb4 = new MouseButton((35, 40), (45, 50), true);
+            bomb5 = new MouseButton((45, 40), (55, 50), true);
+            bomb6 = new MouseButton((55, 40), (65, 50), true);
+
+            bomb7 = new MouseButton((35, 50), (45, 60), true);
+            bomb8 = new MouseButton((45, 50), (55, 60), true);
+            bomb9 = new MouseButton((55, 50), (65, 60), true);
+
+            bomb10 = new MouseButton((35, 60), (45, 70), true);
+            bomb11 = new MouseButton((45, 60), (55, 70), true);
+            bomb12 = new MouseButton((55, 60), (65, 70), true);
             PauseGameButton = new KeyboardButton(new[] {Keys.Escape}, true);
 
             // buttons for main menu controls
             NewGameButton = new MouseButton((10, 76), (50, 82), true);
             HighScoresButton = new MouseButton((10, 57), (50, 63), true);
-            CustomizeControlsButton = new MouseButton((10, 38), (50, 44), true);
             ViewCreditsButton = new MouseButton((10, 19), (50, 25), true);
-
-            LeftControlButton = new MouseButton((10, 76), (40, 82), true);
-            RightControlButton = new MouseButton((60, 76), (90, 82), true);
-            DownControlButton = new MouseButton((10, 63), (40, 69), true);
-            UpControlButton = new MouseButton((60, 63), (90, 69), true);
-            CounterClockwiseControlButton = new MouseButton((10, 50), (40, 56), true);
-            ClockwiseControlButton = new MouseButton((60, 50), (90, 56), true);
-
-            ResetToDefaultsButton = new MouseButton((10, 23), (50, 29), true);
             BackToMainButton = new MouseButton((10, 14), (50, 20), true);
 
             // buttons for pause menu controls
@@ -84,27 +81,13 @@ namespace Midterm.InputHandling
             _listOfButtons = new List<Button>
             {
                 // game buttons
-                MovePieceLeftButton,
-                MovePieceRightButton,
-                SoftDropButton,
-                HardDropButton,
-                RotateCounterClockwiseButton,
-                RotateClockwiseButton,
                 PauseGameButton,
 
                 // main menu buttons
                 NewGameButton,
                 HighScoresButton,
-                CustomizeControlsButton,
                 ViewCreditsButton,
 
-                LeftControlButton,
-                RightControlButton,
-                UpControlButton,
-                DownControlButton,
-                CounterClockwiseControlButton,
-                ClockwiseControlButton,
-                ResetToDefaultsButton,
                 BackToMainButton,
 
                 // pause menu buttons
