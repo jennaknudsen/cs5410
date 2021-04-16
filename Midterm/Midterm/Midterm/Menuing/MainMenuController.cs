@@ -14,6 +14,8 @@ namespace Midterm.Menuing
         // holds a list of all high scores
         public List<int> HighScoresIntList;
 
+        public List<double> TimeHighScoresDoubleList;
+
         public MainMenuController(MidtermGameController controller)
         {
             GameController = controller;

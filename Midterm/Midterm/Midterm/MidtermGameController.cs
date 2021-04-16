@@ -30,9 +30,6 @@ namespace Midterm
         // These controllers need assets, so they are instantiated by the TetrisGame itself
         public ParticleController ParticleController;
 
-        // TODO delete this
-        private bool _firedOnce = false;
-
         // Timeout for game over
         private readonly TimeSpan _gameOverEndTime = TimeSpan.FromSeconds(5);
         public TimeSpan GameOverTime = TimeSpan.Zero;
@@ -60,6 +57,7 @@ namespace Midterm
             PauseMenuController = new PauseMenuController(this);
             LocalStorageManager = new LocalStorageManager();
 
+            // load the overall high scores
             LocalStorageManager.LoadHighScores();
 
             // need to wait for high scores to be loaded
@@ -70,6 +68,18 @@ namespace Midterm
 
             // set the high scores list to what we just read in
             MainMenuController.HighScoresIntList = LocalStorageManager.StoredHighScores.HighScores;
+
+            // load the time high scores
+            LocalStorageManager.LoadTimeHighScores();
+
+            // need to wait for high scores to be loaded
+            while (LocalStorageManager.StoredTimeHighScores == null)
+            {
+                Thread.Sleep(10);   // Added Sleep so that this thread can "breathe" will Async happens
+            }
+
+            // set the high scores list to what we just read in
+            MainMenuController.TimeHighScoresDoubleList = LocalStorageManager.StoredTimeHighScores.TimeHighScores;
 
             // set mouse buttons
             BombButtons = new[]

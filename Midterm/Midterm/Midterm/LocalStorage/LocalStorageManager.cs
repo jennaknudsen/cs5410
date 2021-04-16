@@ -136,7 +136,7 @@ namespace Midterm.LocalStorage
         }
         #endregion
 
-        #region High Scores
+        #region Time High Scores
 
         // public-facing method to load controls
         public void LoadTimeHighScores()
@@ -205,10 +205,10 @@ namespace Midterm.LocalStorage
             lock (this)
             {
                 // don't run if already saving
-                if (this._savingHighScores) return;
+                if (this._savingTimeHighScores) return;
 
                 // flag that this is saving
-                this._savingHighScores = true;
+                this._savingTimeHighScores = true;
 
                 // Create something to save
                 var myState = new TimeScoreDiskStorage(hsList);
