@@ -123,6 +123,10 @@ namespace Midterm
 
             // reset total elapsed game time
             GameTimeTimeSpan = TimeSpan.Zero;
+
+            // add a new score of 0 to high scores list
+            MainMenuController.HighScoresIntList.Add(0);
+            LocalStorageManager.SaveHighScores(MainMenuController.HighScoresIntList);
         }
 
         public void StartLevel(int level)
@@ -154,6 +158,8 @@ namespace Midterm
                     // increment the total game time
                     GameTimeTimeSpan += gameTime.ElapsedGameTime;
 
+                    var needToSaveScore = false;
+
                     // handle pressing the bombs
                     for (var i = 0; i < 12; i++)
                     {
@@ -163,6 +169,7 @@ namespace Midterm
                             {
                                 Bombs[i].Defused = true;
                                 Score += Bombs[i].FuseTime;
+                                needToSaveScore = true;
                             }
                         }
                     }
@@ -184,9 +191,20 @@ namespace Midterm
                                     // subtract from score
                                     Score -= 3;
                                     if (Score < 0) Score = 0;
+                                    needToSaveScore = true;
                                 }
                             }
                         }
+                    }
+
+                    // see if any scores updated, if so then update the score
+                    if (needToSaveScore)
+                    {
+                        // update last element in this list with the new score
+                        MainMenuController.HighScoresIntList[^1] = Score;
+
+                        // update the score
+                        LocalStorageManager.SaveHighScores(MainMenuController.HighScoresIntList);
                     }
 
                     var areAllBombsComplete = true;
