@@ -69,7 +69,7 @@ namespace Midterm
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             _texBoard = this.Content.Load<Texture2D>("Background");
-            _texParticle = this.Content.Load<Texture2D>("ParticleClear");
+            _texParticle = this.Content.Load<Texture2D>("fire");
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");

@@ -177,9 +177,13 @@ namespace Midterm
                     // increment current timespan tick time, see if we need to explode any bombs
                     _currentTickTimeSpan += gameTime.ElapsedGameTime;
 
+                    // store a list of all bombs we exploded on this update
+                    var bombsToExplode = new List<int>();
+
                     if (_currentTickTimeSpan > _tickTimeSpan)
                     {
                         _currentTickTimeSpan = TimeSpan.Zero;
+                        var counter = 0;
                         foreach (var bomb in Bombs)
                         {
                             if (bomb.IsEnabled && !bomb.Defused && !bomb.Exploded)
@@ -187,6 +191,7 @@ namespace Midterm
                                 bomb.FuseTime--;
                                 if (bomb.FuseTime == 0)
                                 {
+                                    bombsToExplode.Add(counter);
                                     bomb.Exploded = true;
                                     // subtract from score
                                     Score -= 3;
@@ -194,7 +199,31 @@ namespace Midterm
                                     needToSaveScore = true;
                                 }
                             }
+                            counter++;
                         }
+                    }
+
+                    // add explosion particles
+                    foreach (var i in bombsToExplode)
+                    {
+                        var (x, y) = i switch
+                        {
+                            0 => (35, 30),
+                            1 => (45, 30),
+                            2 => (55, 30),
+                            3 => (35, 40),
+                            4 => (45, 40),
+                            5 => (55, 40),
+                            6 => (35, 50),
+                            7 => (45, 50),
+                            8 => (55, 50),
+                            9 => (35, 60),
+                            10 => (45, 60),
+                            11 => (55, 60),
+                            _ => (0, 0)
+                        };
+
+                        ParticleController.AddTex1TimedAngleEmitter(x + 6, y + 4, MathHelper.TwoPi);
                     }
 
                     // see if any scores updated, if so then update the score

@@ -18,7 +18,7 @@ namespace Midterm
         private readonly List<TimedAngleEmitter> _emittersList = new List<TimedAngleEmitter>();
 
         // generic emitter
-        private AngleEmitter _angleEmitter;
+        // private AngleEmitter _angleEmitter;
 
         // constructor sets the reference
         public ParticleController(
@@ -29,55 +29,55 @@ namespace Midterm
 
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((50, 50));
 
-            // set up generic angle emitter
-            _angleEmitter = new AngleEmitter(
-                TimeSpan.FromMilliseconds(5),
-                sourceX,
-                sourceY,
-                10,
-                0.8f,
-                TimeSpan.FromMilliseconds(1000),
-                _tex1,
-                false
-            );
+            // // set up generic angle emitter
+            // _angleEmitter = new AngleEmitter(
+            //     TimeSpan.FromMilliseconds(5),
+            //     sourceX,
+            //     sourceY,
+            //     10,
+            //     0.8f,
+            //     TimeSpan.FromMilliseconds(1000),
+            //     _tex1,
+            //     false
+            // );
         }
 
-        public void FireGenericAngleEmitter(float boardX, float boardY, float angle)
-        {
-            var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
-
-            _angleEmitter.Angle = angle;
-            _angleEmitter.SourceX = sourceX;
-            _angleEmitter.SourceY = sourceY;
-            _angleEmitter.Width = MathHelper.PiOver2;
-
-            _angleEmitter.FireParticles(true);
-        }
-
-        public void StopGenericAngleEmitter()
-        {
-            _angleEmitter.FireParticles(false);
-        }
+        // public void FireGenericAngleEmitter(float boardX, float boardY, float angle)
+        // {
+        //     var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
+        //
+        //     _angleEmitter.Angle = angle;
+        //     _angleEmitter.SourceX = sourceX;
+        //     _angleEmitter.SourceY = sourceY;
+        //     _angleEmitter.Width = MathHelper.PiOver2;
+        //
+        //     _angleEmitter.FireParticles(true);
+        // }
+        //
+        // public void StopGenericAngleEmitter()
+        // {
+        //     _angleEmitter.FireParticles(false);
+        // }
 
         public void AddTex1TimedAngleEmitter(float boardX, float boardY, float angle)
         {
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
             var emitter = new TimedAngleEmitter(
-                TimeSpan.FromMilliseconds(5),
+                TimeSpan.FromMilliseconds(2),
                 sourceX,
                 sourceY,
                 10,
                 0.8f,
                 TimeSpan.FromMilliseconds(500),
                 _tex1,
-                TimeSpan.FromMilliseconds(50),
+                TimeSpan.FromMilliseconds(100),
                 false
             );
 
             emitter.Angle = angle;
             // change the width here
-            emitter.Width = MathHelper.Pi;
+            emitter.Width = MathHelper.TwoPi;
             emitter.FireParticles();
 
             _emittersList.Add(emitter);
@@ -100,7 +100,7 @@ namespace Midterm
             }
 
             // manually update all other emitters
-            _angleEmitter.Update(gameTime);
+            // _angleEmitter.Update(gameTime);
 
             // remove all emitters we don't need anymore
             foreach (var emitter in emittersToRemove)
@@ -118,7 +118,7 @@ namespace Midterm
             }
 
             // manually update all other emitters
-            _angleEmitter.Draw(_spriteBatch);
+            // _angleEmitter.Draw(_spriteBatch);
         }
 
         // Clears all particle effects
