@@ -226,12 +226,16 @@ namespace Midterm
                         }
                         else
                         {
-                            // TODO save high scores
+                            // save time high scores
+                            MainMenuController.TimeHighScoresDoubleList.Add(GameTimeTimeSpan.TotalSeconds);
+                            // sort by low to high
+                            MainMenuController.TimeHighScoresDoubleList.Sort((a, b) => a.CompareTo(b));
+                            // actually save the high scores
+                            LocalStorageManager.SaveTimeHighScores(MainMenuController.TimeHighScoresDoubleList);
 
                             // exit back to main menu
                             GameOverTime = _gameOverEndTime;
                             GameState = GameOver;
-
                         }
                     }
 

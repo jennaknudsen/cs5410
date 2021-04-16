@@ -169,8 +169,9 @@ namespace Midterm
                 case HighScores:
                     var highScoresTitleString = "High Scores:";
                     var highScoresBodyString = "";
+                    var timeScoresTitleString = "Time Scores:";
+                    var timeScoresBodyString = "";
 
-                    // this will only be null for one frame
                     // this will only be null for one frame
                     if (_midtermGameController.MainMenuController.HighScoresIntList != null)
                     {
@@ -191,6 +192,26 @@ namespace Midterm
                         }
                     }
 
+                    // this will only be null for one frame
+                    if (_midtermGameController.MainMenuController.TimeHighScoresDoubleList != null)
+                    {
+                        var position = 1;
+
+                        foreach (var hs in _midtermGameController.MainMenuController.TimeHighScoresDoubleList)
+                        {
+                            timeScoresBodyString += position + ") " + hs + " seconds\n";
+                            position++;
+
+                            // only display the top 5 scores
+                            if (position > 5) break;
+                        }
+
+                        if (timeScoresBodyString.Equals(""))
+                        {
+                            timeScoresBodyString = "No time high scores yet.";
+                        }
+                    }
+
                     // get color of button
                     var mmString1 = "Main Menu";
                     var mmColor1 = inputHandler.BackToMainButton.IsHovered
@@ -198,15 +219,23 @@ namespace Midterm
                         : Color.LightGray;
 
                     var (hsTitleX, hsTitleY) = GetAbsolutePixelCoordinates((10, 80));
-                    var (hsContentsX, hsContentsY) = GetAbsolutePixelCoordinates((10, 67));
+                    var (hsContentsX, hsContentsY) = GetAbsolutePixelCoordinates((10, 75));
+                    var (tsTitleX, tsTitleY) = GetAbsolutePixelCoordinates((10, 60));
+                    var (tsContentsX, tsContentsY) = GetAbsolutePixelCoordinates((10, 55));
                     var returnToMainPos = GetMouseButtonPixelCoordinates(inputHandler.BackToMainButton);
 
                     // draw the menu items
                     _spriteBatch.DrawString(_menuFont, highScoresTitleString,
                         new Vector2(hsTitleX, hsTitleY),
                         Color.LightGray);
-                    _spriteBatch.DrawString(_menuFont, highScoresBodyString,
+                    _spriteBatch.DrawString(_gameFont, highScoresBodyString,
                         new Vector2(hsContentsX, hsContentsY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_menuFont, timeScoresTitleString,
+                        new Vector2(tsTitleX, tsTitleY),
+                        Color.LightGray);
+                    _spriteBatch.DrawString(_gameFont, timeScoresBodyString,
+                        new Vector2(tsContentsX, tsContentsY),
                         Color.LightGray);
                     _spriteBatch.DrawString(_menuFont, mmString1,
                         new Vector2(returnToMainPos.x, returnToMainPos.y),
