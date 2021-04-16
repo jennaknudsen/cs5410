@@ -32,7 +32,7 @@ namespace Midterm.Menuing
                 case Main:
                     if (inputHandler.NewGameButton.Pressed)
                     {
-                        GameController.StartGame(false);
+                        GameController.StartGame();
                     }
                     else if (inputHandler.HighScoresButton.Pressed)
                     {

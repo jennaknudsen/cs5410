@@ -61,7 +61,7 @@ namespace Midterm
         }
 
         // this starts the game
-        public void StartGame(bool attractMode)
+        public void StartGame()
         {
             // reset score, board
             Score = 0;
@@ -72,8 +72,16 @@ namespace Midterm
             // initialize bomb array
             Bombs = new Bomb[12];
 
+            // game starts on level 1
+            StartLevel(1);
+
             // reset the game over time
             GameOverTime = _gameOverEndTime;
+        }
+
+        public void StartLevel(int level)
+        {
+            PrimeBombs(level);
         }
 
         // this ticks every game loop
@@ -89,11 +97,9 @@ namespace Midterm
             {
                 case Running:
                     // code to actually run the game
-
-
                     if (InputHandler.bomb1.Pressed)
                     {
-
+                        Console.WriteLine("Bomb1 pressed");
                     }
                     if (InputHandler.PauseGameButton.Pressed)
                     {
@@ -204,7 +210,7 @@ namespace Midterm
                     Bombs[i] = new Bomb(secondList[i], true);
                 // otherwise, not enabled
                 else
-                    Bombs[i] = new Bomb(secondList[i], false);
+                    Bombs[i] = new Bomb(99, false);
             }
         }
 

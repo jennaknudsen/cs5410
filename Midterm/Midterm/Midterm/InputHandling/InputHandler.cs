@@ -81,6 +81,18 @@ namespace Midterm.InputHandling
             _listOfButtons = new List<Button>
             {
                 // game buttons
+                bomb1,
+                bomb2,
+                bomb3,
+                bomb4,
+                bomb5,
+                bomb6,
+                bomb7,
+                bomb8,
+                bomb9,
+                bomb10,
+                bomb11,
+                bomb12,
                 PauseGameButton,
 
                 // main menu buttons
