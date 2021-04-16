@@ -17,6 +17,19 @@ namespace Midterm
         private Texture2D _texBackgroundDimmer;
         private SpriteFont _menuFont;
         private SpriteFont _gameFont;
+        private Texture2D _texBomb;
+        private Texture2D _texExplosion;
+        private Texture2D _texCheckmark;
+        private Texture2D _texNum0;
+        private Texture2D _texNum1;
+        private Texture2D _texNum2;
+        private Texture2D _texNum3;
+        private Texture2D _texNum4;
+        private Texture2D _texNum5;
+        private Texture2D _texNum6;
+        private Texture2D _texNum7;
+        private Texture2D _texNum8;
+        private Texture2D _texNum9;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -60,6 +73,19 @@ namespace Midterm
             _texBackgroundDimmer = this.Content.Load<Texture2D>("background-dimmer");
             _menuFont = this.Content.Load<SpriteFont>("MenuFont");
             _gameFont = this.Content.Load<SpriteFont>("GameFont");
+            _texBomb = this.Content.Load <Texture2D> ("Bomb");
+            _texExplosion = this.Content.Load<Texture2D>("Explosion");
+            _texCheckmark = this.Content.Load<Texture2D>("Explosion");
+            _texNum0 = this.Content.Load<Texture2D>("glass_numbers_0");
+            _texNum1 = this.Content.Load<Texture2D>("glass_numbers_1");
+            _texNum2 = this.Content.Load<Texture2D>("glass_numbers_2");
+            _texNum3 = this.Content.Load<Texture2D>("glass_numbers_3");
+            _texNum4 = this.Content.Load<Texture2D>("glass_numbers_4");
+            _texNum5 = this.Content.Load<Texture2D>("glass_numbers_5");
+            _texNum6 = this.Content.Load<Texture2D>("glass_numbers_6");
+            _texNum7 = this.Content.Load<Texture2D>("glass_numbers_7");
+            _texNum8 = this.Content.Load<Texture2D>("glass_numbers_8");
+            _texNum9 = this.Content.Load<Texture2D>("glass_numbers_9");
 
             // initialize the particle controller
             _midtermGameController.ParticleController = new ParticleController(
@@ -273,6 +299,45 @@ AT A LATER TIME (DO THIS).";
                 new Vector2(scoreX, scoreY),
                 Color.Black);
 
+            // draw bombs
+            var bombSize = RescaleUnitsToPixels(10);
+            for (var i = 0; i < 12; i++)
+            {
+                if (_midtermGameController.Bombs[i].IsEnabled)
+                {
+                    var (x, y) = i switch
+                    {
+                        0 => (35, 30),
+                        1 => (45, 30),
+                        2 => (55, 30),
+                        3 => (35, 40),
+                        4 => (45, 40),
+                        5 => (55, 40),
+                        6 => (35, 50),
+                        7 => (45, 50),
+                        8 => (55, 50),
+                        9 => (35, 60),
+                        10 => (45, 60),
+                        11 => (45, 60),
+                        _ => (0, 0)
+                    };
+
+                    var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
+                    var rect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                    // _spriteBatch.Draw(GetNumTexture(_midtermGameController.Bombs[i].FuseTime), rect, Color.White);
+                    _spriteBatch.Draw(
+                        GetNumTexture(_midtermGameController.Bombs[i].FuseTime),
+                        rect,
+                        null,
+                        Color.White,
+                        0,
+                        new Vector2(0, _texNum0.Height),
+                        SpriteEffects.None,
+                        0
+                        );
+                }
+            }
+
             // draw particles
             _midtermGameController.ParticleController.Draw();
 
@@ -388,5 +453,22 @@ AT A LATER TIME (DO THIS).";
             return rescaledUnits;
         }
 
+        // return the correct texture
+        private Texture2D GetNumTexture(int num)
+        {
+            return num switch
+            {
+                1 => _texNum1,
+                2 => _texNum2,
+                3 => _texNum3,
+                4 => _texNum4,
+                5 => _texNum5,
+                6 => _texNum6,
+                7 => _texNum7,
+                8 => _texNum8,
+                9 => _texNum9,
+                _ => _texNum0
+            };
+        }
     }
 }
