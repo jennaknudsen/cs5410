@@ -106,10 +106,10 @@ namespace Midterm
             _spriteBatch.Begin();
 
             // get pixel coordinates from board coordinates
-            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize));
+            var (backX, backY) = GetAbsolutePixelCoordinates((0, BoardSize * 0.9f));
             var rectSizePixels = RescaleUnitsToPixels(BoardSize);
             // create the background rectangle
-            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, rectSizePixels);
+            var backgroundRect = new Rectangle(backX, backY, rectSizePixels, (int) (rectSizePixels * 0.8f));
             _spriteBatch.Draw(_texBoard, backgroundRect, Color.White);
 
             if (_midtermGameController.GameState == MainMenu)
