@@ -323,18 +323,29 @@ AT A LATER TIME (DO THIS).";
                     };
 
                     var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
-                    var rect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
-                    // _spriteBatch.Draw(GetNumTexture(_midtermGameController.Bombs[i].FuseTime), rect, Color.White);
+                    var (scaledNumX, scaledNumY) = GetAbsolutePixelCoordinates((x + 2.6f, y + 0.25f));
+                    var bombRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                    var numRect = new Rectangle(scaledNumX, scaledNumY, (int) (bombSize * 0.75), (int) (bombSize * 0.75));
+                    _spriteBatch.Draw(
+                        _texBomb,
+                        bombRect,
+                        null,
+                        Color.White,
+                        0,
+                        new Vector2(0, _texBomb.Height),
+                        SpriteEffects.None,
+                        0
+                        );
                     _spriteBatch.Draw(
                         GetNumTexture(_midtermGameController.Bombs[i].FuseTime),
-                        rect,
+                        numRect,
                         null,
                         Color.White,
                         0,
                         new Vector2(0, _texNum0.Height),
                         SpriteEffects.None,
                         0
-                        );
+                    );
                 }
             }
 
