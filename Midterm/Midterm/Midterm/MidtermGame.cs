@@ -322,10 +322,15 @@ AT A LATER TIME (DO THIS).";
         {
             // draw score, level, lines cleared
             var scoreString = "Score: " + _midtermGameController.Score;
-            var (scoreX, scoreY) = GetAbsolutePixelCoordinates((12f, 85f));
+            var (scoreX, scoreY) = GetAbsolutePixelCoordinates((70f, 85f));
+            var timeString = "Total elapsed time: " + _midtermGameController.GameTimeTimeSpan.TotalSeconds;
+            var (timeX, timeY) = GetAbsolutePixelCoordinates((70f, 83f));
 
             _spriteBatch.DrawString(_gameFont, scoreString,
                 new Vector2(scoreX, scoreY),
+                Color.Black);
+            _spriteBatch.DrawString(_gameFont, timeString,
+                new Vector2(timeX, timeY),
                 Color.Black);
 
             // draw bombs

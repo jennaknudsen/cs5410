@@ -115,7 +115,7 @@ namespace Midterm
             Bombs = new Bomb[12];
 
             // game starts on level 1
-            _level = 3;
+            _level = 1;
             StartLevel(_level);
 
             // reset the game over time
