@@ -43,6 +43,10 @@ namespace Midterm
         private readonly TimeSpan _tickTimeSpan = TimeSpan.FromSeconds(1.5);
         private TimeSpan _currentTickTimeSpan;
 
+        // timespan of transition level
+        private readonly TimeSpan _levelTransitionTimeSpan = TimeSpan.FromSeconds(3);
+        public TimeSpan CurrentLevelTransitionTimeSpan;
+
         public MidtermGameController()
         {
             // set up all of the needed controllers and handlers
@@ -90,7 +94,7 @@ namespace Midterm
             Score = 0;
 
             // set the game state to be Running
-            GameState = Running;
+            GameState = TransitionLevel;
 
             // initialize bomb array
             Bombs = new Bomb[12];
@@ -106,6 +110,8 @@ namespace Midterm
         {
             PrimeBombs(level);
             _currentTickTimeSpan = TimeSpan.Zero;
+            CurrentLevelTransitionTimeSpan = _levelTransitionTimeSpan;
+            GameState = TransitionLevel;
         }
 
         // this ticks every game loop
@@ -175,6 +181,15 @@ namespace Midterm
                     //
                     //     ParticleController.FireGenericAngleEmitter(50, 50, MathHelper.PiOver2);
                     // }
+                    break;
+                case TransitionLevel:
+                    // decrement transition time, if 0 then start the level
+                    CurrentLevelTransitionTimeSpan -= gameTime.ElapsedGameTime;
+                    if (CurrentLevelTransitionTimeSpan < TimeSpan.Zero)
+                    {
+                        CurrentLevelTransitionTimeSpan = _levelTransitionTimeSpan;
+                        GameState = Running;
+                    }
                     break;
                 case Paused:
                     PauseMenuController.ProcessMenu(InputHandler);

@@ -5,6 +5,7 @@ namespace Midterm
         Running,
         GameOver,
         MainMenu,
-        Paused
+        Paused,
+        TransitionLevel,
     }
 }

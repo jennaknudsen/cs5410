@@ -431,6 +431,33 @@ AT A LATER TIME (DO THIS).";
                 _spriteBatch.Draw(_texBackgroundDimmer, backgroundRect, Color.White);
                 DrawPauseMenu(gameTime);
             }
+            else if (_midtermGameController.GameState == TransitionLevel)
+            {
+                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 80));
+                var width = RescaleUnitsToPixels(100);
+                var height = RescaleUnitsToPixels(20);
+                var transitionLevelRect = new Rectangle(rectX, rectY, width, height);
+
+                _spriteBatch.Draw(_texBackgroundDimmer, transitionLevelRect, Color.White);
+
+                // draw the text over the dimmed background
+                var transitionLevelText = "Starting level in ";
+
+                var resetTime = _midtermGameController.CurrentLevelTransitionTimeSpan;
+                if (resetTime.TotalSeconds > 2)
+                    transitionLevelText += "3";
+                else if (resetTime.TotalSeconds > 1)
+                    transitionLevelText += "2";
+                else
+                    transitionLevelText += "1";
+
+                // get position of the text on screen
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((20, 73));
+
+                _spriteBatch.DrawString(_menuFont, transitionLevelText,
+                    new Vector2(textPosX, textPosY),
+                    Color.LimeGreen);
+            }
         }
 
         // game board will have relative dimensions in a square
