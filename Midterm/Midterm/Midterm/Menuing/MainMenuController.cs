@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Midterm.InputHandling;
 using Midterm.Menuing;
 using Microsoft.Xna.Framework.Input;
+using Midterm.LocalStorage;
 using static Midterm.Menuing.MenuState;
 
 namespace Midterm.Menuing
@@ -24,6 +25,13 @@ namespace Midterm.Menuing
         public override void OpenMenu()
         {
             GameController.GameState = GameState.MainMenu;
+
+            // when we open the main menu, sort high scores descending
+            HighScoresIntList.Sort((a, b) => b.CompareTo(a));
+
+            // actually save them
+            GameController.LocalStorageManager.SaveHighScores(HighScoresIntList);
+
             MenuState = Main;
         }
 

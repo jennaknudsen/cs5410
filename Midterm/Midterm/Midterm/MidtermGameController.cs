@@ -99,7 +99,7 @@ namespace Midterm
             };
 
             // main state is menu
-            GameState = MainMenu;
+            MainMenuController.OpenMenu();
         }
 
         // this starts the game
@@ -287,7 +287,7 @@ namespace Midterm
                 case GameOver:
                     GameOverTime -= gameTime.ElapsedGameTime;
                     if (GameOverTime < TimeSpan.Zero)
-                        GameState = MainMenu;
+                        MainMenuController.OpenMenu();
                     break;
             }
         }
