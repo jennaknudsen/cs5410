@@ -64,12 +64,12 @@ namespace Midterm
             var (sourceX, sourceY) = MidtermGame.GetAbsolutePixelCoordinates((boardX, boardY));
 
             var emitter = new TimedAngleEmitter(
-                TimeSpan.FromMilliseconds(2),
+                TimeSpan.FromMilliseconds(1),
                 sourceX,
                 sourceY,
                 10,
                 0.8f,
-                TimeSpan.FromMilliseconds(500),
+                TimeSpan.FromMilliseconds(1000),
                 _tex1,
                 TimeSpan.FromMilliseconds(100),
                 false

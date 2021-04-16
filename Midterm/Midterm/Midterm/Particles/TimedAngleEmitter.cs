@@ -76,6 +76,9 @@ namespace Midterm.Particles
                 {
                     Particles.Add(p.Name, p);
                 }
+
+                // add some gravity
+                p.Direction += new Vector2(0, 0.5f);
             }
         }
     }
