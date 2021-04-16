@@ -244,8 +244,10 @@ namespace Midterm
                     break;
                 case Credits:
                     var creditsString = "CREDITS:";
-                    var creditsBodyString = @"CREDITS TO COME
-AT A LATER TIME (DO THIS).";
+                    var creditsBodyString = @"All game logic created by
+me (Jonas Knudsen).
+
+All assets provided by the instructor.";
 
                     var mmString3 = "Main Menu";
                     var mmColor3 = inputHandler.BackToMainButton.IsHovered
@@ -373,7 +375,9 @@ AT A LATER TIME (DO THIS).";
                     // if the bomb is ticking
                     if (_midtermGameController.Bombs[i].Defused)
                     {
-                        var defusedRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                        var (scaledCheckX, scaledCheckY) = GetAbsolutePixelCoordinates((x + 2f, y));
+                        var defusedRect = new Rectangle(scaledCheckX, scaledCheckY,
+                            (int) (bombSize * 0.8f), (int) (bombSize * 0.8f));
                         _spriteBatch.Draw(
                             _texCheckmark,
                             defusedRect,
@@ -387,17 +391,22 @@ AT A LATER TIME (DO THIS).";
                     }
                     else if (_midtermGameController.Bombs[i].Exploded)
                     {
-                        var explodedRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
-                        _spriteBatch.Draw(
-                            _texExplosion,
-                            explodedRect,
-                            null,
-                            Color.White,
-                            0,
-                            new Vector2(0, _texExplosion.Height),
-                            SpriteEffects.None,
-                            0
-                        );
+                        if (_midtermGameController.Bombs[i].IsDoneExploding)
+                        {
+                            var (scaledExplosionX, scaledExplosionY) = GetAbsolutePixelCoordinates((x, y - 1f));
+                            var explodedRect = new Rectangle(scaledExplosionX, scaledExplosionY,
+                                (int) (bombSize * 1.2f), (int) (bombSize * 1.2f));
+                            _spriteBatch.Draw(
+                                _texExplosion,
+                                explodedRect,
+                                null,
+                                Color.White,
+                                0,
+                                new Vector2(0, _texExplosion.Height),
+                                SpriteEffects.None,
+                                0
+                            );
+                        }
                     }
                     else
                     {

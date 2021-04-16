@@ -203,6 +203,15 @@ namespace Midterm
                         }
                     }
 
+                    // tick down all bombs that have exploded
+                    foreach (var bomb in Bombs)
+                    {
+                        if (bomb.Exploded && !bomb.IsDoneExploding)
+                        {
+                            bomb.TickDownBombExplosion(gameTime);
+                        }
+                    }
+
                     // add explosion particles
                     foreach (var i in bombsToExplode)
                     {
@@ -319,6 +328,16 @@ namespace Midterm
                     break;
                 case GameOver:
                     GameOverTime -= gameTime.ElapsedGameTime;
+
+                    // tick down all bombs that have exploded
+                    foreach (var bomb in Bombs)
+                    {
+                        if (bomb.Exploded && !bomb.IsDoneExploding)
+                        {
+                            bomb.TickDownBombExplosion(gameTime);
+                        }
+                    }
+
                     if (GameOverTime < TimeSpan.Zero)
                         MainMenuController.OpenMenu();
                     break;
