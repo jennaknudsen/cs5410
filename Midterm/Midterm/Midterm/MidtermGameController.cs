@@ -21,7 +21,6 @@ namespace Midterm
 
         // references to various objects that this class uses
         public InputHandler InputHandler;
-        // public AiController AiController;
         public MainMenuController MainMenuController;
         public PauseMenuController PauseMenuController;
         public LocalStorageManager LocalStorageManager;
@@ -32,19 +31,16 @@ namespace Midterm
         // TODO delete this
         private bool _firedOnce = false;
 
-        // // Counter for attract mode
-        // private readonly TimeSpan _attractModeThreshold = TimeSpan.FromSeconds(10);
-        // private TimeSpan _inactiveTime = TimeSpan.Zero;
-
         // Timeout for game over
         private readonly TimeSpan _gameOverEndTime = TimeSpan.FromSeconds(5);
         public TimeSpan GameOverTime = TimeSpan.Zero;
+
+        public Bomb[] Bombs;
 
         public MidtermGameController()
         {
             // set up all of the needed controllers and handlers
             InputHandler = new InputHandler();
-            // AiController = new AiController(this);
             MainMenuController = new MainMenuController(this);
             PauseMenuController = new PauseMenuController(this);
             LocalStorageManager = new LocalStorageManager();
@@ -71,7 +67,10 @@ namespace Midterm
             Score = 0;
 
             // set the game state to be Running
-            GameState = attractMode? AttractMode: Running;
+            GameState = Running;
+
+            // initialize bomb array
+            Bombs = new Bomb[12];
 
             // reset the game over time
             GameOverTime = _gameOverEndTime;
@@ -89,9 +88,13 @@ namespace Midterm
             switch (GameState)
             {
                 case Running:
-                case AttractMode:
                     // code to actually run the game
 
+
+                    if (InputHandler.bomb1.Pressed)
+                    {
+
+                    }
                     if (InputHandler.PauseGameButton.Pressed)
                     {
                         PauseMenuController.OpenMenu();
@@ -142,6 +145,15 @@ namespace Midterm
                     if (GameOverTime < TimeSpan.Zero)
                         GameState = MainMenu;
                     break;
+            }
+        }
+
+        public void ClickBomb(Bomb bomb)
+        {
+            if (bomb.IsEnabled)
+            {
+                // TODO change this
+                Console.WriteLine("Bomb clicked!");
             }
         }
     }

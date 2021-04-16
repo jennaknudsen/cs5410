@@ -4,7 +4,6 @@ namespace Midterm
     {
         Running,
         GameOver,
-        AttractMode,
         MainMenu,
         Paused
     }
