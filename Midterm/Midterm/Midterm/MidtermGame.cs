@@ -318,11 +318,23 @@ AT A LATER TIME (DO THIS).";
                         8 => (55, 50),
                         9 => (35, 60),
                         10 => (45, 60),
-                        11 => (45, 60),
+                        11 => (55, 60),
                         _ => (0, 0)
                     };
 
                     var (scaledX, scaledY) = GetAbsolutePixelCoordinates((x, y));
+
+                    var bombRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
+                    _spriteBatch.Draw(
+                        _texBomb,
+                        bombRect,
+                        null,
+                        Color.White,
+                        0,
+                        new Vector2(0, _texBomb.Height),
+                        SpriteEffects.None,
+                        0
+                    );
 
                     // if the bomb is ticking
                     if (_midtermGameController.Bombs[i].Defused)
@@ -348,7 +360,7 @@ AT A LATER TIME (DO THIS).";
                             null,
                             Color.White,
                             0,
-                            new Vector2(0, _texCheckmark.Height),
+                            new Vector2(0, _texExplosion.Height),
                             SpriteEffects.None,
                             0
                         );
@@ -356,19 +368,8 @@ AT A LATER TIME (DO THIS).";
                     else
                     {
                         var (scaledNumX, scaledNumY) = GetAbsolutePixelCoordinates((x + 2.6f, y + 0.25f));
-                        var bombRect = new Rectangle(scaledX, scaledY, bombSize, bombSize);
                         var numRect = new Rectangle(scaledNumX, scaledNumY, (int) (bombSize * 0.75),
                             (int) (bombSize * 0.75));
-                        _spriteBatch.Draw(
-                            _texBomb,
-                            bombRect,
-                            null,
-                            Color.White,
-                            0,
-                            new Vector2(0, _texBomb.Height),
-                            SpriteEffects.None,
-                            0
-                        );
 
                         _spriteBatch.Draw(
                             GetNumTexture(_midtermGameController.Bombs[i].FuseTime),
@@ -433,7 +434,7 @@ AT A LATER TIME (DO THIS).";
             }
             else if (_midtermGameController.GameState == TransitionLevel)
             {
-                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 80));
+                var (rectX, rectY) = GetAbsolutePixelCoordinates((0, 90));
                 var width = RescaleUnitsToPixels(100);
                 var height = RescaleUnitsToPixels(20);
                 var transitionLevelRect = new Rectangle(rectX, rectY, width, height);
@@ -452,7 +453,7 @@ AT A LATER TIME (DO THIS).";
                     transitionLevelText += "1";
 
                 // get position of the text on screen
-                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((20, 73));
+                var (textPosX, textPosY) = GetAbsolutePixelCoordinates((30, 83));
 
                 _spriteBatch.DrawString(_menuFont, transitionLevelText,
                     new Vector2(textPosX, textPosY),

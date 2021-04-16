@@ -16,6 +16,8 @@ namespace Midterm
 
         public int Score;
 
+        private int _level;
+
         // reference to the current game state
         public GameState GameState;
 
@@ -100,7 +102,8 @@ namespace Midterm
             Bombs = new Bomb[12];
 
             // game starts on level 1
-            StartLevel(1);
+            _level = 1;
+            StartLevel(_level);
 
             // reset the game over time
             GameOverTime = _gameOverEndTime;
@@ -146,6 +149,8 @@ namespace Midterm
 
                     // increment current timespan tick time, see if we need to explode any bombs
                     _currentTickTimeSpan += gameTime.ElapsedGameTime;
+
+                    var didWeTickABomb = false;
                     if (_currentTickTimeSpan > _tickTimeSpan)
                     {
                         _currentTickTimeSpan = TimeSpan.Zero;
@@ -153,6 +158,7 @@ namespace Midterm
                         {
                             if (bomb.IsEnabled && !bomb.Defused && !bomb.Exploded)
                             {
+                                didWeTickABomb = true;
                                 bomb.FuseTime--;
                                 if (bomb.FuseTime == 0)
                                 {
@@ -164,7 +170,18 @@ namespace Midterm
                             }
                         }
                     }
+                    else
+                    {
+                        // include this here so that on non-tick frames, we don't auto-advance
+                        didWeTickABomb = true;
+                    }
 
+                    // if no bombs were ticked, go to next level
+                    if (!didWeTickABomb)
+                    {
+                        _level++;
+                        StartLevel(_level);
+                    }
 
                     // demonstration of particle effects
                     // if (gameTime.TotalGameTime >= TimeSpan.FromSeconds(6))
