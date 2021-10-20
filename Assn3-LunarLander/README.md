@@ -14,3 +14,11 @@ This Lunar Lander game was made in C# using the MonoGame framework. To run this 
     <li> <code>→</code> turn right </li>
   </ul>
 </details>
+
+### Technical Notes
+
+* Terrain for this game is generated using the [midpoint displacement algorithm](https://bitesofcode.wordpress.com/2016/12/23/landscape-generation-using-midpoint-displacement/).
+* The lander's physics are calculated using a real-time physics simulation. 
+  * Lander thrust acceleration: 7 m/s^2.
+  * Moon's gravity acceleration: -1.62 m/s^2.
+* Persistent storage for this game stores high scores and control configs between sessions.
