@@ -19,3 +19,14 @@ until the AI loses the game or the user presses an input.
     <li> <code>E, PageUp</code> rotate piece clockwise
   </ul>
 </details>
+
+### Technical Notes
+
+* The Tetris AI used in Attract Mode was based on results from Yiyuan Lee's Tetris AI training 
+  (training details [here](https://codemyroad.wordpress.com/2013/04/14/tetris-ai-the-near-perfect-player/),
+  GitHub repo [here](https://github.com/LeeYiyuan/tetrisai)).
+* Game details:
+  * Uses the [Original Nintendo scoring system](https://tetris.fandom.com/wiki/Scoring#Original_Nintendo_Scoring_System).
+  * Uses [sticky gravity](https://tetris.fandom.com/wiki/Line_clear#Line_clear_gravity) on line clears.
+  * New level reached after every 10 line clears.
+* Persistent storage for this game stores high scores and control configs between sessions.
