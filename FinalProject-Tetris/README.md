@@ -1,4 +1,4 @@
-## Tetris Game
+## Tetris
 
 https://user-images.githubusercontent.com/45336771/138013812-9f8e55a8-f16f-4d74-8d4a-d9678c824845.mp4
 
