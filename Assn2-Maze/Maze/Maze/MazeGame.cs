@@ -536,7 +536,7 @@ P - Toggle Path to Goal";
 
                     var creditsString = @"CREDITS:
 All game logic, assets, and artwork created 
-by me (Jonas Knudsen), with the exception of the
+by me (Jenna Knudsen), with the exception of the
 royalty-free background paving texture, found at:
 http://www.cadhatch.com/seamless-road-paving-
 textures/4588167770

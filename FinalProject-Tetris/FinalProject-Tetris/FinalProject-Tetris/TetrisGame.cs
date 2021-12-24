@@ -463,7 +463,7 @@ namespace FinalProject_Tetris
                 case Credits:
                     var creditsString = "CREDITS:";
                     var creditsBodyString = @"All game logic, artwork, and sounds created
-by me (Jonas Knudsen), with the exception of some
+by me (Jenna Knudsen), with the exception of some
 starter code provided by the instructor, and the
 background cloud texture, which I found at:
 https://opengameart.org/sites/default/

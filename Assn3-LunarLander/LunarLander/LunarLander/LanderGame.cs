@@ -643,7 +643,7 @@ namespace LunarLander
                     // just show credits here. Nothing crazy
                     var creditsString = "CREDITS:";
                     var creditsBodyString = @"All game logic and artwork created 
-by me (Jonas Knudsen), with the exception of some
+by me (Jenna Knudsen), with the exception of some
 starter code provided by the instructor, and the
 background space texture, which I found at:
 https://www.nasa.gov/sites/default/files/images/

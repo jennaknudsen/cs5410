@@ -245,7 +245,7 @@ namespace Midterm
                 case Credits:
                     var creditsString = "CREDITS:";
                     var creditsBodyString = @"All game logic created by
-me (Jonas Knudsen).
+me (Jenna Knudsen).
 
 All assets provided by the instructor.";
 
